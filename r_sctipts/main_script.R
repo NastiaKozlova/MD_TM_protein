@@ -14,6 +14,8 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_sctipts/combine_dcd.
 system(command = paste0("Rscript --vanilla  ",part_start,"r_sctipts/prepare_tcl_din.R ",part_start),ignore.stdout=T,wait = T) 
 #vmd
 system(command = paste0("vmd -dispdev text -e ",part_start,"MD_analysis/vmd_script.tcl "),ignore.stdout=T,wait = T) 
+#check installation of dssp
+#sudo apt-get install dssp may help
 system(command = paste0("Rscript --vanilla  ",part_start,"r_sctipts/compare_second_str.R ",part_start),ignore.stdout=T,wait = T) 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_sctipts/Ramachadran.R ",part_start),ignore.stdout=T,wait = T)
 
