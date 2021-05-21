@@ -5,12 +5,12 @@ library(ggplot2)
 library(dplyr)
 library(readr)
 
-v_main<-c(6.6,7)
+v_main<-c(8)
 setwd(part_start)
 v_part<-list.files("MD")
 if (!dir.exists(paste0(part_start,"MD_analysis/din/"))){dir.create(paste0(part_start,"MD_analysis/din/"))}
 test_10<-seq(from=0,to=1000,by=10)
-main_part<-c("6.6","7")
+main_part<-c(8)
 for (p in 1:length(v_part)) {
   part<-paste0(part_start,"MD/",v_part[p],"/")
   parta<-paste0(part_start,"MD_analysis/din/",v_part[p],"/")

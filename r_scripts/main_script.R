@@ -1,5 +1,15 @@
+#readr
 part_start<-'/home/nastia/projects/MD_TM_protein/'
 #v_main<-c(6.6,7)
+setwd(part_start)
+v_MD<-list.files(paste0("MD"))
+if(!dir.exists("MD_count")){dir.create("MD_count")}
+i<-1
+for (i in 1:length(v_MD)) {
+  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/make_namd_scripts.R ",part_start,"MD/",v_MD[i],"/"),ignore.stdout=T,wait = T)
+  system(command = paste0("cp ",part_start,"MD/",v_MD[i],"/run_namd.txt ",part_start,"MD_count/",v_MD[i],"_run_namd.txt "))
+}
+#run MD simulation of sysems
 #test disulfid bonds
 #system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/prepate_test_tcl.R ",part_start),ignore.stdout=T,wait = T) 
 #system(command = paste0("vmd -dispdev text -e ",part_start,"vmd_test_script.tcl "),ignore.stdout=T,wait = T) 
@@ -19,33 +29,29 @@ system(command = paste0("vmd -dispdev text -e ",part_start,"MD_analysis/vmd_scri
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/compare_second_str.R ",part_start),ignore.stdout=T,wait = T) 
 #rama_4.csv were produse form
 #https://www.ebi.ac.uk/thornton-srv/software/PROCHECK/nmr_manual/parameters/manopt_01.html
+#install open babel sudo apt-get install openbabel
+#download and unzip autodock vina in programs/ http://vina.scripps.edu/download.html
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/Ramachadran.R ",part_start),ignore.stdout=T,wait = T)
 
 #hbonds
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/find_XYZ_CA.R ",part_start),ignore.stdout=T,wait = T,show.output.on.console = F)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/prepare_hbonds.R ",part_start),ignore.stdout=T,wait = T)
 #vmd
-system(command = paste0("vmd -dispdev text -e ",part_start,"vmd_hbonds_script.tcl"),ignore.stdout=T,wait = T) 
+system(command = paste0("vmd -dispdev text -e ",part_start,"MD_analysis/vmd_hbonds_script.tcl"),ignore.stdout=T,wait = T) 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/test_hbonds.R ",part_start),ignore.stdout=T,wait = T)
 
 #docking
+#Download programm https://ccsb.scripps.edu/mgltools/downloads/
 #docking python
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_script.R ",part_start),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/convert_pdb_to_pdbqt.R ",part_start),ignore.stdout=T,wait = T)
-#for ligands frorm ligand start to ligang
-#for receptors from receptor start to receptor
-#docking  python
-system(command = paste0("chmod +x ",part_start,"docking/script_fin.txt ",part_start),ignore.stdout=T,wait = T)
-system(command = paste0(part_start,"docking/script_fin.txt ",part_start),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/convert_pdbqt_to_pdb.R ",part_start),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_pre_analysis.R ",part_start),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_group_structure.R ",part_start),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_interactions.R ",part_start),ignore.stdout=T,wait = T)
+#/home/nastia/projects/MD_TM_protein/r_scripts/docking/docking_prepare_receptor_pdb.R
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_prepare_receptor_pdb.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_main.R ",part_start),ignore.stdout=T,wait = T)
+
 #ring2 
 #check comand ring2 
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/ring2_prepare.R ",part_start),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/ring2_convert.R ",part_start),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/ring2_groups.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/ring/ring2_prepare.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/ring/ring2_convert.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/ring/ring2_groups.R ",part_start),ignore.stdout=T,wait = T)
 #make fin plots
 #correct alignemt file for another protein
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/find_conservative_aminoacids.R ",part_start),ignore.stdout=T,wait = T)
