@@ -93,7 +93,7 @@ for (i in 1:nrow(df_all)) {
 
 #copy pdb files to groups spb dir
 if (!dir.exists("str")) {dir.create("str")}
-
+if (!dir.exists("str_fin")) {dir.create("str_fin")}
 i<-1
 j<-1
 k<-1
@@ -110,6 +110,8 @@ for (j in 1:length(df_all$name)) {
       pdb<-read.pdb(paste0("pdb_second/",df_RMSD$ligand_center[k],"/",df_RMSD$models.y[k]))
       write.pdb(pdb,paste0("str/",df_RMSD$ligand_center[k],"/",df_RMSD$grop_number[k],"/",df_RMSD$models.y[k]))
     }
+    df_RMSD<-df_RMSD%>%filter(models.y==models.x)
+    write.pdb(pdb,paste0("str_fin/",df_RMSD$ligand_center[1],"_",df_RMSD$grop_number[1],"_",df_RMSD$models.y[1]))
   }
 }
 

@@ -14,7 +14,8 @@ p<-1
 i<-1
 y<-1
 main_part<-c(8)
-seq<-read.fasta(paste0(part_start,"MD_analysis/NP_006415.2.fasta"))
+a<-list.files(paste0(part_start,"start/sequense/"))
+seq<-read.fasta(paste0(part_start,"start/sequense/",a))
 
 main<-main_part[2]
 p<-30

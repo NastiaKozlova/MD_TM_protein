@@ -1,87 +1,77 @@
 part_start <- commandArgs(trailingOnly=TRUE)
+setwd(part_start)
 library(bio3d)
 library(readr)
 library(dplyr)
 library(ggplot2)
 v_rmsd<-4
 
-setwd(part_start)
-part<-part_start
 
 #library(dplyr)
 #library(bio3d)
 #library(ggplot2)
 
-
-v_first_bond<-list.files(paste0(part_start,"docking/docking_first/din/interaction_fin/"))
-df_first_bond_start<-read.csv(paste0(part_start,"docking/docking_first/din/interaction_fin/",v_first_bond[1]),stringsAsFactors = F)
+#df_RMSD<-read.csv(paste0("docking/df_RMSD.csv"),stringsAsFactors = F)
+v_first_bond<-list.files(paste0("docking/docking_first/din/interaction_fin/"))
+df_first_bond_start<-read.csv(paste0("docking/docking_first/din/interaction_fin/",v_first_bond[1]),stringsAsFactors = F)
 for (i in 2:length(v_first_bond)) {
-  df_first_bond_add<-read.csv(paste0(part_start,"docking/docking_first/din/interaction_fin/",v_first_bond[i]),stringsAsFactors = F)
+  df_first_bond_add<-read.csv(paste0("docking/docking_first/din/interaction_fin/",v_first_bond[i]),stringsAsFactors = F)
   df_first_bond_start<-rbind(df_first_bond_start,df_first_bond_add)
-  df_first_bond_start<-df_first_bond_start%>%filter(number_interactions>80)
+  df_first_bond_start<-df_first_bond_start%>%filter(persent_interactions>80)
 }
-df_first_bond_start<-df_first_bond_start%>%filter(number_interactions>80)
+df_first_bond_start<-df_first_bond_start%>%filter(persent_interactions>80)
+df_first_bond_start<-df_first_bond_start%>%filter(persent_interactions==100)
 
-df_first_bond_start<-df_first_bond_start%>%select(resno,number_interactions, system, center, ligand, grops, grops_number, 
-                                                  persent_interactions)
-df_first_bond_start<-df_first_bond_start%>%select(resno, system, center, ligand, grops, grops_number, 
-                                                  persent_interactions)
-df_first_bond_start<-df_first_bond_start%>%mutate(name=paste0(system,"_", ligand,"_",center ))
-
-v_second_bond<-list.files(paste0(part_start,"docking/docking_second/din/interaction_fin/"))
-df_second_bond_start<-read.csv(paste0(part_start,"docking/docking_second/din/interaction_fin/",v_second_bond[1]),stringsAsFactors = F)
-for (i in 2:length(v_second_bond)) {
-  df_second_bond_add<-read.csv(paste0(part_start,"docking/docking_second/din/interaction_fin/",v_second_bond[i]),stringsAsFactors = F)
-  df_second_bond_start<-rbind(df_second_bond_start,df_second_bond_add)
-  df_second_bond_start<-df_second_bond_start%>%filter(number_interactions>80)
+#df_first_bond_start<-df_first_bond_start[df_first_bond_start$system%in%df_RMSD$fin_model,]
+df_first_bond_start<-df_first_bond_start%>%mutate(receptor=NA)
+for (i in 1:nrow(df_first_bond_start)) {
+  df_first_bond_start$receptor[i]<-strsplit(df_first_bond_start$system[i],split = "_",fixed = T)[[1]][1]  
 }
-df_second_bond_start<-df_second_bond_start%>%select(resno,number_interactions, system,
-                                                    center, ligand, grops, grops_number, persent_interactions)
-df_second_bond_start<-df_second_bond_start%>%filter(number_interactions>80)
-df_second_bond_start<-df_second_bond_start%>%select(resno,system, center, ligand, grops, grops_number, persent_interactions)
-df_fin_semi<-semi_join(df_first_bond_start,df_second_bond_start,by=c("center", "ligand","resno"))
-df_fin_anti<-anti_join(df_first_bond_start,df_second_bond_start,by=c("center", "ligand","resno"))
-df_fin<-left_join(df_first_bond_start,df_second_bond_start,by=c("center", "ligand","name"="system"))
-write.csv(df_fin,paste0(part_start,"docking/df_interactions.csv"),row.names = F)
+#df_first_bond_start<-df_first_bond_start%>%select(receptor,ligand, center, resid,resno, x,y,z,system,grops,grops_number)
+df_first_bond_start<-df_first_bond_start%>%select(receptor,ligand, center, resid,resno, grops,grops_number,system)
+df_first_bond<-unique(df_first_bond_start)
 
 
+df_first_bond<-df_first_bond%>%mutate(test_complex_amino=paste(receptor,ligand, center, resid,resno,sep="_"))
+df_first_bond<-df_first_bond%>%group_by(test_complex_amino)%>%mutate(number_interactons_complex=n())
+df_first_bond<-ungroup(df_first_bond)
 
-df_fin_no<-df_fin%>%filter(resno.x!=resno.y)
-df_fin_yes<-df_fin%>%filter(resno.x==resno.y)
-df_first_bond_start$name<-NULL
-df_first_bond_start<-df_first_bond_start%>%mutate(ligand_center=paste0(ligand,"_",center))
-v_ligand_center<-unique(df_first_bond_start$ligand_center)
-df_second_bond_start<-df_second_bond_start%>%mutate(ligand_center=paste0(ligand,"_",center))
-df_second_bond_start<-df_second_bond_start%>%mutate(tes="second")
-i<-1
-for (i in 1:length(v_ligand_center)) {
-  df_first_bond_TEMP<-system%>%filter(ligand_center==v_ligand_center[i])
-  df_second_bond_start$tes[df_second_bond_start$resno%in%df_first_bond_TEMP$resno&
-                           df_second_bond_start$ligand_center==v_ligand_center[i]]<-"both"
-}
+df_first_bond_system<-df_first_bond%>%mutate(test_complex=paste(receptor,ligand, center, sep="_"))
+df_first_bond_system<-df_first_bond_system%>%select(receptor,ligand,center,test_complex,system,grops)
+df_first_bond_system<-unique(df_first_bond_system)
 
-df_second_bond_no<-df_second_bond_start%>%filter(tes=="both")
-df_second_bond_no<-df_second_bond_no%>%mutate(system="start")
-df_second_bond_no<-unique(df_second_bond_no)
-df_second_bond_no<-df_second_bond_no%>%mutate(temp=paste0(resno,system,center,ligand,ligand_center))
-df_first_bond_start<-df_first_bond_start%>%mutate(tes="first")
-df_first_bond_start<-df_first_bond_start%>%mutate(temp=paste0(resno,system,center,ligand,ligand_center))
-#df_first_bond_start<-df_first_bond_start%>%mutate(tes="first")
+df_first_bond_system<-df_first_bond_system%>%group_by(test_complex)%>%mutate(number_models_complex=n())
+df_first_bond_system<-ungroup(df_first_bond_system)
+df_first_bond_system<-df_first_bond_system%>%select(receptor, ligand,center,number_models_complex)
+#df_first_bond_system<-df_first_bond_system%>%group_by(test_system)%>%mutate(number_models_system=n())
+df_first_bond_system<-unique(df_first_bond_system)
 
-df_first_bond_start$tes[df_first_bond_start$temp%in%df_second_bond_no$temp]<-NA
-df_first_bond_start<-df_first_bond_start%>%filter(!is.na(tes))
-df_first_bond_start$temp<-NULL
-df_fin<-rbind(df_first_bond_start,df_second_bond_start)
-
-df_fina<-df_fin%>%filter(tes=="first")
-df_finb<-df_fin%>%filter(tes=="both")
-df_finc<-df_fin%>%filter(tes=="second")
+df_first_bond<-ungroup(df_first_bond)
+df_first_bond_system<-ungroup(df_first_bond_system)
+df_first_bond_system$system<-NULL
+df_first_bond$system<-NULL
+#df_first_bond_system<-ungroup(df_first_bond_system)
+#df_first_bond_system<-unique(df_first_bond_system)
 
 
+df_first_bonda<-left_join(df_first_bond,df_first_bond_system,
+                          by = c("receptor", "ligand", "center"))
 
-part_start<-paste0(part_start,"docking/docking_second/")
-setwd(part_start)
-df_groups_start<-read.csv("din/df_groups_start.csv",stringsAsFactors = F)
-df_all<-read.csv("df_all.csv",stringsAsFactors = F)
-df_all<-df_all%>%mutate(name=paste0(receptor,"_",ligand,"_",center))
-df_groups_start<-full_join(df_groups_start,df_all,by=c("ligand_center"="name"))
+df_first_bonda<-df_first_bonda%>%mutate(occurence_interctions_complex=number_interactons_complex/number_models_complex*100)
+
+df_first_bonda<-df_first_bonda%>%select(receptor, ligand, center, resid, resno, occurence_interctions_complex)
+df_first_bonda<-unique(df_first_bonda)
+df_first_bonda<-df_first_bonda%>%filter(occurence_interctions_complex>50)
+p<-ggplot(data = df_first_bonda)+
+  geom_text(aes(x=resno,y=resid,colour=occurence_interctions_complex,label=resno))+facet_grid(receptor~ligand)+
+  theme_bw()+guides(colour="none")
+ggsave(p,   filename = paste0("docking_aminoacid_interaction.png"), width = 40, height = 20, units = c("cm"), dpi = 200 ) 
+
+
+write.csv(df_first_bonda,"docking_aminoacid_interactions.csv",row.names = F)
+
+#df_first_bond<-df_first_bonda%>%select(receptor,ligand,center,resid,resno)
+#df_first_bond_1<-df_first_bond%>%filter(receptor==df_first_bonda$receptor[1])
+#df_first_bond_2<-df_first_bond%>%filter(receptor!=df_first_bonda$receptor[1])#
+
+#df_first_bond_anti<-full_join(df_first_bond_1,df_first_bond_2, c("ligand", "center", "resid", "resno"))
