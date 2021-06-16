@@ -143,7 +143,7 @@ for (i in 2:length(df_all$name)) {
 }
 p<-ggplot(df_fin)+
   geom_freqpoly(aes(x=affinity,colour=group),binwidth=0.3)+
-  facet_grid(ligand~center)+
+  facet_grid(ligand~receptor)+
   theme_bw()
 ggsave(p,filename = paste0("ligand_energy.png"), width = 30, height = 20, units = c("cm"), dpi = 200 ) 
 write.csv(df_fin,"log_fin.csv",row.names = F)

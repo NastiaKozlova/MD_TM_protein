@@ -2,10 +2,6 @@ library(bio3d)
 library(dplyr)
 part_start = commandArgs(trailingOnly=TRUE)
 setwd(part_start)
-main_part<-c("ACHE","BCHE")
-main<-main_part[1]
-i<-1
-for (main in main_part) {
   if (!dir.exists(paste0(part_start,paste0(main,"/structure_prediction/pdb_fin")))){dir.create(paste0(part_start,paste0(main,"/structure_prediction/pdb_fin")))}
   seq<-read.fasta(paste0(main,".fasta"))
   fasta<-read.fasta(paste0(main,"/structure_prediction/seqs.fasta"))

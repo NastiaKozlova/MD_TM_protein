@@ -80,56 +80,64 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/dock
 part_start<-paste0(part_start,"MD_analysis/")
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/analysis.R ",part_start,"MD_analysis/"),ignore.stdout=T,wait = T)
 
-setwd(part_name)
-df_topology<-read.csv("din/df_topology.csv",stringsAsFactors = F)
+#setwd(part_name)
+#df_topology<-read.csv("din/df_topology.csv",stringsAsFactors = F)
   
-for (i in 1:nrow(df_topology)) {
-  if(!file.exists(paste0("din/groups_fin/",df_topology$name[i],".csv"))){
-    #      print(df_topology$name[i])
-    df_topology$name[i]<-NA
-  }
-}
-df_topology<-df_topology%>%filter(!is.na(name))
-df_groups_start<-read.csv(paste0("din/groups_fin/",df_topology$name[1],".csv"),stringsAsFactors = F)
-for (i in 2:nrow(df_topology)) {
-  df_groups_add<-read.csv(paste0("din/groups_fin/",df_topology$name[i],".csv"),stringsAsFactors = F)
-  df_groups_start<-rbind(df_groups_start,df_groups_add)
-}
-write.csv(df_groups_start,"din/df_groups_start.csv",row.names = F)
+#for (i in 1:nrow(df_topology)) {
+#  if(!file.exists(paste0("din/groups_fin/",df_topology$name[i],".csv"))){
+#    df_topology$name[i]<-NA
+#  }
+#}
+#df_topology<-df_topology%>%filter(!is.na(name))
+#df_groups_start<-read.csv(paste0("din/groups_fin/",df_topology$name[1],".csv"),stringsAsFactors = F)
+#for (i in 2:nrow(df_topology)) {
+#  df_groups_add<-read.csv(paste0("din/groups_fin/",df_topology$name[i],".csv"),stringsAsFactors = F)
+#  df_groups_start<-rbind(df_groups_start,df_groups_add)
+#}
+#write.csv(df_groups_start,"din/df_groups_start.csv",row.names = F)#
 
-df_log<-read.csv(paste0("din/df_log_all.csv"),stringsAsFactors = F)
-df_groups_start<-read.csv("din/df_groups_start.csv",stringsAsFactors = F)
-#  colnames(df_groups_start)
-df_groups_start<-df_groups_start%>%select(RMSD, models.y,models.x, number, grop_number, group, ligand_center)
-#colnames(df_log)
-df_log<-df_log%>%select(affinity, name_files, name, receptor, ligand, center, files, new_number)
-df_log<-unique(df_log)
-df_log<-df_log%>%mutate(models.y=paste0("frame_",new_number,".pdb"))
-df_logu<-full_join(df_log,df_groups_start,by=c("models.y","name"="ligand_center" ))
-df_logu<-df_logu%>%filter(!is.na(RMSD))
-  #  df_logu
-df_logu<-df_logu%>%filter(!is.na(models.y))
-write.csv(df_log,"df_fin_log.csv",row.names = F) 
-df_logu<-df_logu%>%mutate(ligand_center=paste0(ligand,"_",center))
-df_logu<-df_logu%>%mutate(colour="NO")
-df_logu$colour[df_logu$models.y==df_logu$models.x]<-"YES"
-df_logu<-df_logu%>%filter(affinity<0)
+#df_log<-read.csv(paste0("din/df_log_all.csv"),stringsAsFactors = F)
+#df_groups_start<-read.csv("din/df_groups_start.csv",stringsAsFactors = F)
+##  colnames(df_groups_start)
+#df_groups_start<-df_groups_start%>%select(RMSD, models.y,models.x, number, grop_number, group, ligand_center)
+##colnames(df_log)
+#df_log<-df_log%>%select(affinity, name_files, name, receptor, ligand, center, files, new_number)
+#df_log<-unique(df_log)
+#df_log<-df_log%>%mutate(models.y=paste0("frame_",new_number,".pdb"))
+#df_logu<-full_join(df_log,df_groups_start,by=c("models.y","name"="ligand_center" ))
+#df_logu<-df_logu%>%filter(!is.na(RMSD))
+#  #  df_logu
+#df_logu<-df_logu%>%filter(!is.na(models.y))
+#write.csv(df_log,"df_fin_log.csv",row.names = F) 
+#df_log<-read.csv("df_fin_log.csv",stringsAsFactors = F)
+#df_logu<-df_logu%>%mutate(receptor_fin=NA)
+#for (i in 1:nrow(df_logu)) {
+#  df_logu$receptor_fin[i]<-strsplit(df_logu$receptor,split = "_")[[1]][1]
+#}
+#df_logu$number<-NULL
+#df_logu<-unique(df_logu)
+#p<-ggplot(data=df_logu)+
+#  geom_freqpoly(aes(x=affinity))+facet_grid(receptor_fin~ligand)+theme_bw()+guides(colour="none")
+#ggsave(p,filename = paste0("din/aminoasids_interated_with_ligands.png"), widthreceptor_fin = 100, height = 20, units = c("cm"), dpi = 200 ) 
+#p<-ggplot(data=df_logu_min)+
+#  geom_point(aes(x=number,y=affinity,colour=colour))+facet_grid(receptor~ligand)+theme_bw()+guides(colour="none")
+#ggsave(p,filename = paste0("din/aminoasids_interated_with_ligands_low_energy.png"), width = 100, height = 20, units = c("cm"), dpi = 200 ) 
 
-df_logu<-df_logu%>%group_by(name)%>%mutate(min_affinity=min(affinity))
-df_logu<-df_logu%>%group_by(name)%>%mutate(max_affinity=max(affinity))
-df_logu<-df_logu%>%filter(colour=="YES")
-df_logu_min<-df_logu%>%filter(min_affinity==affinity)
-df_logu_max<-df_logu%>%filter(max_affinity==affinity)
-p<-ggplot(data=df_logu)+
-  geom_point(aes(x=number,y=affinity,colour=colour))+facet_grid(receptor~ligand_center)+theme_bw()+guides(colour="none")
-ggsave(p,filename = paste0("din/aminoasids_interated_with_ligands.png"), width = 100, height = 20, units = c("cm"), dpi = 200 ) 
-p<-ggplot(data=df_logu_min)+
-  geom_point(aes(x=number,y=affinity,colour=colour))+facet_grid(receptor~ligand_center)+theme_bw()+guides(colour="none")
-ggsave(p,filename = paste0("din/aminoasids_interated_with_ligands_low_energy.png"), width = 100, height = 20, units = c("cm"), dpi = 200 ) 
-  
-p<-ggplot(data=df_logu_max)+
-  geom_point(aes(x=number,y=affinity,colour=colour))+facet_grid(receptor~ligand_center)+theme_bw()+guides(colour="none")
-ggsave(p,filename = paste0("din/aminoasids_interated_with_ligands_higth_energy.png"), width = 100, height = 20, units = c("cm"), dpi = 200 ) 
+#p<-ggplot(data=df_logu_max)+
+#  geom_point(aes(x=number,y=affinity,colour=colour))+facet_grid(receptor~ligand)+theme_bw()+guides(colour="none")
+#ggsave(p,filename = paste0("din/aminoasids_interated_with_ligands_higth_energy.png"), width = 100, height = 20, units = c("cm"), dpi = 200 ) 
+
+#df_logu<-df_logu%>%mutate(ligand_center=paste0(ligand,"_",center))
+#df_logu<-df_logu%>%mutate(colour="NO")
+#df_logu$colour[df_logu$models.y==df_logu$models.x]<-"YES"
+#df_logu<-df_logu%>%filter(affinity<0)
+
+#df_logu<-df_logu%>%group_by(name)%>%mutate(min_affinity=min(affinity))
+#df_logu<-df_logu%>%group_by(name)%>%mutate(max_affinity=max(affinity))
+#df_logu<-df_logu%>%filter(colour=="YES")
+#df_logu_min<-df_logu%>%filter(min_affinity==affinity)
+#df_logu_max<-df_logu%>%filter(max_affinity==affinity)
+
 
 
 #i<-1

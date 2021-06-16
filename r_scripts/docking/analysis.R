@@ -1,4 +1,5 @@
 part_start <- commandArgs(trailingOnly=TRUE)
+part_start<-paste0(part_start,"MD_analysis/")
 setwd(part_start)
 library(bio3d)
 library(readr)
@@ -69,7 +70,17 @@ ggsave(p,   filename = paste0("docking_aminoacid_interaction.png"), width = 40, 
 
 
 write.csv(df_first_bonda,"docking_aminoacid_interactions.csv",row.names = F)
-
+df_topology<-read.csv("docking/docking_first/din/df_topology.csv",stringsAsFactors = F)
+df_fin<-read.csv("docking/docking_first/din/log_fin.csv",stringsAsFactors = F)
+df_fin<-df_fin%>%mutate(receptor_fin=NA)
+for (i in 1:nrow(df_fin)) {
+  df_fin$receptor_fin[i]<-strsplit(df_fin$receptor[i],split = "_",fixed = T)[[1]][1]
+}
+p<-ggplot(df_fin)+
+  geom_freqpoly(aes(x=affinity,colour=grop_number),binwidth=0.3)+
+  facet_grid(receptor_fin~ligand)+
+  theme_bw()
+ggsave(p,filename = paste0("ligand_energy.png"), width = 30, height = 20, units = c("cm"), dpi = 200 ) 
 #df_first_bond<-df_first_bonda%>%select(receptor,ligand,center,resid,resno)
 #df_first_bond_1<-df_first_bond%>%filter(receptor==df_first_bonda$receptor[1])
 #df_first_bond_2<-df_first_bond%>%filter(receptor!=df_first_bonda$receptor[1])#
