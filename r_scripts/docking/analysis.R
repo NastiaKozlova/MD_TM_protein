@@ -1,5 +1,5 @@
 part_start <- commandArgs(trailingOnly=TRUE)
-part_start<-paste0(part_start,"MD_analysis/")
+part_start<-paste0(part_start)
 setwd(part_start)
 library(bio3d)
 library(readr)

@@ -65,13 +65,13 @@ for (j in 1:length(v_receptor)) {
                 v_receptor[j],"_",ligand[q],"_",df_doking$type[p],"_",1:max_num,"_config.txt --log log/",
                 v_receptor[j],"_",ligand[q],"_",df_doking$type[p],"_",1:max_num,".log\n")
       a<-paste0(a,collapse = "")
-      if (!file.exists(paste0("log/", v_receptor[j],"_",ligand[q],"_",df_doking$type[p],"_",max_num,".log"))){
+      if (!file.exists(paste0("out/", v_receptor[j],"_",ligand[q],"_",df_doking$type[p],"_",max_num,".pdbqt"))){
         df_conf[q,p]<-a
       }
     }
   }
   df_conf[is.na(df_conf)]<-""
-  write.csv(df_conf,paste0("script/",v_receptor[j],"_readme.txt"),row.names = F,quote = F)
+  write.csv(df_conf,paste0("script/",v_receptor[j],"_readme.txt"),row.names = F)
 }
 df_conf<-read.csv(paste0("script/",v_receptor[1],"_readme.txt"),stringsAsFactors = F)
 for (j in 2:length(v_receptor)) {
