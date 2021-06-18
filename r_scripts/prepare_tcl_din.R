@@ -115,7 +115,6 @@ for (i in 1:length(v_parta)) {
     if (file.exists(paste0(part_start,'MD/',v_parta[i],"/namd/step",8,".dcd"))){
       temp_script<-paste0("source ", part_start, "MD_analysis/tcl/",  v_parta[i], "_Energy_",     8,".tcl\n",
                           "source ", part_start, "MD_analysis/tcl/",  v_parta[i], "_RMSD_",       8, ".tcl\n",
-                          "source ", part_start, "MD_analysis/tcl/",  v_parta[i], "_RMSD_",       8, "_EMD4.tcl\n",
                           "source ", part_start, "MD_analysis/tcl/",  v_parta[i], "_RMSF_",       8, ".tcl\n",
                           "source ", part_start, "MD_analysis/tcl/",  v_parta[i], "_SASA_",       8, ".tcl\n",
                           "source ", part_start, "MD_analysis/tcl/",  v_parta[i], "_Second_str_",        8, ".tcl\n",
