@@ -1,5 +1,4 @@
 part_start <- commandArgs(trailingOnly=TRUE)
-part_start<-paste0(part_start)
 setwd(part_start)
 library(bio3d)
 library(readr)
@@ -81,8 +80,3 @@ p<-ggplot(df_fin)+
   facet_grid(receptor_fin~ligand)+
   theme_bw()
 ggsave(p,filename = paste0("ligand_energy.png"), width = 30, height = 20, units = c("cm"), dpi = 200 ) 
-#df_first_bond<-df_first_bonda%>%select(receptor,ligand,center,resid,resno)
-#df_first_bond_1<-df_first_bond%>%filter(receptor==df_first_bonda$receptor[1])
-#df_first_bond_2<-df_first_bond%>%filter(receptor!=df_first_bonda$receptor[1])#
-
-#df_first_bond_anti<-full_join(df_first_bond_1,df_first_bond_2, c("ligand", "center", "resid", "resno"))
