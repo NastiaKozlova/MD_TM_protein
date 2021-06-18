@@ -1,5 +1,5 @@
 #readr
-part_start<-'/home/nastia/projects/MD_TM_protein/'
+part_start<-'/home/nastia/projects/current/lacY/MD_TMD_protein/'
 setwd(part_start)
 v_MD<-list.files(paste0("MD"))
 if(!dir.exists("MD_count")){dir.create("MD_count")}
@@ -8,17 +8,9 @@ for (i in 1:length(v_MD)) {
   system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/make_namd_scripts.R ",part_start,"MD/",v_MD[i],"/"),ignore.stdout=T,wait = T)
   system(command = paste0("cp ",part_start,"MD/",v_MD[i],"/run_namd.txt ",part_start,"MD_count/",v_MD[i],"_run_namd.txt "))
 }
-#run MD simulation of sysems
-#test disulfid bonds
-#system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/prepate_test_tcl.R ",part_start),ignore.stdout=T,wait = T) 
-#system(command = paste0("vmd -dispdev text -e ",part_start,"vmd_test_script.tcl "),ignore.stdout=T,wait = T) 
-#system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/disul_bond_leng.R ",part_start),ignore.stdout=T,wait = T)
-#errors<-read.csv(paste0(part_start,"Errors_in_disulfid_bonds.csv"),stringsAsFactors = F)
-#print(paste0(nrow(errors)," errors in systems\n ",
-#             "check disulfid placement bonds in file Errors_in_disulfid_bonds.csv if errors more then 0 and remove systems with wrong disulfid bonds from MD directory"))
-#check disulfid placement bonds in file Errors_in_disulfid_bonds.csv and remove systems with wrong disulfid bonds
 #MD simulation analysis
 if (!dir.exists(paste0(part_start,'MD_analysis/'))){dir.create(paste0(part_start,'MD_analysis/'))}
+#combine all dcd files of Productive MD runs 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/combine_dcd.R ",part_start),ignore.stdout=T,wait = T) 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/prepare_tcl_din.R ",part_start),ignore.stdout=T,wait = T) 
 #vmd
