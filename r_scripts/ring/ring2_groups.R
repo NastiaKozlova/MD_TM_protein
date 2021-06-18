@@ -14,8 +14,8 @@ p<-1
 i<-1
 y<-1
 main_part<-c(8)
-a<-list.files(paste0(part_start,"start/sequense/"))
-seq<-read.fasta(paste0(part_start,"start/sequense/",a))
+a<-list.files(paste0(part_start,"start/sequence/"))
+seq<-read.fasta(paste0(part_start,"start/sequence/",a))
 
 main<-main_part[2]
 p<-30
