@@ -12,7 +12,7 @@ part<-paste0(part_start,"MD_analysis/")
 parta<-paste0(part_start,"MD/")
 df_all_systems<-read.csv(paste0(part_start,"start/all_systems.csv"),stringsAsFactors = F)
 
-df_all_systems$fin_name<-as.character(df_all_systems$fin_name)
+df_all_systems$system_name<-as.character(df_all_systems$system_name)
 df_all_systems_productive_run<-df_all_systems%>%filter(Progress=="Productive RUN")
 df_all_systems_done<-df_all_systems%>%filter(Progress=="done")
 df_all_systems<-rbind(df_all_systems_productive_run,df_all_systems_done)
@@ -32,6 +32,8 @@ if (!dir.exists(paste0(part,"fin_plots/str_XYZ"))) {dir.create(paste0(part,"fin_
 if (!dir.exists(paste0(part,"fin_plots/frame_plots"))) {dir.create(paste0(part,"fin_plots/frame_plots"))}
 if (!dir.exists(paste0(part,"fin_plots/docking_plots"))) {dir.create(paste0(part,"fin_plots/docking_plots"))}
 #if (!dir.exists(paste0(part,"fin_plots/lenght_plots"))) {dir.create(paste0(part,"fin_plots/lenght_plots"))}
+i<-1
+main<-main_part[1]
 for (i in 1:nrow(df_all_systems)) {
   for (main in main_part) {
     if (file.exists(paste0(part,"din/",df_all_systems$fin_name[i],"/",main,"_time_Ramachadran.csv"))){
@@ -220,17 +222,30 @@ if (nrow(df_all_systems)>1) {
   for (i in 2:nrow(df_all_systems)) {
     df_seq_add<-read.csv(paste0(part,"fin_data/str_data/",df_all_systems$fin_name[i],".csv"),stringsAsFactors =  F)
     df_seq<-rbind(df_seq,df_seq_add)
-    df_seq<-read.csv(paste0(part,"fin_data/str_data/",df_all_systems$fin_name[i],".csv"),stringsAsFactors = F)
-
   }
 }
 df_seq<-df_seq%>%filter(persent_interactions==100)
 df_seq<-df_seq%>%filter(ramachadran==0)
-df_seq<-df_seq%>%filter(conservative>50)
-df_seq<-df_seq%>%filter(hbonds>50)
+df_seq<-df_seq%>%filter(conservative>75)
+#df_seq<-df_seq%>%filter(hbonds>50)
 p_docking<-ggplot(data = df_seq)+
   geom_text(aes(x = resno, y = resid,colour=conservative,label=aminoacids))+
   theme_bw()+ facet_grid(ligand~receptor)
-ggsave(p_docking,   filename = paste0(part,"fin_plots/docking_fin.png"), width = 60, height = 40, units = c("cm"), dpi = 200 ) 
+ggsave(p_docking,   filename = paste0(part,"fin_plots/docking_fin_intercations.png"), width = 60, height = 40, units = c("cm"), dpi = 200 ) 
+
+
+df_fin<-read.csv(paste0(part,"docking/docking_first/din/log_fin.csv"),stringsAsFactors = F)
+df_fin<-df_fin%>%mutate(receptor_fin=NA)
+for (i in 1:nrow(df_fin)) {
+  df_fin$receptor_fin[i]<-strsplit(df_fin$receptor[i],split = "_",fixed = T)[[1]][1]
+}
+df_fin<-df_fin%>%select(number,grop_number,group,ligand_center,affinity,receptor, ligand, center, receptor_fin)
+df_fin<-unique(df_fin)
+df_fin<-df_fin%>%mutate(grop_number=as.character(grop_number))
+p<-ggplot(df_fin)+
+  geom_freqpoly(aes(x = affinity,colour = grop_number),binwidth=0.5)+
+  facet_grid(receptor_fin~ligand)+
+  theme_bw()+geom_vline(xintercept=0)
+ggsave(p,filename = paste0(part,"fin_plots/check_ligand_energy.png"), width = 30, height = 20, units = c("cm"), dpi = 200 ) 
 
 
