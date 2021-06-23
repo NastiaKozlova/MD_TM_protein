@@ -1,5 +1,5 @@
 #readr
-part_start<-'/home/nastia/projects/current/lacY/MD_TMD_protein/'
+part_start<-'/home/nastia/projects/current/NaPi2b/MD_TM_protein/'
 setwd(part_start)
 v_MD<-list.files(paste0("MD"))
 if(!dir.exists("MD_count")){dir.create("MD_count")}
@@ -31,18 +31,20 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/prepare_hbon
 system(command = paste0("vmd -dispdev text -e ",part_start,"MD_analysis/vmd_hbonds_script.tcl"),ignore.stdout=T,wait = T) 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/test_hbonds.R ",part_start),ignore.stdout=T,wait = T)
 
-#docking
-#Download programm https://ccsb.scripps.edu/mgltools/downloads/
-#docking python
-#/home/nastia/projects/MD_TM_protein/r_scripts/docking/docking_prepare_receptor_pdb.R
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_prepare_receptor_pdb.R ",part_start),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_main.R ",part_start),ignore.stdout=T,wait = T)
+
 
 #ring2 
 #check comand ring2 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/ring/ring2_prepare.R ",part_start),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/ring/ring2_convert.R ",part_start),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/ring/ring2_groups.R ",part_start),ignore.stdout=T,wait = T)
+
+#docking
+#Download programm https://ccsb.scripps.edu/mgltools/downloads/
+#docking python
+#/home/nastia/projects/MD_TM_protein/r_scripts/docking/docking_prepare_receptor_pdb.R
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_prepare_receptor_pdb.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_main.R ",part_start),ignore.stdout=T,wait = T)
 #make fin plots
 #correct alignemt file for another protein
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/find_conservative_aminoacids.R ",part_start),ignore.stdout=T,wait = T)
