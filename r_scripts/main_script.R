@@ -1,5 +1,5 @@
 #readr
-part_start<-'/home/nastia/projects/current/lacY/MD_TMD_protein/'
+part_start<-'path to MD_TMD_protein/'
 setwd(part_start)
 v_MD<-list.files(paste0("MD"))
 if(!dir.exists("MD_count")){dir.create("MD_count")}
