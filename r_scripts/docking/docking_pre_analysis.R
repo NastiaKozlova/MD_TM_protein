@@ -15,12 +15,12 @@ if (!file.exists("din/")) {dir.create("din/")}
 if (!dir.exists(paste0(part_start,"din/"))){dir.create(paste0(part_start,"din/"))}
 if (!dir.exists(paste0(part_start,"din/log/"))){dir.create(paste0(part_start,"din/log/"))}
 if (!dir.exists(paste0(part_start,"din/pdb_second/"))){dir.create(paste0(part_start,"din/pdb_second/"))}
-a<-list.files(paste0("log/"))
+a<-list.files(paste0("out/"))
 df_topology<-data.frame(matrix(nrow=length(a),ncol =  3))
 colnames(df_topology)<-c("name","run","name_log")
 i<-1
 df_topology<-df_topology%>%mutate(exists="NO")
-i<-1
+#i<-1
 for (i in 1:length(a)) {
   b<-strsplit(a[i],split = ".",fixed = T)[[1]][1]
   df_topology$name_log[i]<-b
@@ -31,9 +31,9 @@ for (i in 1:length(a)) {
     df_topology$exists[i]<-"YES"
   }
 }
-#df_topology<-df_topology%>%filter(!is.na(exists))
+df_topology<-df_topology%>%filter(!is.na(exists))
 df_topology<-df_topology%>%filter(exists=="YES")
-print(nrow(df_topology))
+#print(nrow(df_topology))
 df_topology<-left_join(df_topology,df_all,by="name")
 df_topology<-df_topology%>%filter(!is.na(receptor))
 df_log<-read_table(paste0("log/",df_topology$name_log[1],".log"),col_names = F,

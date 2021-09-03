@@ -141,79 +141,82 @@ for (i in 1:nrow(df_all_systems)) {
       
       
       if(file.exists(paste0(part_start,"MD_analysis/docking/docking_first/interaction_fin.csv"))){
+
         df_docking<-read.csv(paste0(part_start,"MD_analysis/docking/docking_first/interaction_fin.csv"),stringsAsFactors = F)
         df_docking<-df_docking%>%mutate(receptor=system)
-        #     for (receptor in 1:nrow(df_docking)) {
-        #        df_docking$receptor[receptor]<-strsplit(df_docking$system[receptor],split = "_")[[1]][1]
-        #      }
-        #      df_docking<-df_docking%>%mutate(receptor=paste0(receptor))
-        #    nrow(df_docking)
+          #     for (receptor in 1:nrow(df_docking)) {
+          #        df_docking$receptor[receptor]<-strsplit(df_docking$system[receptor],split = "_")[[1]][1]
+          #      }
+          #      df_docking<-df_docking%>%mutate(receptor=paste0(receptor))
+          #    nrow(df_docking)
         df_docking<-df_docking%>%filter(receptor==paste0(df_all_systems$fin_name[i]))
         pdb_name<-df_docking$receptor[1]
         df_docking<-df_docking%>%select(resno, number_interactions, receptor, center, ligand, grops, grops_number, persent_interactions, aminoacids)
         df_docking<-unique(df_docking)
-        pdb<-read.pdb(paste0(part_start,"MD_analysis/docking/receptor_start/",pdb_name,".pdb"))  
-        df_seq<-pdb$atom
-        df_seq<-df_seq%>%filter(elety=="CA")
-        df_seq<-df_seq%>%select(resno,resid, x, y, z)
-        df_seq<-left_join(df_seq,df_docking,by="resno")
-        
-        df_seq<-df_seq%>%mutate(ramachadran=0)
-        df_ramachadran <-read.csv(paste0(part,"din/",df_all_systems$fin_name[i],"/",main,"_ramachad.csv"),stringsAsFactors = F)
-        for (p in 1:nrow(df_ramachadran)) {
-          df_seq$ramachadran[df_seq$resno==df_ramachadran$number[p]]<-df_ramachadran$x_num[p]
+        if(file.exists(paste0(part_start,"MD_analysis/docking/receptor_start/",pdb_name,".pdb"))){
+          pdb<-read.pdb(paste0(part_start,"MD_analysis/docking/receptor_start/",pdb_name,".pdb"))  
+          df_seq<-pdb$atom
+          df_seq<-df_seq%>%filter(elety=="CA")
+          df_seq<-df_seq%>%select(resno,resid, x, y, z)
+          df_seq<-left_join(df_seq,df_docking,by="resno")
+          
+          df_seq<-df_seq%>%mutate(ramachadran=0)
+          df_ramachadran <-read.csv(paste0(part,"din/",df_all_systems$fin_name[i],"/",main,"_ramachad.csv"),stringsAsFactors = F)
+          for (p in 1:nrow(df_ramachadran)) {
+            df_seq$ramachadran[df_seq$resno==df_ramachadran$number[p]]<-df_ramachadran$x_num[p]
+          }
+          df_hbonds <-read.csv(paste0(part,"din/",df_all_systems$fin_name[i],"/hbonds_",main,".csv"),stringsAsFactors = F)
+          df_seq<-df_seq%>%mutate(hbonds=0)
+          for (p in 1:nrow(df_hbonds)) {
+            df_seq$hbonds[df_seq$resno==df_hbonds$number[p]]<-df_hbonds$persent[p]
+          }
+          df_RMSF<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/RMSF/",main,".txt"), sep="", header=F, na.strings ="", stringsAsFactors= F)
+          colnames(df_RMSF)<-"RMSF"
+          df_RMSF<-df_RMSF%>%mutate(resno=1:nrow(df_RMSF))
+          df_seq<-left_join(df_seq,df_RMSF,by=c("resno"))
+          v_conserv<-list.files(paste0(part_start,"MD_analysis/conservative/"))
+          df_conserv<-read.csv(paste0(part_start,"MD_analysis/conservative/",v_conserv),stringsAsFactors =  F)
+          df_seq<-left_join(df_seq,df_conserv,by=c("resno"="number"))
+          p_conserv<-ggplot(data = df_seq)+
+            geom_point(aes(x = resno, y = z,colour=conservative))+
+            theme_bw()#+coord_flip()
+          p_ramachadran<-ggplot(data = df_seq)+
+            geom_point(aes(x = resno, y = z,colour=ramachadran))+
+            theme_bw()#+coord_flip()
+          p_RMSF<-ggplot(data = df_seq)+
+            geom_point(aes(x = resno, y = z,colour=RMSF))+
+            theme_bw()
+          p_hbonds<-ggplot(data = df_seq)+
+            geom_point(aes(x = resno, y = z,colour=hbonds))+
+            theme_bw()
+          p_all<-plot_grid(p_conserv,p_ramachadran,       p_hbonds,      p_RMSF,     
+                           nrow=4,  labels = c("A","B","C","D"),align="hv")
+          ggsave(p_all,   filename = paste0(part,"fin_plots/str_XYZ/",df_all_systems$fin_name[i],"_disulfid_bonds_",df_all_systems$disulfid_bonds[i],"_glyco_",df_all_systems$Glyco[i],"_",df_all_systems$Membrane[i],"_",main,".png"), width = 60, height = 40, units = c("cm"), dpi = 200 ) 
+          p_conserv<-ggplot(data = df_seq)+
+            geom_point(aes(x = resno, y = conservative))+
+            theme_bw()#+coord_flip()
+          p_ramachadran<-ggplot(data = df_seq)+
+            geom_point(aes(x = resno, y = ramachadran))+
+            theme_bw()#+coord_flip()
+          p_RMSF<-ggplot(data = df_seq)+
+            geom_point(aes(x = resno, y = RMSF))+
+            theme_bw()
+          p_hbonds<-ggplot(data = df_seq)+
+            geom_point(aes(x = resno, y = hbonds))+
+            theme_bw()
+          p_all<-plot_grid(p_conserv,p_ramachadran,       p_hbonds,      p_RMSF,     
+                           nrow=4,  labels = c("A","B","C","D"),align="hv")
+          ggsave(p_all,   filename = paste0(part,"fin_plots/str_plots/",df_all_systems$fin_name[i],"_disulfid_bonds_",df_all_systems$disulfid_bonds[i],"_glyco_",df_all_systems$Glyco[i],"_",df_all_systems$Membrane[i],"_",main,".png"), width = 60, height = 40, units = c("cm"), dpi = 200 ) 
+          
+          write.csv(df_seq,paste0(part,"fin_data/str_data/",df_all_systems$fin_name[i],".csv"),row.names = F)
+          df_seq<-read.csv(paste0(part,"fin_data/str_data/",df_all_systems$fin_name[i],".csv"),stringsAsFactors = F)
+          df_seq<-df_seq%>%filter(persent_interactions>95)
+          df_seq<-df_seq%>%filter(ramachadran==0)
+          p_docking<-ggplot(data = df_seq)+
+            geom_text(aes(x = resno, y = resid,colour=conservative,label=aminoacids))+
+            theme_bw()+ facet_grid(ligand~receptor)
+          ggsave(p_docking,   filename = paste0(part,"fin_plots/docking_plots/",df_all_systems$fin_name[i],"_disulfid_bonds_",df_all_systems$disulfid_bonds[i],"_glyco_",df_all_systems$Glyco[i],"_",df_all_systems$Membrane[i],"_",main,".png"), width = 60, height = 40, units = c("cm"), dpi = 200 ) 
         }
-        df_hbonds <-read.csv(paste0(part,"din/",df_all_systems$fin_name[i],"/hbonds_",main,".csv"),stringsAsFactors = F)
-        df_seq<-df_seq%>%mutate(hbonds=0)
-        for (p in 1:nrow(df_hbonds)) {
-          df_seq$hbonds[df_seq$resno==df_hbonds$number[p]]<-df_hbonds$persent[p]
-        }
-        df_RMSF<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/RMSF/",main,".txt"), sep="", header=F, na.strings ="", stringsAsFactors= F)
-        colnames(df_RMSF)<-"RMSF"
-        df_RMSF<-df_RMSF%>%mutate(resno=1:nrow(df_RMSF))
-        df_seq<-left_join(df_seq,df_RMSF,by=c("resno"))
-        v_conserv<-list.files(paste0(part_start,"MD_analysis/conservative/"))
-        df_conserv<-read.csv(paste0(part_start,"MD_analysis/conservative/",v_conserv),stringsAsFactors =  F)
-        df_seq<-left_join(df_seq,df_conserv,by=c("resno"="number"))
-        p_conserv<-ggplot(data = df_seq)+
-          geom_point(aes(x = resno, y = z,colour=conservative))+
-          theme_bw()#+coord_flip()
-        p_ramachadran<-ggplot(data = df_seq)+
-          geom_point(aes(x = resno, y = z,colour=ramachadran))+
-          theme_bw()#+coord_flip()
-        p_RMSF<-ggplot(data = df_seq)+
-          geom_point(aes(x = resno, y = z,colour=RMSF))+
-          theme_bw()
-        p_hbonds<-ggplot(data = df_seq)+
-          geom_point(aes(x = resno, y = z,colour=hbonds))+
-          theme_bw()
-        p_all<-plot_grid(p_conserv,p_ramachadran,       p_hbonds,      p_RMSF,     
-                         nrow=4,  labels = c("A","B","C","D"),align="hv")
-        ggsave(p_all,   filename = paste0(part,"fin_plots/str_XYZ/",df_all_systems$fin_name[i],"_disulfid_bonds_",df_all_systems$disulfid_bonds[i],"_glyco_",df_all_systems$Glyco[i],"_",df_all_systems$Membrane[i],"_",main,".png"), width = 60, height = 40, units = c("cm"), dpi = 200 ) 
-        p_conserv<-ggplot(data = df_seq)+
-          geom_point(aes(x = resno, y = conservative))+
-          theme_bw()#+coord_flip()
-        p_ramachadran<-ggplot(data = df_seq)+
-          geom_point(aes(x = resno, y = ramachadran))+
-          theme_bw()#+coord_flip()
-        p_RMSF<-ggplot(data = df_seq)+
-          geom_point(aes(x = resno, y = RMSF))+
-          theme_bw()
-        p_hbonds<-ggplot(data = df_seq)+
-          geom_point(aes(x = resno, y = hbonds))+
-          theme_bw()
-        p_all<-plot_grid(p_conserv,p_ramachadran,       p_hbonds,      p_RMSF,     
-                         nrow=4,  labels = c("A","B","C","D"),align="hv")
-        ggsave(p_all,   filename = paste0(part,"fin_plots/str_plots/",df_all_systems$fin_name[i],"_disulfid_bonds_",df_all_systems$disulfid_bonds[i],"_glyco_",df_all_systems$Glyco[i],"_",df_all_systems$Membrane[i],"_",main,".png"), width = 60, height = 40, units = c("cm"), dpi = 200 ) 
-        
-        write.csv(df_seq,paste0(part,"fin_data/str_data/",df_all_systems$fin_name[i],".csv"),row.names = F)
-        df_seq<-read.csv(paste0(part,"fin_data/str_data/",df_all_systems$fin_name[i],".csv"),stringsAsFactors = F)
-        df_seq<-df_seq%>%filter(persent_interactions>95)
-        df_seq<-df_seq%>%filter(ramachadran==0)
-        p_docking<-ggplot(data = df_seq)+
-          geom_text(aes(x = resno, y = resid,colour=conservative,label=aminoacids))+
-          theme_bw()+ facet_grid(ligand~receptor)
-        ggsave(p_docking,   filename = paste0(part,"fin_plots/docking_plots/",df_all_systems$fin_name[i],"_disulfid_bonds_",df_all_systems$disulfid_bonds[i],"_glyco_",df_all_systems$Glyco[i],"_",df_all_systems$Membrane[i],"_",main,".png"), width = 60, height = 40, units = c("cm"), dpi = 200 ) 
       }
     }
   }
