@@ -269,10 +269,13 @@ for (i in 1:999) {
                  "run                     500000;             # 1ns")
   write.table(df_tcl,paste0(part_start,"namd/step7.",i+1,"_production.inp"),row.names=F,col.names=F,quote = F)
 }
-df_namd<-data.frame(matrix(ncol=2,nrow = 1000))
+df_namd<-data.frame(matrix(ncol=2,nrow = 1007))
 colnames(df_namd)<-c("comand","conf")
 df_namd$comand<-"run_namd"
-df_namd$conf<-paste0(" namd/step7.",c(1:1000),"_production.inp > namd/step7.",c(1:1000),"_production.out")
+a<-c( paste0("step6.",c(1:6),"_equilibration.inp > step6.",c(1:6),"_equilibration.out"),
+      "step7_production.inp > step7_production.out",
+      paste0("step7.",c(1:1000),"_production.inp > step7.",c(1:1000),"_production.out"))
+df_namd$conf<-a
 df_namd_add<-data.frame(matrix(ncol=2,nrow = 1))
 colnames(df_namd_add)<-c("comand","conf")
 df_namd_add$comand<-paste0("cd ",part_start,"namd")

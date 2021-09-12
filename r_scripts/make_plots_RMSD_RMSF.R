@@ -32,7 +32,7 @@ if (!dir.exists(paste0(part,"fin_plots/str_XYZ"))) {dir.create(paste0(part,"fin_
 if (!dir.exists(paste0(part,"fin_plots/frame_plots"))) {dir.create(paste0(part,"fin_plots/frame_plots"))}
 if (!dir.exists(paste0(part,"fin_plots/docking_plots"))) {dir.create(paste0(part,"fin_plots/docking_plots"))}
 #if (!dir.exists(paste0(part,"fin_plots/lenght_plots"))) {dir.create(paste0(part,"fin_plots/lenght_plots"))}
-i<-1
+i<-2
 main<-main_part[1]
 for (i in 1:nrow(df_all_systems)) {
   for (main in main_part) {
