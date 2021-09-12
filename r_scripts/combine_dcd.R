@@ -26,18 +26,27 @@ for (j in 1:length(v_parta)) {
   
   #combine MD simulation dcd files
   df_tcl<-data.frame(matrix(nrow = 2,ncol = 2))
-  df_tcl[1,1]<-paste0('cd ', part,'/namd/\n\npackage require animate')
+  df_tcl[1,1]<-paste0('cd ', part,'/namd/\n\npackage require animate\n')
   df_tcl[1,2]<-paste0('mol new {step5_input.psf} type {psf}')
   for (p in 1:num_model) {
     if(file.exists(paste0(part,'/namd/step7.',p,'_production.dcd'))){
       df_tcl[p+1,1]<-paste0('mol addfile {',part,'/namd/step7.',p,'_production.dcd} type {dcd} first 0 last -1 step 1 waitfor all')
     }
   }
-  df_tcl[p+2,1]<-paste0('animate write dcd step8.dcd waitfor all')
+  df_tcl[p+2,1]<-paste0('set ref [atomselect top "protein and name CA" frame 0]\n',
+  'set sel [atomselect top "protein and name CA"]\n',
+  'set all [atomselect top all]\n',
+  'set n [molinfo top get numframes]\n',
+  'set fin [expr $n-1]\n',
+    'for { set i 1 } { $i < $n } { incr i } {\n',
+      '  $sel frame $i\n',
+      '  $all frame $i\n',
+      '  $all move [measure fit $sel $ref]\n',
+      '}\n')
+  df_tcl[p+3,1]<-paste0('animate write dcd step8.dcd waitfor all')
+  df_tcl[p+4,1]<-paste0('mol delete all\n\nexit now')
   
-  df_tcl[p+3,1]<-paste0('mol delete all\n\nexit now')
-  
-  write.table(df_tcl,file =paste0(part_start,'MD_analysis/tcl/',parta,'_combine.tcl'),sep = '\n',na = '' ,row.names = F,col.names = F,quote = F)
+  write.table(df_tcl,file =paste0(part_start,'MD_analysis/tcl/',parta,'_combine.tcl'),sep = ' ',na = '' ,row.names = F,col.names = F,quote = F)
   print( paste0('vmd -dispdev text -e ',part_start,'MD_analysis/tcl/',parta,'_combine.tcl'))
   system(command = paste0('vmd -dispdev text -e ',part_start,'MD_analysis/tcl/',parta,'_combine.tcl'),ignore.stdout=T,wait = T) 
 }
