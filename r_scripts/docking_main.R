@@ -77,5 +77,5 @@ system(command = paste0("python3 ", part_name,"convert_pdbqt_to_pdb.py"),ignore.
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_pre_analysis.R ",part_name),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_group_structure.R ",part_name),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_interactions.R ",part_name),ignore.stdout=T,wait = T)
-part_start<-paste0(part_start,"MD_analysis/")
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/analysis.R ",part_start,"MD_analysis/"),ignore.stdout=T,wait = T)
+#part_start<-paste0(part_start,"MD_analysis/")
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/analysis.R ",part_name),ignore.stdout=T,wait = T)

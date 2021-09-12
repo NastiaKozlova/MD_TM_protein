@@ -1,4 +1,5 @@
 part_start <- commandArgs(trailingOnly=TRUE)
+#part_start<-part_name
 setwd(part_start)
 library(bio3d)
 library(readr)
@@ -12,10 +13,10 @@ v_rmsd<-4
 #library(ggplot2)
 
 #df_RMSD<-read.csv(paste0("docking/df_RMSD.csv"),stringsAsFactors = F)
-v_first_bond<-list.files(paste0("docking/docking_first/din/interaction_fin/"))
-df_first_bond_start<-read.csv(paste0("docking/docking_first/din/interaction_fin/",v_first_bond[1]),stringsAsFactors = F)
+v_first_bond<-list.files(paste0("din/interaction_fin/"))
+df_first_bond_start<-read.csv(paste0("din/interaction_fin/",v_first_bond[1]),stringsAsFactors = F)
 for (i in 2:length(v_first_bond)) {
-  df_first_bond_add<-read.csv(paste0("docking/docking_first/din/interaction_fin/",v_first_bond[i]),stringsAsFactors = F)
+  df_first_bond_add<-read.csv(paste0("din/interaction_fin/",v_first_bond[i]),stringsAsFactors = F)
   df_first_bond_start<-rbind(df_first_bond_start,df_first_bond_add)
   df_first_bond_start<-df_first_bond_start%>%filter(persent_interactions>80)
 }
@@ -23,10 +24,10 @@ df_first_bond_start<-df_first_bond_start%>%filter(persent_interactions>80)
 df_first_bond_start<-df_first_bond_start%>%filter(persent_interactions==100)
 
 #df_first_bond_start<-df_first_bond_start[df_first_bond_start$system%in%df_RMSD$fin_model,]
-df_first_bond_start<-df_first_bond_start%>%mutate(receptor=NA)
-for (i in 1:nrow(df_first_bond_start)) {
-  df_first_bond_start$receptor[i]<-strsplit(df_first_bond_start$system[i],split = "_",fixed = T)[[1]][1]  
-}
+df_first_bond_start<-df_first_bond_start%>%mutate(receptor=system)
+#for (i in 1:nrow(df_first_bond_start)) {
+#  df_first_bond_start$receptor[i]<-strsplit(df_first_bond_start$system[i],split = "_",fixed = T)[[1]][1]  
+#}
 #df_first_bond_start<-df_first_bond_start%>%select(receptor,ligand, center, resid,resno, x,y,z,system,grops,grops_number)
 df_first_bond_start<-df_first_bond_start%>%select(receptor,ligand, center, resid,resno, grops,grops_number,system)
 df_first_bond<-unique(df_first_bond_start)
@@ -69,8 +70,8 @@ ggsave(p,   filename = paste0("docking_aminoacid_interaction.png"), width = 40, 
 
 
 write.csv(df_first_bonda,"docking_aminoacid_interactions.csv",row.names = F)
-df_topology<-read.csv("docking/docking_first/din/df_topology.csv",stringsAsFactors = F)
-df_fin<-read.csv("docking/docking_first/din/log_fin.csv",stringsAsFactors = F)
+df_topology<-read.csv("din/df_topology.csv",stringsAsFactors = F)
+df_fin<-read.csv("din/log_fin.csv",stringsAsFactors = F)
 df_fin<-df_fin%>%mutate(receptor_fin=NA)
 for (i in 1:nrow(df_fin)) {
   df_fin$receptor_fin[i]<-strsplit(df_fin$receptor[i],split = "_",fixed = T)[[1]][1]
