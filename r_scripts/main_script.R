@@ -47,3 +47,4 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/ring/ring2_g
 #correct alignemt file for another protein
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/find_conservative_aminoacids.R ",part_start),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/make_plots_RMSD_RMSF.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/count_compatition ",part_start),ignore.stdout=T,wait = T)
