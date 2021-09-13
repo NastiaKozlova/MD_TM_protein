@@ -5,7 +5,7 @@ library(dplyr)
 part_name<-paste0(part_start,"MD_analysis/docking/docking_first/")
 setwd(part_name)
 #repetition
-max_num<-1000
+max_num<-100
 v_receptor<-list.files("receptor_start")
 a<-c()
 for (i in 1:length(v_receptor)){
