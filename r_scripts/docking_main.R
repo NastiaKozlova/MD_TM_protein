@@ -89,10 +89,9 @@ p<-ggplot(df_fin)+
   geom_freqpoly(aes(x=affinity,colour=group),binwidth=0.3)+
   facet_grid(ligand~system)+
   theme_bw()+guides(colour = "none")
-ggsave(p,filename = paste0("ligand_energy.png"), width = 20, height = 15, units = c("cm"), dpi = 200 ) 
+ggsave(p,filename = paste0(part_start,"plot/ligand_energy.png"), width = 20, height = 15, units = c("cm"), dpi = 200 ) 
 p<-ggplot(df_fin)+
   geom_freqpoly(aes(x=affinity,colour=group),binwidth=0.3)+
   facet_grid(system~ligand)+
   theme_bw()+guides(colour = "none")
-ggsave(p,filename = paste0("ligand_energy_reverce.png"), width = 20, height = 15, units = c("cm"), dpi = 200 ) 
-write.csv(df_fin,"log_fin.csv",row.names = F)
+ggsave(p,filename = paste0(part_start,"plot/ligand_energy_reverce.png"), width = 20, height = 15, units = c("cm"), dpi = 200 ) 

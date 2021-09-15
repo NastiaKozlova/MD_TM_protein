@@ -1,8 +1,9 @@
 #readr
-part_start<-'path to MD_TMD_protein'
+part_start<-'path to MD_TM_protein/'
 setwd(part_start)
 v_MD<-list.files(paste0("MD"))
 if(!dir.exists("MD_count")){dir.create("MD_count")}
+if(!dir.exists("plot")){dir.create("plot")}
 i<-1
 for (i in 1:length(v_MD)) {
   system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/make_namd_scripts.R ",part_start,"MD/",v_MD[i],"/"),ignore.stdout=T,wait = T)
