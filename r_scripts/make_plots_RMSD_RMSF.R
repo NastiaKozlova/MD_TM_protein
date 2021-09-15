@@ -46,7 +46,7 @@ for (i in 1:nrow(df_all_systems)) {
       colnames(df_Energy_protein_water)<-c(colnames(df_Energy_protein_water)[1:2],paste0("protein_water_",colnames(df_Energy_protein_water)[3:ncol(df_Energy_protein_water)]))
       df_Energy_protein_lipids<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/Energy/protein_lipid_energy_",main,".txt"), header=T, na.strings ="", stringsAsFactors= F)
       colnames(df_Energy_protein_lipids)<-c(colnames(df_Energy_protein_lipids)[1:2],paste0("protein_lipid_",colnames(df_Energy_protein_lipids)[3:ncol(df_Energy_protein_lipids)]))
-      df_fin<-left_join(df_ramachadran,df_Energy_protein,by=c("frame"="Frame"))
+      df_fin<-full_join(df_ramachadran,df_Energy_protein,by=c("frame"="Frame"))
       df_fin$time<-NULL
       df_fin$Time<-NULL
       df_fin<-left_join(df_fin,df_Energy_protein_water,by=c("frame"="Frame"))
