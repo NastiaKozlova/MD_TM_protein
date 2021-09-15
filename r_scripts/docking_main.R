@@ -80,4 +80,19 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/dock
 #part_start<-paste0(part_start,"MD_analysis/")
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/analysis.R ",part_name),ignore.stdout=T,wait = T)
 
-df_fin<-read.csv(paste0(part_name,"log_fin.csv"),stringsAsFactors =  F)
+df_fin<-read.csv(paste0(part_name,"din/log_fin.csv"),stringsAsFactors =  F)
+df_all_systems<-read.csv(paste0(part_start,"start/all_systems.csv"),stringsAsFactors =  F)
+df_all_systems<-df_all_systems%>%mutate(system=paste(Structure,Membrane))
+df_all_systems<-df_all_systems%>%mutate(system_name=paste0("charmm-gui-",system_name))
+df_fin<-left_join(df_fin,df_all_systems,by=c("receptor"="system_name"))
+p<-ggplot(df_fin)+
+  geom_freqpoly(aes(x=affinity,colour=group),binwidth=0.3)+
+  facet_grid(ligand~system)+
+  theme_bw()+guides(colour = "none")
+ggsave(p,filename = paste0("ligand_energy.png"), width = 20, height = 15, units = c("cm"), dpi = 200 ) 
+p<-ggplot(df_fin)+
+  geom_freqpoly(aes(x=affinity,colour=group),binwidth=0.3)+
+  facet_grid(system~ligand)+
+  theme_bw()+guides(colour = "none")
+ggsave(p,filename = paste0("ligand_energy_reverce.png"), width = 20, height = 15, units = c("cm"), dpi = 200 ) 
+write.csv(df_fin,"log_fin.csv",row.names = F)
