@@ -1,6 +1,7 @@
 #readr
-part_start<-'path to MD_TM_protein/'
+part_start<-'path to MD_MD_protein/'
 setwd(part_start)
+
 v_MD<-list.files(paste0("MD"))
 if(!dir.exists("MD_count")){dir.create("MD_count")}
 if(!dir.exists("plot")){dir.create("plot")}

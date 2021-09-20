@@ -33,7 +33,7 @@ for (j in 1:length(v_parta)) {
   df_tcl[7,1]<-paste0('namdenergy -sel $sel2  $sel0 -vdw -elec -nonb -cutoff 12 -skip 0 -ofile din/Energy/protein_water_energy_',8,'.txt -switch 10 -exe ',namd_exe,' -par namd/toppar/par_all36_cgenff.prm -par namd/toppar/toppar_all36_na_rna_modified.str -par namd/toppar/toppar_all36_label_fluorophore.str -par namd/toppar/par_all36m_prot.prm -par namd/toppar/par_all36_carb.prm -par namd/toppar/toppar_all36_carb_imlab.str -par namd/toppar/toppar_all36_synthetic_polymer.str -par namd/toppar/toppar_all36_label_spin.str -par namd/toppar/par_interface.prm -par namd/toppar/toppar_all36_prot_c36m_d_aminoacids.str -par namd/toppar/par_all36_na.prm -par namd/toppar/toppar_all36_prot_modify_res.str -par namd/toppar/toppar_all36_lipid_cholesterol.str -par namd/toppar/toppar_all36_lipid_sphingo.str -par namd/toppar/par_all36_lipid.prm -par namd/toppar/toppar_all36_carb_glycolipid.str -par namd/toppar/toppar_all36_lipid_lps.str -par namd/toppar/toppar_all36_prot_retinol.str -par namd/toppar/toppar_all36_carb_glycopeptide.str -par namd/toppar/toppar_all36_prot_na_combined.str -par namd/toppar/toppar_all36_prot_heme.str -par namd/toppar/toppar_all36_na_nad_ppi.str -par namd/toppar/toppar_all36_lipid_ether.str -par namd/toppar/toppar_water_ions.str -par namd/toppar/toppar_all36_prot_arg0.str -par namd/toppar/toppar_ions_won.str -par namd/toppar/toppar_all36_lipid_bacterial.str -par namd/toppar/toppar_all36_nano_lig.str -par namd/toppar/toppar_all36_lipid_detergent.str -par namd/toppar/toppar_all36_prot_fluoro_alkanes.str -par namd/toppar/toppar_all36_lipid_prot.str -par namd/toppar/toppar_all36_lipid_miscellaneous.str -par namd/toppar/toppar_all36_lipid_hmmm.str -par namd/toppar/toppar_all36_lipid_yeast.str -par namd/toppar/toppar_dum_noble_gases.str')
   df_tcl[8,1]<-paste0('namdenergy -sel $sel2  $sel1 -vdw -elec -nonb -cutoff 12 -skip 0 -ofile din/Energy/protein_lipid_energy_',8,'.txt -switch 10 -exe ',namd_exe,' -par namd/toppar/par_all36_cgenff.prm -par namd/toppar/toppar_all36_na_rna_modified.str -par namd/toppar/toppar_all36_label_fluorophore.str -par namd/toppar/par_all36m_prot.prm -par namd/toppar/par_all36_carb.prm -par namd/toppar/toppar_all36_carb_imlab.str -par namd/toppar/toppar_all36_synthetic_polymer.str -par namd/toppar/toppar_all36_label_spin.str -par namd/toppar/par_interface.prm -par namd/toppar/toppar_all36_prot_c36m_d_aminoacids.str -par namd/toppar/par_all36_na.prm -par namd/toppar/toppar_all36_prot_modify_res.str -par namd/toppar/toppar_all36_lipid_cholesterol.str -par namd/toppar/toppar_all36_lipid_sphingo.str -par namd/toppar/par_all36_lipid.prm -par namd/toppar/toppar_all36_carb_glycolipid.str -par namd/toppar/toppar_all36_lipid_lps.str -par namd/toppar/toppar_all36_prot_retinol.str -par namd/toppar/toppar_all36_carb_glycopeptide.str -par namd/toppar/toppar_all36_prot_na_combined.str -par namd/toppar/toppar_all36_prot_heme.str -par namd/toppar/toppar_all36_na_nad_ppi.str -par namd/toppar/toppar_all36_lipid_ether.str -par namd/toppar/toppar_water_ions.str -par namd/toppar/toppar_all36_prot_arg0.str -par namd/toppar/toppar_ions_won.str -par namd/toppar/toppar_all36_lipid_bacterial.str -par namd/toppar/toppar_all36_nano_lig.str -par namd/toppar/toppar_all36_lipid_detergent.str -par namd/toppar/toppar_all36_prot_fluoro_alkanes.str -par namd/toppar/toppar_all36_lipid_prot.str -par namd/toppar/toppar_all36_lipid_miscellaneous.str -par namd/toppar/toppar_all36_lipid_hmmm.str -par namd/toppar/toppar_all36_lipid_yeast.str -par namd/toppar/toppar_dum_noble_gases.str')
   df_tcl[9,1]<-paste0('namdenergy -sel $sel2        -vdw -elec -nonb -cutoff 12 -skip 0 -ofile din/Energy/protein_',8,             '.txt -switch 10 -exe ',namd_exe,' -par namd/toppar/par_all36_cgenff.prm -par namd/toppar/toppar_all36_na_rna_modified.str -par namd/toppar/toppar_all36_label_fluorophore.str -par namd/toppar/par_all36m_prot.prm -par namd/toppar/par_all36_carb.prm -par namd/toppar/toppar_all36_carb_imlab.str -par namd/toppar/toppar_all36_synthetic_polymer.str -par namd/toppar/toppar_all36_label_spin.str -par namd/toppar/par_interface.prm -par namd/toppar/toppar_all36_prot_c36m_d_aminoacids.str -par namd/toppar/par_all36_na.prm -par namd/toppar/toppar_all36_prot_modify_res.str -par namd/toppar/toppar_all36_lipid_cholesterol.str -par namd/toppar/toppar_all36_lipid_sphingo.str -par namd/toppar/par_all36_lipid.prm -par namd/toppar/toppar_all36_carb_glycolipid.str -par namd/toppar/toppar_all36_lipid_lps.str -par namd/toppar/toppar_all36_prot_retinol.str -par namd/toppar/toppar_all36_carb_glycopeptide.str -par namd/toppar/toppar_all36_prot_na_combined.str -par namd/toppar/toppar_all36_prot_heme.str -par namd/toppar/toppar_all36_na_nad_ppi.str -par namd/toppar/toppar_all36_lipid_ether.str -par namd/toppar/toppar_water_ions.str -par namd/toppar/toppar_all36_prot_arg0.str -par namd/toppar/toppar_ions_won.str -par namd/toppar/toppar_all36_lipid_bacterial.str -par namd/toppar/toppar_all36_nano_lig.str -par namd/toppar/toppar_all36_lipid_detergent.str -par namd/toppar/toppar_all36_prot_fluoro_alkanes.str -par namd/toppar/toppar_all36_lipid_prot.str -par namd/toppar/toppar_all36_lipid_miscellaneous.str -par namd/toppar/toppar_all36_lipid_hmmm.str -par namd/toppar/toppar_all36_lipid_yeast.str -par namd/toppar/toppar_dum_noble_gases.str')
-  df_tcl[10,1]<-'mol delete all'
+  df_tcl[10,1]<-'mol delete all\n\n\n exit now'
   write.table(df_tcl,file =paste0(part_start,'MD_analysis/tcl/',parta[j],'_Energy_',8,'.tcl'),sep = '\n', quote = F,na = '' ,row.names = F,col.names = F)
   
   
@@ -50,7 +50,7 @@ for (j in 1:length(v_parta)) {
   df_tcl[1,10]<-paste0('}')
   df_tcl[1,11]<-paste0('puts "output file: $n din/RMSD/',8,'.txt"')
   df_tcl[1,12]<-paste0('close $output')
-  df_tcl[1,13]<-paste0('mol delete all')
+  df_tcl[1,13]<-paste0('mol delete all\n\n\n exit now')
   write.table(df_tcl,file =paste0(part_start,'MD_analysis/tcl/',parta[j],'_RMSD_',8,'.tcl'),sep = '\n', quote = F,na = '' ,row.names = F,col.names = F)
   
   df_tcl<-data.frame(matrix(nrow = 1,ncol = 12))
@@ -65,7 +65,7 @@ for (j in 1:length(v_parta)) {
   df_tcl[1,9]<-paste0('}')
   df_tcl[1,10]<-paste0('puts "output file: $n din/RMSF/',8,'.txt"')
   df_tcl[1,11]<-paste0('close $output')
-  df_tcl[1,12]<-paste0('mol delete all')
+  df_tcl[1,12]<-paste0('mol delete all\n\n\n exit now')
   write.table(df_tcl,file =paste0(part_start,'MD_analysis/tcl/',parta[j],'_RMSF_',8,'.tcl'),sep = '\n', quote = F,na = '' ,row.names = F,col.names = F)
   
   
@@ -83,7 +83,7 @@ for (j in 1:length(v_parta)) {
   df_tcl[11,1]<-paste0('}')
   df_tcl[12,1]<-paste0('puts "output file: $n din/SASA/',8,'.txt"')
   df_tcl[13,1]<-paste0('close $output')
-  df_tcl[14,1]<-paste0('mol delete all')
+  df_tcl[14,1]<-paste0('mol delete all\n\n\n exit now')
   write.table(df_tcl,file =paste0(part_start,'MD_analysis/tcl/',parta[j],'_SASA_',8,'.tcl'),sep = '\n', quote = F,na = '' ,row.names = F,col.names = F)
   df_tcl<-data.frame(matrix(nrow = 1,ncol = 7))
   df_tcl[1,1]<-paste('cd', part,'\nmol new {namd/step5_input.psf} type {psf}')
@@ -92,7 +92,7 @@ for (j in 1:length(v_parta)) {
   df_tcl[1,4]<-paste0('for {set i 0 } {$i < $nf} {incr i} {')
   df_tcl[1,5]<-paste0('[atomselect top "protein" frame $i] writepdb din/pdb_second/',8,'/frame_$i.pdb')
   df_tcl[1,6]<-paste0('}')
-  df_tcl[1,7]<-'mol delete all'
+  df_tcl[1,7]<-'mol delete all\n\n\n exit now'
   write.table(df_tcl,file =paste0(part_start,'MD_analysis/tcl/',parta[j],'_Second_str_',8,'.tcl'),sep = '\n', quote = F,na = '' ,row.names = F,col.names = F)
   
   
@@ -103,29 +103,26 @@ for (j in 1:length(v_parta)) {
   df_tcl[1,4]<-paste0('for {set i 0 } {$i < $nf} {incr i} {')
   df_tcl[1,5]<-paste0('[atomselect top all frame $i] writepdb din/pdb_second/hbond_',8,'/frame_$i.pdb')
   df_tcl[1,6]<-paste0('}')
-  df_tcl[1,7]<-'mol delete all'
+  df_tcl[1,7]<-'mol delete all\n\n\n exit now'
   write.table(df_tcl,file =paste0(part_start,'MD_analysis/tcl/',parta[j],'_Second_str_hbond_',8,'.tcl'),sep = '\n', quote = F,na = '' ,row.names = F,col.names = F)
 }
 
 df_fin_conf<-data.frame(matrix(ncol = length(8),nrow=length(v_parta)))
 i<-1
 j<-1
+q<-1
 for (i in 1:length(v_parta)) {
   for (j in 1:length(8)) {
     if (file.exists(paste0(part_start,'MD/',v_parta[i],"/namd/step",8,".dcd"))){
-      temp_script<-paste0("source ", part_start, "MD_analysis/tcl/",  v_parta[i], "_Energy_",     8,".tcl\n",
-                          "source ", part_start, "MD_analysis/tcl/",  v_parta[i], "_RMSD_",       8, ".tcl\n",
-                          "source ", part_start, "MD_analysis/tcl/",  v_parta[i], "_RMSF_",       8, ".tcl\n",
-                          "source ", part_start, "MD_analysis/tcl/",  v_parta[i], "_SASA_",       8, ".tcl\n",
-                          "source ", part_start, "MD_analysis/tcl/",  v_parta[i], "_Second_str_",        8, ".tcl\n",
-                          "source ", part_start, "MD_analysis/tcl/",   v_parta[i], "_Second_str_hbond_", 8,".tcl\n")
-      df_fin_conf[i,j]<-paste0(temp_script)
+      temp_script<-c(paste0(part_start, "MD_analysis/tcl/",  v_parta[i], "_Energy_",     8,".tcl\n"),
+                     paste0(part_start, "MD_analysis/tcl/",  v_parta[i], "_RMSD_",       8, ".tcl\n"),
+                     paste0(part_start, "MD_analysis/tcl/",  v_parta[i], "_RMSF_",       8, ".tcl\n"),
+                     paste0(part_start, "MD_analysis/tcl/",  v_parta[i], "_SASA_",       8, ".tcl\n"),
+                     paste0(part_start, "MD_analysis/tcl/",  v_parta[i], "_Second_str_",        8, ".tcl\n"),
+                     paste0(part_start, "MD_analysis/tcl/",   v_parta[i], "_Second_str_hbond_", 8,".tcl\n"))
+      for (q in 1:length(temp_script)) {
+        system(command = paste0("vmd -dispdev text -e ",temp_script[q]),ignore.stdout=T,wait = T)
+      }
     }
   }
 }
-df_fin_add<-data.frame(matrix(ncol = length(8),nrow=1))
-df_fin_add[1,1]<-"exit now"
-colnames(df_fin_add)<-colnames(df_fin_conf)
-df_fin_conf<-rbind(df_fin_conf,df_fin_add)
-write.table(df_fin_conf,file =paste0(part_start,'MD_analysis/vmd_script.tcl'),sep = '\n', quote = F,na = '' ,row.names = F,col.names = F)
-
