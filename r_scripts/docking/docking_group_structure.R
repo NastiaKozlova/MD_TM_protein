@@ -127,7 +127,7 @@ for (j in 1:length(df_all$name)) {
       df_RMSD<-df_RMSD%>%filter(models.y==models.x)
       for (k in 1:nrow(df_RMSD)) {
         pdb<-read.pdb(paste0("pdb_second/",df_RMSD$ligand_center[k],"/",df_RMSD$models.y[k]))
-        write.pdb(pdb,paste0("str_fin/",df_RMSD$ligand_center[1],"_",df_RMSD$grop_number[1],"_",df_RMSD$models.y[1]))
+        write.pdb(pdb,paste0("str_fin/",df_RMSD$ligand_center[k],"_",df_RMSD$grop_number[k],"_",df_RMSD$models.y[k]))
       }
     }
   }
