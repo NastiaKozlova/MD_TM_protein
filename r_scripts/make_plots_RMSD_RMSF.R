@@ -15,8 +15,6 @@ df_all_systems<-read.csv(paste0(part_start,"start/all_systems.csv"),stringsAsFac
 
 df_all_systems$system_name<-as.character(df_all_systems$system_name)
 df_all_systems<-df_all_systems%>%mutate(Progress=="notdone")
-#df_all_systems_done<-df_all_systems%>%filter(Progress=="done")
-#df_all_systems<-rbind(df_all_systems_productive_run,df_all_systems_done)
 df_all_systems<-df_all_systems%>%mutate(fin_name=paste0("charmm-gui-",system_name))
 v_part<-list.files(paste0(part,"din"))
 main_part<-c(8)
@@ -66,7 +64,7 @@ for (i in 1:nrow(df_all_systems)) {
       df_fin<-left_join(df_fin,df_RMSD,by=c("frame"))
       df_fin$Time<-NULL
       df_fin$time<-NULL 
-      df_fin<-df_fin%>%filter(frame>=20)
+#      df_fin<-df_fin%>%filter(frame>=20)
       df_fin<-df_fin%>%mutate(frame=frame/10)
       write.csv(df_fin,paste0(part,"fin_data/frame_data/",df_all_systems$fin_name[i],"_",main,".csv"),row.names = F)
 
