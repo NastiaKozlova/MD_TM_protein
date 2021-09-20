@@ -1,4 +1,5 @@
 part_start <- commandArgs(trailingOnly=TRUE)
+setwd(part_start)
 library(dplyr)
 library(ggplot2)
 library(cowplot)
@@ -7,7 +8,7 @@ library(bio3d)
 library(ggplot2)
 library(dplyr)
 test_10<-seq(from=0,to=1000,by=10)
-
+df_topology<-read.csv("start/df_topology.csv",stringsAsFactors =  F)
 part<-paste0(part_start,"MD_analysis/")
 parta<-paste0(part_start,"MD/")
 df_all_systems<-read.csv(paste0(part_start,"start/all_systems.csv"),stringsAsFactors = F)
@@ -65,6 +66,7 @@ for (i in 1:nrow(df_all_systems)) {
       df_fin<-left_join(df_fin,df_RMSD,by=c("frame"))
       df_fin$Time<-NULL
       df_fin$time<-NULL 
+      df_fin<-df_fin%>%filter(frame>=20)
       df_fin<-df_fin%>%mutate(frame=frame/10)
       write.csv(df_fin,paste0(part,"fin_data/frame_data/",df_all_systems$fin_name[i],"_",main,".csv"),row.names = F)
 
@@ -73,6 +75,7 @@ for (i in 1:nrow(df_all_systems)) {
         labs(y = "RMSD (A)", x = "Time (ns)")+
         geom_line(aes(x = frame, y = RMSD))+
         theme_bw()+coord_flip()+
+        scale_x_continuous(breaks = test_10, labels =  test_10)+
         geom_hline(yintercept = median(df_fin$RMSD,na.rm = T))
       p_sasa<-ggplot(data = df_fin)+
         labs(title=paste("SASA"),
@@ -116,12 +119,14 @@ for (i in 1:nrow(df_all_systems)) {
         geom_freqpoly(aes(x = RMSD))+
         theme_bw()+scale_fill_grey()+
         geom_text(x=median(df_RMSD$RMSD), y=20,label=round(median(df_RMSD$RMSD,na.rm = T),digits = 1))+
+        scale_x_continuous(breaks = test_10, labels =  test_10)+
         geom_vline(xintercept = median(df_RMSD$RMSD,na.rm = T))
       p_sasa_histo<-ggplot(data = df_fin)+
         labs(title="SASA", x = "SASA (A^2)") +
         geom_freqpoly(aes(x = SASA))+
         theme_bw()+
         geom_text(x=median(df_fin$SASA), y=20,label=round(median(df_fin$SASA,na.rm = T),digits = 1))+
+        scale_x_continuous(breaks = test_10, labels =  test_10)+
         geom_vline(xintercept = median(df_fin$SASA,na.rm = T))
       p_Elec_histo<-ggplot(data = df_fin)+
         labs(title=paste("Electrostatic energy"),
@@ -129,6 +134,7 @@ for (i in 1:nrow(df_all_systems)) {
         geom_freqpoly(aes(x = protein_Elec))+
         theme_bw()+
         geom_text(x=median(df_fin$protein_Elec,na.rm = T), y=20,label=round(median(df_fin$protein_Elec,na.rm = T),digits = 1))+
+        scale_x_continuous(breaks = test_10, labels =  test_10)+
         geom_vline(xintercept = median(df_fin$protein_Elec,na.rm = T))
       p_ramachadran_histo <- ggplot(data = df_fin)+
         labs(title=paste("Ramachadran"),
@@ -136,16 +142,19 @@ for (i in 1:nrow(df_all_systems)) {
         geom_freqpoly(aes(x = ramachadran),bins=(max(df_fin$ramachadran)-min(df_fin$ramachadran)))+
         theme_bw()+#coord_flip()+
         geom_text(x=median(df_fin$ramachadran,na.rm = T), y=20,label=round(median(df_fin$ramachadran,na.rm = T),digits = 1))+
+        scale_x_continuous(breaks = test_10, labels =  test_10)+
         geom_vline(xintercept = median(df_fin$ramachadran,na.rm = T))
       p_Total_histo <- ggplot(data = df_fin)+
         labs(title=paste("Total energy"), y = "", x = "Total energy (kcal/mol)") +
         geom_freqpoly(aes(x = protein_Total))+
         theme_bw()+
         geom_vline(xintercept = median(df_fin$protein_Total,na.rm = T))+
+        scale_x_continuous(breaks = test_10, labels =  test_10)+
         geom_text(x=median(df_fin$protein_Total,na.rm = T), y=20,label=round(median(df_fin$protein_Total,na.rm = T),digits = 1))
       p_VdW_histo<-ggplot(data = df_fin)+
         labs(title=paste("VdW"), x = "VdW (kcal/mol)") +
         geom_freqpoly(aes(x =protein_VdW))+
+        scale_x_continuous(breaks = test_10, labels =  test_10)+
         theme_bw()+
         geom_text(x=median(df_fin$protein_VdW,na.rm = T), y=20,label=round(median(df_fin$protein_VdW,na.rm = T),digits = 1))+
         geom_vline(xintercept = median(df_fin$protein_VdW,na.rm = T))
@@ -195,32 +204,40 @@ for (i in 1:nrow(df_all_systems)) {
           v_conserv<-list.files(paste0(part_start,"MD_analysis/conservative/"))
           df_conserv<-read.csv(paste0(part_start,"MD_analysis/conservative/",v_conserv),stringsAsFactors =  F)
           df_seq<-left_join(df_seq,df_conserv,by=c("resno"="number"))
-          p_conserv<-ggplot(data = df_seq)+
-            geom_point(aes(x = resno, y = z,colour=conservative))+
+          p_conserv<-ggplot(data = df_seq)+geom_rect(aes(xmin=seq_beg, xmax=seq_end, ymin=-Inf, ymax=Inf, fill=type),data=df_topology)+
+            geom_line(aes(x = resno, y = z,colour=conservative))+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
             theme_bw()#+coord_flip()
-          p_ramachadran<-ggplot(data = df_seq)+
-            geom_point(aes(x = resno, y = z,colour=ramachadran))+
+          p_ramachadran<-ggplot(data = df_seq)+geom_rect(aes(xmin=seq_beg, xmax=seq_end, ymin=-Inf, ymax=Inf, fill=type),data=df_topology)+
+            geom_line(aes(x = resno, y = z,colour=ramachadran))+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
             theme_bw()#+coord_flip()
-          p_RMSF<-ggplot(data = df_seq)+
-            geom_point(aes(x = resno, y = z,colour=RMSF))+
+          p_RMSF<-ggplot(data = df_seq)+geom_rect(aes(xmin=seq_beg, xmax=seq_end, ymin=-Inf, ymax=Inf, fill=type),data=df_topology)+
+            geom_line(aes(x = resno, y = z,colour=RMSF))+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
             theme_bw()
-          p_hbonds<-ggplot(data = df_seq)+
-            geom_point(aes(x = resno, y = z,colour=hbonds))+
+          p_hbonds<-ggplot(data = df_seq)+geom_rect(aes(xmin=seq_beg, xmax=seq_end, ymin=-Inf, ymax=Inf, fill=type),data=df_topology)+
+            geom_line(aes(x = resno, y = z,colour=hbonds))+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
             theme_bw()
           p_all<-plot_grid(p_conserv,p_ramachadran,       p_hbonds,      p_RMSF,     
                            nrow=4,  labels = c("A","B","C","D"),align="hv")
           ggsave(p_all,   filename = paste0(part,"fin_plots/str_XYZ/",df_all_systems$fin_name[i],"_disulfid_bonds_",df_all_systems$disulfid_bonds[i],"_glyco_",df_all_systems$Glyco[i],"_",df_all_systems$Membrane[i],"_",main,".png"), width = 60, height = 40, units = c("cm"), dpi = 200 ) 
-          p_conserv<-ggplot(data = df_seq)+
-            geom_point(aes(x = resno, y = conservative))+
+          p_conserv<-ggplot(data = df_seq)+geom_rect(aes(xmin=seq_beg, xmax=seq_end, ymin=-Inf, ymax=Inf, fill=type),data=df_topology)+
+            geom_line(aes(x = resno, y = conservative))+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
             theme_bw()#+coord_flip()
-          p_ramachadran<-ggplot(data = df_seq)+
-            geom_point(aes(x = resno, y = ramachadran))+
+          p_ramachadran<-ggplot(data = df_seq)+geom_rect(aes(xmin=seq_beg, xmax=seq_end, ymin=-Inf, ymax=Inf, fill=type),data=df_topology)+
+            geom_line(aes(x = resno, y = ramachadran))+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
             theme_bw()#+coord_flip()
-          p_RMSF<-ggplot(data = df_seq)+
-            geom_point(aes(x = resno, y = RMSF))+
+          p_RMSF<-ggplot(data = df_seq)+geom_rect(aes(xmin=seq_beg, xmax=seq_end, ymin=-Inf, ymax=Inf, fill=type),data=df_topology)+
+            geom_line(aes(x = resno, y = RMSF))+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
             theme_bw()
-          p_hbonds<-ggplot(data = df_seq)+
-            geom_point(aes(x = resno, y = hbonds))+
+          p_hbonds<-ggplot(data = df_seq)+geom_rect(aes(xmin=seq_beg, xmax=seq_end, ymin=-Inf, ymax=Inf, fill=type),data=df_topology)+
+            geom_line(aes(x = resno, y = hbonds))+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
             theme_bw()
           p_all<-plot_grid(p_conserv,p_ramachadran,       p_hbonds,      p_RMSF,     
                            nrow=4,  labels = c("A","B","C","D"),align="hv")
@@ -230,7 +247,7 @@ for (i in 1:nrow(df_all_systems)) {
           df_seq<-read.csv(paste0(part,"fin_data/str_data/",df_all_systems$fin_name[i],".csv"),stringsAsFactors = F)
           df_seq<-df_seq%>%filter(persent_interactions>95)
           df_seq<-df_seq%>%filter(ramachadran==0)
-          p_docking<-ggplot(data = df_seq)+
+          p_docking<-ggplot(data = df_seq)+geom_rect(aes(xmin=seq_beg, xmax=seq_end, ymin=-Inf, ymax=Inf, fill=type),data=df_topology)+
             geom_text(aes(x = resno, y = resid,colour=conservative,label=aminoacids))+
             theme_bw()+ facet_grid(ligand~receptor)
           ggsave(p_docking,   filename = paste0(part,"fin_plots/docking_plots/",df_all_systems$fin_name[i],"_disulfid_bonds_",df_all_systems$disulfid_bonds[i],"_glyco_",df_all_systems$Glyco[i],"_",df_all_systems$Membrane[i],"_",main,".png"), width = 60, height = 40, units = c("cm"), dpi = 200 ) 
@@ -251,7 +268,7 @@ df_seq<-df_seq%>%filter(persent_interactions==100)
 df_seq<-df_seq%>%filter(ramachadran==0)
 df_seq<-df_seq%>%filter(conservative>75)
 #df_seq<-df_seq%>%filter(hbonds>50)
-p_docking<-ggplot(data = df_seq)+
+p_docking<-ggplot(data = df_seq)+geom_rect(aes(xmin=seq_beg, xmax=seq_end, ymin=-Inf, ymax=Inf, fill=type),data=df_topology)+
   geom_text(aes(x = resno, y = resid,colour=conservative,label=aminoacids))+
   theme_bw()+ facet_grid(ligand~receptor)
 ggsave(p_docking,   filename = paste0(part,"fin_plots/docking_fin_intercations.png"), width = 60, height = 40, units = c("cm"), dpi = 200 ) 
