@@ -27,16 +27,15 @@ Sequence of protein into _*MD_TMD_protein/start/sequence/Protein_name.fasta*_
 Sequences of proteins to align into _*MD_TMD_protein/start/alignment/Protein_name.fasta*_
 Protein topology into _*MD_TMD_protein/start/df_topology.csv*_
 List of active center aminoacids _*MD_TMD_protein/start/active_center.csv*_
+
 Example of the table:
 | type   | amino | resno |
 | ------ | ----- | ----- |
 | center | PHE   | 27    |
 | center | TRP   | 151   |
+
 Type distinguish different centers of interest
 Ligand structures in pdb into _*MD_TMD_protein/start/ligand_start*_
-
-
-
 
 # Protein structure stablilisation using MD simulations (NAMD)
 
