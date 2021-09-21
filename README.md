@@ -13,21 +13,50 @@ Scripts are separate to the four parts:
 
 The main script from with program will run is _*r_scripts/master_script.R*_
 
+## Nessesary files
+
+list of membrane structures in pdb into _*MD_TMD_protein/start/all_systems.csv*_
+Example of the table
+
+| system\_name | Progress       | Membrane | Structure |
+| ------------ | -------------- | -------- | --------- |
+| 2322184819   | to do          | POPG     | WT        |
+| 2322253581   | to do          | POPE     | WT        |
+
+Sequence of protein into _*MD_TMD_protein/start/sequence/Protein_name.fasta*_
+Sequences of proteins to align into _*MD_TMD_protein/start/alignment/Protein_name.fasta*_
+Protein topology into _*MD_TMD_protein/start/df_topology.csv*_
+List of active center aminoacids _*MD_TMD_protein/start/active_center.csv*_
+Example of the table:
+| type   | amino | resno |
+| ------ | ----- | ----- |
+| center | PHE   | 27    |
+| center | TRP   | 151   |
+Type distinguish different centers of interest
+Ligand structures in pdb into _*MD_TMD_protein/start/ligand_start*_
+
+
+
+
 # Protein structure stablilisation using MD simulations (NAMD)
 
 CHARMM GUI output should be placed into _**MD_TM_protein/MD**_ folder
 " MD_TM_protein/r_scripts/make_namd_scripts.R" -- prepare all scripts and structures to run MD simulations. 
 MD simulations are contained equvlibration according to CHARMM-GUI manual and  1000 ns productive simulation(1000\*1ns).
-You can adjast length of simulation by editing _*num_din*_ parameter. _*num_din*_ =time in ns
+You can adjast length of simulation by editing _*num_din*_ parameter. _*num_din*_ time in ns
 
-After this step you can find your namd script _*MD\_globular\_protein/r\_scripts/namd\_script.txt*_
-This script has to be altered to accommodate different configurations of computers. 
+After this step you can find your namd scripts to _*MD_TMD_protein/MD_count/*_
+This script has to be altered to accommodate different configurations of computers and run them OUTSIDE of the R environment.
+
 
 # Prediction of structure receptor-ligand complex this docking AutoDock
 
-You should put all of ligand structures in pdb form into _* MD_TM_protein/start/docking/docking_first/ligand_start/*_
-
-
+You should put all of ligand structures in pdb into _*MD_TMD_protein/start/sequence/lacY.fasta*_
+You should put all of ligand structures in pdb into _*MD_TMD_protein/start/active_center.csv*_
+You should put all of ligand structures in pdb into _*MD_TMD_protein/start/ligand_start*_
+You should put all of ligand structures in pdb into _*MD_TMD_protein/start/alignment/lacY.fasta*_
+You should put all of ligand structures in pdb into _*MD_TMD_protein/start/df_topology.csv*_
+You should put all of ligand structures in pdb into _*MD_TMD_protein/start/all_systems.csv*_
 
 # Receptor-ligand structure stablilisation using MD simulations (NAMD)
 
