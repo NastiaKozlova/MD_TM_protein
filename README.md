@@ -50,24 +50,11 @@ This script has to be altered to accommodate different configurations of compute
 
 # Prediction of structure receptor-ligand complex this docking AutoDock
 
-You should put all of ligand structures in pdb into _*MD_TMD_protein/start/sequence/lacY.fasta*_
-You should put all of ligand structures in pdb into _*MD_TMD_protein/start/active_center.csv*_
-You should put all of ligand structures in pdb into _*MD_TMD_protein/start/ligand_start*_
-You should put all of ligand structures in pdb into _*MD_TMD_protein/start/alignment/lacY.fasta*_
-You should put all of ligand structures in pdb into _*MD_TMD_protein/start/df_topology.csv*_
-You should put all of ligand structures in pdb into _*MD_TMD_protein/start/all_systems.csv*_
-
-# Receptor-ligand structure stablilisation using MD simulations (NAMD)
-
-The main script from with program will run is _*r_scripts/master_script.R*_
-"r_scripts/prepare_to_stabilisation_MD.R" -- prepare all scripts and structures 
-to run MD simulations. MD simulations are contained 0.1ns minimisation, 0.3ns heating,
-2 ns eqvilibration and 100 ns productive simulation(100\*1ns). 
-You can alter time by changing _*num_din*_
-
-After this step you can find your namd script _*MD\_globular\_protein/r\_scripts/namd\_script.txt*_
-This script has to be altered to accommodate different configurations of computers. 
-
+Receptor structures for docking are prepared by MD_TMD_protein/r_scripts/docking/docking_prepare_receptor_pdb.R
+Main script is MD_TMD_protein/r_scripts/docking/docking_script.R
+You can adjust length of simulation by editing max_num in MD_TMD_protein/r_scripts/docking/docking_script.R
+By default max_num=100, prodising up to 900 conformations of ligand per complex (receptor(TM protein)-ligand-active center). 
+All conformaions are sorted using convergence method, sorting by RMSD between ligands conformations.
 
 # Dependencise
 
