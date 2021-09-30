@@ -49,24 +49,30 @@ df_fin<-df_fin%>%mutate(protein_protein_Total=protein_Total-protein_water_Total-
 df_fin<-left_join(df_fin,df_all_systems,by=c("system"="fin_name"))
 #df_fin<-df_fin%>%filter(frame>10)
 df_fin<-df_fin%>%mutate(system=paste0(Structure,"_",Membrane))
+write.csv(df_fin)
 p_protein_lipid_histo<-ggplot(data = df_fin)+
-  labs(title=paste("protein_lipid"), x = "protein_lipid (kcal/mol)") +theme_bw()+
-  geom_freqpoly(aes(x =protein_lipid_Total,colour=system))+guides(colour = "none")
+  labs(x = "Energy (kcal/mol)",title="Energy of protein lipid interactions",) +theme_bw()+
+  geom_freqpoly(aes(x =protein_lipid_Total,colour=Structure,linetype=Membrane))+theme(legend.position = "bottom")
 p_protein_water_histo<-ggplot(data = df_fin)+
-  labs(title=paste("protein_water"), x = "protein_water (kcal/mol)") +theme_bw()+
-  geom_freqpoly(aes(x =protein_water_Total,colour=system))+guides(colour = "none")
+  labs(x = "Energy (kcal/mol)",title="Energy of protein water interactions") +theme_bw()+
+  geom_freqpoly(aes(x =protein_water_Total,colour=Structure,linetype=Membrane))+theme(legend.position = "bottom")
 p_protein_protein_histo<-ggplot(data = df_fin)+
-  labs(title=paste("protein_protein"), x = "protein_protein (kcal/mol)") +theme_bw()+
-  geom_freqpoly(aes(x =protein_protein_Total,colour=system))+guides(colour = "none")
+  labs(x = "Energy (kcal/mol)",title="Energy of interprotein interactions") +theme_bw()+
+  geom_freqpoly(aes(x =protein_protein_Total,colour=Structure,linetype=Membrane))+theme(legend.position = "bottom")
 p_protein_histo<-ggplot(data = df_fin)+
-  labs(title=paste("protein"), x = "protein (kcal/mol)") +theme_bw()+
-  geom_freqpoly(aes(x =protein_Total,colour=system))+theme(legend.position = "bottom")
-p_all<-plot_grid(p_protein_lipid_histo,p_protein_water_histo,       p_protein_protein_histo,      p_protein_histo,
-                 rel_heights=c(1,1,1,1),
-                 nrow=4,  labels = c("A","B","C","D"),align="hv",ncol = 1,axis="bt")
+  labs(x = "Energy (kcal/mol)",title="Total protein energy") +theme_bw()+
+  geom_freqpoly(aes(x =protein_Total,colour=Structure,linetype=Membrane))+theme(legend.position = "bottom")
+legend_test<-get_legend(p_protein_histo)
 
+p_all<-plot_grid(p_protein_lipid_histo+theme(legend.position = "none"),
+                 p_protein_water_histo+theme(legend.position = "none"),  
+                 p_protein_protein_histo+theme(legend.position = "none"),
+                 p_protein_histo+theme(legend.position = "none"),
+                 rel_heights=c(1,1),
+                 nrow=2,  labels = c("A","B","C","D"),align="hv",ncol = 2,axis="bt")
+p_test<-plot_grid(p_all,legend_test,nrow=2,rel_heights=c(1,0.1))
 
-ggsave(p_all,   filename = paste0(part,"fin_plots/tost_",main,".png"), width = 20, height = 25, units = c("cm"), dpi = 200 ) 
+ggsave(p_test,   filename = paste0(part,"fin_plots/tost_",main,".png"), width = 20, height = 15, units = c("cm"), dpi = 1000 ) 
 M <- aov(protein_Total ~ system, data = df_fin)
 df_protein_Total<-TukeyHSD(M)[[1]]
 

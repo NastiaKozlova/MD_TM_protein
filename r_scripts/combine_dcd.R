@@ -24,7 +24,7 @@ for (j in 1:length(v_parta)) {
   if (!dir.exists(paste0(part,'/din/Energy'))){dir.create(paste0(part,'/din/Energy'))}
   if (!dir.exists(paste0(part,'/din/hbonds'))){dir.create(paste0(part,'/din/hbonds'))}
   
-  #combine MD simulation dcd files
+  #combine and align MD simulation dcd files
   df_tcl<-data.frame(matrix(nrow = 2,ncol = 2))
   df_tcl[1,1]<-paste0('cd ', part,'/namd/\n\npackage require animate\n')
   df_tcl[1,2]<-paste0('mol new {step5_input.psf} type {psf}')
@@ -49,4 +49,19 @@ for (j in 1:length(v_parta)) {
   write.table(df_tcl,file =paste0(part_start,'MD_analysis/tcl/',parta,'_combine.tcl'),sep = ' ',na = '' ,row.names = F,col.names = F,quote = F)
   print( paste0('vmd -dispdev text -e ',part_start,'MD_analysis/tcl/',parta,'_combine.tcl'))
   system(command = paste0('vmd -dispdev text -e ',part_start,'MD_analysis/tcl/',parta,'_combine.tcl'),ignore.stdout=T,wait = T) 
+  #combine MD simulation dcd files
+  df_tcl<-data.frame(matrix(nrow = 2,ncol = 2))
+  df_tcl[1,1]<-paste0('cd ', part,'/namd/\n\npackage require animate\n')
+  df_tcl[1,2]<-paste0('mol new {step5_input.psf} type {psf}')
+  for (p in 1:num_model) {
+    if(file.exists(paste0(part,'/namd/step7.',p,'_production.dcd'))){
+      df_tcl[p+1,1]<-paste0('mol addfile {',part,'/namd/step7.',p,'_production.dcd} type {dcd} first 0 last -1 step 1 waitfor all')
+    }
+  }
+  df_tcl[p+2,1]<-paste0('animate write dcd step8_nonalign.dcd waitfor all')
+  df_tcl[p+3,1]<-paste0('mol delete all\n\nexit now')
+  
+  write.table(df_tcl,file =paste0(part_start,'MD_analysis/tcl/',parta,'_combine_non_align.tcl'),sep = ' ',na = '' ,row.names = F,col.names = F,quote = F)
+  print( paste0('vmd -dispdev text -e ',part_start,'MD_analysis/tcl/',parta,'_combine_non_align.tcl'))
+  system(command = paste0('vmd -dispdev text -e ',part_start,'MD_analysis/tcl/',parta,'_combine_non_align.tcl'),ignore.stdout=T,wait = T) 
 }

@@ -14,7 +14,7 @@ parta<-paste0(part_start,"MD/")
 df_all_systems<-read.csv(paste0(part_start,"start/all_systems.csv"),stringsAsFactors = F)
 
 df_all_systems$system_name<-as.character(df_all_systems$system_name)
-df_all_systems<-df_all_systems%>%mutate(Progress=="notdone")
+#df_all_systems<-df_all_systems%>%mutate(Progress=="notdone")
 df_all_systems<-df_all_systems%>%mutate(fin_name=paste0("charmm-gui-",system_name))
 v_part<-list.files(paste0(part,"din"))
 main_part<-c(8)
@@ -30,7 +30,7 @@ if (!dir.exists(paste0(part,"fin_plots/str_plots"))) {dir.create(paste0(part,"fi
 if (!dir.exists(paste0(part,"fin_plots/str_XYZ"))) {dir.create(paste0(part,"fin_plots/str_XYZ"))}
 if (!dir.exists(paste0(part,"fin_plots/frame_plots"))) {dir.create(paste0(part,"fin_plots/frame_plots"))}
 if (!dir.exists(paste0(part,"fin_plots/docking_plots"))) {dir.create(paste0(part,"fin_plots/docking_plots"))}
-#if (!dir.exists(paste0(part,"fin_plots/lenght_plots"))) {dir.create(paste0(part,"fin_plots/lenght_plots"))}
+
 i<-1
 main<-main_part[1]
 for (i in 1:nrow(df_all_systems)) {
@@ -280,10 +280,14 @@ for (i in 1:nrow(df_fin)) {
 df_fin<-df_fin%>%select(number,grop_number,group,ligand_center,affinity,receptor, ligand, center, receptor_fin)
 df_fin<-unique(df_fin)
 df_fin<-df_fin%>%mutate(grop_number=as.character(grop_number))
+df_fin<-left_join(df_fin,df_all_systems,by=c("receptor_fin"="fin_name"))
+df_fin<-df_fin%>%mutate(System=paste(Membrane,Structure))
 p<-ggplot(df_fin)+
-  geom_freqpoly(aes(x = affinity,colour = grop_number),binwidth=0.5)+
-  facet_grid(receptor_fin~ligand)+
-  theme_bw()+geom_vline(xintercept=0)
-ggsave(p,filename = paste0(part,"fin_plots/check_ligand_energy.png"), width = 30, height = 20, units = c("cm"), dpi = 200 ) 
+  labs(x="Affinity, kkal/mol")+
+#  geom_freqpoly(aes(x = affinity,colour = grop_number),binwidth=2)+
+  geom_freqpoly(aes(x = affinity),binwidth=2)+
+  facet_grid(System~ligand)+
+  theme_bw()+geom_vline(xintercept=0)+guides(colour = "none")
+ggsave(p,filename = paste0(part,"fin_plots/check_ligand_energy.png"), width = 12, height = 12, units = c("cm"), dpi = 1000 ) 
 
 

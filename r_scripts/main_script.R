@@ -1,5 +1,5 @@
 #readr
-part_start<-'path to MD_MD_protein/'
+part_start<-'/home/nastia/projects/current/lacY/MD_TMD_protein/'
 setwd(part_start)
 
 v_MD<-list.files(paste0("MD"))
@@ -15,8 +15,6 @@ if (!dir.exists(paste0(part_start,'MD_analysis/'))){dir.create(paste0(part_start
 #combine all dcd files of Productive MD runs 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/combine_dcd.R ",part_start),ignore.stdout=T,wait = T) 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/prepare_tcl_din.R ",part_start),ignore.stdout=T,wait = T) 
-#vmd
-system(command = paste0("vmd -dispdev text -e ",part_start,"MD_analysis/vmd_script.tcl "),ignore.stdout=T,wait = T) 
 #check installation of dssp
 #sudo apt-get install dssp may help
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/compare_second_str.R ",part_start),ignore.stdout=T,wait = T) 
