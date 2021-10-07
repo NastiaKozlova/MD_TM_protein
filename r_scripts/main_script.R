@@ -1,5 +1,5 @@
 #readr
-part_start<-'/home/nastia/projects/current/NaPi2b/MD_TM_protein/'
+part_start<-'path to MD_TM_protein/'
 setwd(part_start)
 
 v_MD<-list.files(paste0("MD"))
