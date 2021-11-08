@@ -57,14 +57,17 @@ for (q in 1:nrow(df_all_systems)) {
       df_pdb<-df_pdb%>%filter(type!="ATOM")
       df_ring<-df_ring%>%filter((number.y-number.x)>5)
       df_ring<-df_ring%>%filter(all>0)
-      df_ring<-df_ring%>%filter(all>nrow(df_ramachadran)*0.8)
+      df_ring<-df_ring%>%mutate(all=all/nrow(df_ramachadran))
+
       df_ring<-df_ring[df_ring$number.x%in%df_pdb$resno,]
       df_ring<-df_ring[df_ring$number.y%in%df_pdb$resno,]
-      df_ring1<-df_ring%>%select(number.x,number.y)
-      df_ring2<-df_ring%>%select(number.y,number.x)
+      df_ring1<-df_ring%>%select(number.x,number.y,all)
+      df_ring2<-df_ring%>%select(number.y,number.x,all)
       colnames(df_ring2)<-colnames(df_ring1)
       df_ring<-rbind(df_ring1,df_ring2)
-      df_interactions<-df_ring1
+      df_ringa<-df_ring
+      df_ring<-df_ring%>%filter(all>0.8)
+      df_interactions<-df_ring%>%filter(number.x<number.y)
       df_interactions<-unique(df_interactions)
       df_interactions<-left_join(df_interactions,df_pdb,by=c("number.x"="resno"))
       df_interactions<-left_join(df_interactions,df_pdb,by=c("number.y"="resno"))
@@ -105,7 +108,7 @@ for (q in 1:nrow(df_all_systems)) {
       df_pdb_amino$number.y<-NULL
       df_pdb_amino<-unique(df_pdb_amino)
       
-      df_interactions_bonds<-df_ring%>%select("number.x","number.y")
+      df_interactions_bonds<-df_ring%>%select("number.x","number.y","all")
       df_interactions_bonds<-df_interactions_bonds%>%filter(number.x<number.y)
       
 
@@ -129,14 +132,14 @@ for (q in 1:nrow(df_all_systems)) {
         set.seed(10052006)
         p<-ggnet2(mm.net, color = mm.col[ mm.net %v% "topology" ],
                   label = T,
-                  edge.size = "number",
+   #               edge.size = "all",
                   size = 20, mode = "kamadakawai", label.size = 5)
         ggsave(p,filename = paste0("fin_plots/TMD_interactions/",df_all_systems$fin_name[q],"_",df_all_systems$disulfid_bonds[q],"_",df_all_systems$Glyco[q],".png"), width = 30, height = 30, units = c("cm"), dpi = 200 ) 
-
+        df_interactions_bonds<-df_interactions_bonds%>%filter(all>0.8)
         vlist<-list(edges =df_interactions_bonds,vertices =df_pdb_amino)
         
         rownames(vlist$vertices) <- vlist$vertices$resno
-        mm.net <- network(vlist$edges[, 1:2], directed = FALSE)
+        mm.net <- network(vlist$edges[, 1:3], directed = FALSE)
         mm.net %v% "topology" <- as.character(
           vlist$vertices[ network.vertex.names(mm.net), "topology"]
         )
