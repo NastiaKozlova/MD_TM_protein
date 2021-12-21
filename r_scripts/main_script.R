@@ -1,6 +1,6 @@
 #readr
 part_start<-'path to MD_TM_protein/'
-part_start<-'/home/nastia/projects/current/lacY/MD_TMD_protein/'
+part_start<-paste0(getwd(),"/")
 setwd(part_start)
 
 v_MD<-list.files(paste0("MD"))
