@@ -69,7 +69,7 @@ for (p in 1:length(v_part)) {
         df_hbonds_add<-read.csv(paste0("hbonds/",main,"_mod/frame_",q,".txt"),stringsAsFactors = F)
         df_hbonds<-rbind(df_hbonds,df_hbonds_add)
       }
-      df_hbonds<-df_hbonds%>%filter(abs(z)<18)
+#      df_hbonds<-df_hbonds%>%filter(abs(z)<18)
       df_hbonds<-df_hbonds%>%select(number, amino,frame)
       df_bonds<-unique(df_hbonds)
       df_bonds<-df_bonds%>%group_by(number)%>%mutate(occupancy=n())

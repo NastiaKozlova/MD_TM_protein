@@ -14,17 +14,23 @@ for (i in 1:length(v_receptor)){
 }
 v_receptor<-a
 j<-1
-df_active_center<-read.csv("active_center.csv",stringsAsFactors = F)
+df_ligand_center<-read.csv("ligand_center.csv",stringsAsFactors = F)
+v_receptor<-unique(df_ligand_center$receptor)
+df_active_center_all<-read.csv("active_center.csv",stringsAsFactors = F)
+#df_active_center<-left_join(df_active_center,df_ligand_center,by=c("type","receptor"))
+j<-1
 for (j in 1:length(v_receptor)) {
   pdb<-read.pdb(paste0("receptor_start/",v_receptor[j],".pdb"))
   df_pdb<-pdb$atom
   df_pdb<-df_pdb%>%filter(elety=="CA")
+  df_active_center<-df_active_center_all%>%filter(receptor==v_receptor[j])
   df_doking<-data.frame(matrix(nrow = length(unique(df_active_center$type)),ncol = 7))
   colnames(df_doking)<-c('type',"x_len","x_mean","y_len","y_mean","z_len","z_mean")
   df_doking$type<-unique(df_active_center$type)
 
   for (i in 1:nrow(df_doking)) {
     df_active<-df_active_center%>%filter(type==df_doking$type[i])
+    
     df_pdb_a<-df_pdb[df_pdb$resno%in%df_active$resno,]
     df_doking$x_len[i]<-max(df_pdb_a$x)-min(df_pdb_a$x)+10
     df_doking$x_mean[i]<-(max(df_pdb_a$x)+min(df_pdb_a$x))/2
@@ -35,6 +41,9 @@ for (j in 1:length(v_receptor)) {
     df_doking$z_len[i]<-max(df_pdb_a$z)-min(df_pdb_a$z)+10
     df_doking$z_mean[i]<-(max(df_pdb_a$z)+min(df_pdb_a$z))/2
   }
+  df_doking$x_len[df_doking$x_len>30]<-30
+  df_doking$y_len[df_doking$y_len>30]<-30
+  df_doking$z_len[df_doking$z_len>30]<-30
   a<-list.files("ligand/")
   ligand<-c()
   for (i in 1:length(a)) {
@@ -70,16 +79,14 @@ for (j in 1:length(v_receptor)) {
       }
     }
   }
+
+  df_conf_add<-data.frame(matrix(ncol=ncol(df_conf),nrow=1))
+  colnames(df_conf_add)<-colnames(df_conf)
+  df_conf_add[1,1]<-paste0("cd ",part_name)
+  df_conf<-rbind(df_conf_add,df_conf)
   df_conf[is.na(df_conf)]<-""
-  write.csv(df_conf,paste0("script/",v_receptor[j],"_readme.txt"),row.names = F)
+  write.table(df_conf,paste0("script/",v_receptor[j],"_readme.txt"),row.names = F,quote = F,col.names = F,sep = "\n")
+
+  system(command = paste0("chmod +x ",part_name,"script/",v_receptor[j],"_readme.txt "),ignore.stdout=T,wait = T)
+  system(command = paste0(part_name,"script/",v_receptor[j],"_readme.txt"),ignore.stdout=T,wait = T)
 }
-df_conf<-read.csv(paste0("script/",v_receptor[1],"_readme.txt"),stringsAsFactors = F)
-for (j in 2:length(v_receptor)) {
-  df_conf_add<-read.csv(paste0("script/",v_receptor[j],"_readme.txt"),stringsAsFactors = F)
-  df_conf<-rbind(df_conf,df_conf_add)
-}
-df_conf_add<-data.frame(matrix(ncol=ncol(df_conf),nrow=1))
-colnames(df_conf_add)<-colnames(df_conf)
-df_conf_add[1,1]<-paste0("cd ",part_name)
-df_conf<-rbind(df_conf_add,df_conf)
-write.table(df_conf,paste0("script_fin.txt"),row.names = F,quote = F,col.names = F,sep = "\n")
