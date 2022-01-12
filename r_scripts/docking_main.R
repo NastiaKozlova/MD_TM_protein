@@ -13,8 +13,8 @@ system(command = paste0("cp -r ",part_start,"/start/ligand_start/ ",part_name),i
 v_ligand<-list.files(paste0("start/ligand_start/"))
 a<-c()
 for (i in 1:length(v_ligand)) {
-    b<-strsplit(v_ligand[i],split = ".",fixed = T)[[1]][1]
-    a<-c(a,b)
+  b<-strsplit(v_ligand[i],split = ".",fixed = T)[[1]][1]
+  a<-c(a,b)
 }
 v_ligand<-a
 df_ligand<-data.frame(matrix(ncol=2,nrow=length(v_ligand)))
@@ -30,7 +30,6 @@ if (!dir.exists(paste0(part_name,"receptor/"))){dir.create(paste0(part_name,"rec
 if (!dir.exists(paste0(part_name,"active_center/"))){dir.create(paste0(part_name,"active_center/"))}
 df_all_systems<-read.csv(paste0(part_start,"start/all_systems.csv"),stringsAsFactors = F)
 system(command = paste0("cp -r ",part_start,"/MD_analysis/docking/receptor_start/ ",part_name),ignore.stdout=T,wait = T)
-system(command = paste0("cp ",part_start,"start/active_center.csv ",part_name),ignore.stdout=T,wait = T)
 df_receptor<-df_all_systems%>%mutate(receptor=paste0("charmm-gui-",system_name))
 df_receptor<-df_receptor%>%mutate(c="C")
 
