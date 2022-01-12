@@ -30,6 +30,7 @@ if (!dir.exists(paste0(part_name,"receptor/"))){dir.create(paste0(part_name,"rec
 if (!dir.exists(paste0(part_name,"active_center/"))){dir.create(paste0(part_name,"active_center/"))}
 df_all_systems<-read.csv(paste0(part_start,"start/all_systems.csv"),stringsAsFactors = F)
 system(command = paste0("cp -r ",part_start,"/MD_analysis/docking/receptor_start/ ",part_name),ignore.stdout=T,wait = T)
+system(command = paste0("cp ",part_start,"start/active_center.csv ",part_name),ignore.stdout=T,wait = T)
 df_receptor<-df_all_systems%>%mutate(receptor=paste0("charmm-gui-",system_name))
 df_receptor<-df_receptor%>%mutate(c="C")
 
