@@ -49,8 +49,6 @@ write.csv(df_ligand_center,paste0(part_name,"ligand_center.csv"),row.names =  F)
 
 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_script.R ",part_start),ignore.stdout=T,wait = T)
-system(command = paste0("chmod +x ",part_name,"script_fin.txt "),ignore.stdout=T,wait = T)
-system(command = paste0(part_name,"script_fin.txt"),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/convert_pdbqt_to_pdb.R ",part_name),ignore.stdout=T,wait = T)
 system(command = paste0("chmod +x ",part_name,"convert_pdbqt_to_pdb.py "),ignore.stdout=T,wait = T)
 system(command = paste0("python3 ", part_name,"convert_pdbqt_to_pdb.py"),ignore.stdout=T,wait = T)
