@@ -13,8 +13,8 @@ system(command = paste0("cp -r ",part_start,"/start/ligand_start/ ",part_name),i
 v_ligand<-list.files(paste0("start/ligand_start/"))
 a<-c()
 for (i in 1:length(v_ligand)) {
-    b<-strsplit(v_ligand[i],split = ".",fixed = T)[[1]][1]
-    a<-c(a,b)
+  b<-strsplit(v_ligand[i],split = ".",fixed = T)[[1]][1]
+  a<-c(a,b)
 }
 v_ligand<-a
 df_ligand<-data.frame(matrix(ncol=2,nrow=length(v_ligand)))
