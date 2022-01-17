@@ -6,9 +6,12 @@ library(readr)
 library(dplyr)
 library(ggplot2)
 v_rmsd<-4
+#part_start<-part_name
 setwd(part_start)
-df_all<-read.csv(paste0(part_start,"df_all.csv"),stringsAsFactors = F)
+df_all<-read.csv(paste0(part_start,"ligand_center.csv"),stringsAsFactors = F)
+colnames(df_all)<-c("center","receptor","ligand")
 df_all<-df_all%>%mutate(name=paste0(receptor,"_",ligand,"_",center))
+write.csv(df_all,"df_all.csv",row.names = F)
 num_model<-1
 max_num<-5
 if (!file.exists("din/")) {dir.create("din/")}
@@ -36,14 +39,14 @@ df_topology<-df_topology%>%filter(exists=="YES")
 #print(nrow(df_topology))
 df_topology<-left_join(df_topology,df_all,by="name")
 df_topology<-df_topology%>%filter(!is.na(receptor))
-df_log<-read_table(paste0("log/",df_topology$name_log[1],".log"),col_names = F,
-                   skip = 25,n_max =9,comment = "-",progress = F)
+
+df_log<-read.csv(paste0("din/log/",df_topology$name_log[1],".csv"),header = F)
+
 colnames(df_log)<-c("mode",   "affinity", "rmsd", "rmsd_from_BM")
 df_log<-df_log%>%mutate(name_files=df_topology$name_log[1])
 
 for (i in 2:nrow(df_topology)) {
-  df_log_add<-read_table(paste0("log/",df_topology$name_log[i],".log"),col_names = F,
-                         skip = 25,n_max = 9,comment = "-",progress = F)
+  df_log_add<-read.csv(paste0("din/log/",df_topology$name_log[i],".csv"),header = F)
   colnames(df_log_add)<-c("mode",   "affinity", "rmsd", "rmsd_from_BM")
   df_log_add<-df_log_add%>%mutate(name_files=df_topology$name_log[i])
   df_log<-rbind(df_log,df_log_add)
