@@ -3,7 +3,7 @@ if(!dir.exists(paste0(part_start,"MD_analysis/docking/docking_first/"))){dir.cre
 
 library(dplyr)
 library(bio3d)
-library(readr)
+#library(readr)
 filter_structure<-function(df_pdb,x_min,x_max,y_min,y_max,z_min,z_max){
   df_pdb_filtered<-df_pdb%>%filter(x>x_min)
   df_pdb_filtered<-df_pdb_filtered%>%filter(x<x_max)

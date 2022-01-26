@@ -3,6 +3,7 @@ library(ggplot2)
 library(bio3d)
 library(dplyr)
 setwd(part_start)
+if (!dir.exists(paste0(part_start,"din/"))){dir.create(paste0(part_start,"din/"))}
 if (!dir.exists(paste0(part_start,"din/log/"))){dir.create(paste0(part_start,"din/log/"))}
 df_convert<-paste0('import glob\n\n',
                    'folder_log = "',part_start,'log/*.log"\n',

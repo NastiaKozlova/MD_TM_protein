@@ -2,7 +2,7 @@ part_start <- commandArgs(trailingOnly=TRUE)
 #create new log file and save pdb_second
 
 library(bio3d)
-library(readr)
+#library(readr)
 library(dplyr)
 library(ggplot2)
 v_rmsd<-4
