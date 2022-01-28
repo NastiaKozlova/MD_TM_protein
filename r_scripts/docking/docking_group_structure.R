@@ -2,7 +2,7 @@ part_start <- commandArgs(trailingOnly=TRUE)
 #group ligand structures
 #part_start<-part_name
 library(bio3d)
-library(readr)
+#library(readr)
 library(dplyr)
 library(ggplot2)
 v_rmsd<-4

@@ -2,7 +2,6 @@ part_start <- commandArgs(trailingOnly=TRUE)
 #part_start<-part_name
 setwd(part_start)
 library(bio3d)
-library(readr)
 library(dplyr)
 library(ggplot2)
 v_rmsd<-4

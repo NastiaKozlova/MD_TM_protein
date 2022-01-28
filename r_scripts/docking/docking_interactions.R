@@ -10,12 +10,19 @@ setwd(part_start)
 main_part<-list.files("interaction")
 if (!dir.exists("din/interaction_fin/")){dir.create("din/interaction_fin/")}
 i<-1
-j<-643
+j<-1
 df_topology<-read.csv("din/df_topology.csv",stringsAsFactors = F)
+v_name<-list.files(paste0("din/interaction/"))
+df_topology<-df_topology[df_topology$name%in%v_name,]
+df_topology<-df_topology
+df_topology$name_log<-NULL
+df_topology$run<-NULL
+df_topology<-unique(df_topology)
 for (j in 1:nrow(df_topology)) {
   pdb<-read.pdb(paste0("receptor_start/",df_topology$receptor[j],".pdb"))
   v_groups<-list.files(paste0("din/interaction/",df_topology$name[j]))
   if(length(v_groups)>0){
+    print(j)
     for (i in 1:length(v_groups)) {
       v_frame<-list.files(paste0("din/interaction/",df_topology$name[j],"/",v_groups[i]))
       df_pdb<-pdb$atom
