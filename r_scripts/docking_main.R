@@ -60,7 +60,8 @@ system(command = paste0("python3 ", part_name,"prepare_log_csv.py"),ignore.stdou
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_pre_analysis.R ",part_name),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_group_structure.R ",part_name),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_interactions.R ",part_name),ignore.stdout=T,wait = T)
-#part_start<-paste0(part_start,"MD_analysis/")
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/merge_docking_parts.R ",part_name),ignore.stdout=T,wait = T)
+
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/analysis.R ",part_name),ignore.stdout=T,wait = T)
 
 df_fin<-read.csv(paste0(part_name,"din/log_fin.csv"),stringsAsFactors =  F)
@@ -76,5 +77,5 @@ ggsave(p,filename = paste0(part_start,"plot/ligand_energy.png"), width = 20, hei
 p<-ggplot(df_fin)+
   geom_freqpoly(aes(x=affinity,colour=group),binwidth=0.3)+
   facet_grid(system~ligand)+
-  theme_bw()+guides(colour = "none")
+  theme_bw()+guides(colour = "none")+theme_bw()
 ggsave(p,filename = paste0(part_start,"plot/ligand_energy_reverce.png"), width = 20, height = 15, units = c("cm"), dpi = 200 ) 
