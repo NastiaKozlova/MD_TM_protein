@@ -112,7 +112,7 @@ df_structure_RMSD<-df_structure_RMSD%>%mutate(size_of_group=n())
 write.csv(df_structure_RMSD,"df_merge_structure_log.csv",row.names = F)
 
 a<-seq(from=min(df_structure_RMSD$affinity),to=max(df_structure_RMSD$affinity),by=0.1)
-
-p<-ggplot(data=df_structure_RMSD,aes(x=affinity))+geom_freqpoly(binwidth=0.1)+facet_grid(number~ligand)+
+df_structure_RMSD<-df_structure_RMSD%>%mutate(number=as.character(number))
+p<-ggplot(data=df_structure_RMSD)+geom_freqpoly(aes(x=affinity,colour=number),binwidth=0.1)+facet_grid(receptor~ligand)+
   scale_x_continuous(breaks=a,labels=a)+theme_bw()
 ggsave(p,filename = paste0("test.png"), width = 20, height = 15, units = c("cm"), dpi = 200 )

@@ -1,13 +1,52 @@
-part_start <- commandArgs(trailingOnly=TRUE)
+part_name <- commandArgs(trailingOnly=TRUE)
 library(bio3d)
-library(readr)
 library(dplyr)
 library(ggplot2)
 v_rmsd<-4
 
-setwd(part_start)
+setwd(part_name)
 
 main_part<-list.files("interaction")
+
+df_all<-read.csv(paste0(part_name,"din/df_merge_structure_log.csv"),stringsAsFactors = F)
+
+
+j<-1
+setwd("din")
+if (!dir.exists(paste0("interaction/"))) { dir.create(paste0("interaction/"))}
+i<-1
+for (j in 1:nrow(df_all)) {
+  if(file.exists(paste0("groups_fin/",df_all$ligand_center[j],".csv"))){
+    
+    a<-read.pdb(paste0(part_name,"receptor_start/",df_all$receptor[i],".pdb"))
+    b<-read.pdb(paste0("pdb_second/",df_all$ligand_center[j],"/",df_all$models.y[j]))
+    bs<-binding.site(a,b)
+    m<-bs$resnames
+    a<-c()
+    b<-c()
+    y<-1
+    for (y in 1:length(m)) {
+      p<-strsplit(m[y],split = " ",fixed = T)[[1]][2]
+      a<-c(a,p)
+      p<-strsplit(m[y],split = " ",fixed = T)[[1]][1]
+      b<-c(b,p)
+    }
+    a<-as.numeric(a)
+    df_protein<-data.frame(matrix(ncol=2,nrow=length(a)))
+    colnames(df_protein)<-c("resid","resno")
+    df_protein$resid<-a
+    df_protein$resno<-b
+    if (!dir.exists(paste0("interaction/",df_all$receptor_ligand[j]))) { dir.create(paste0("interaction/",df_all$receptor_ligand[j]))}
+    if (!dir.exists(paste0("interaction/",df_all$receptor_ligand[j],"/",df_all$size_of_group[j]))) {
+      dir.create(paste0("interaction/",df_all$receptor_ligand[j],"/",df_all$size_of_group[j]))}
+    if (!dir.exists(paste0("interaction/",df_all$receptor_ligand[j],"/",df_all$size_of_group[j],"/",df_all$size_of_group[j],"/"))) {
+      dir.create(paste0("interaction/",df_all$receptor_ligand[j],"/",df_all$size_of_group[j],"/",df_all$center[j],"/"))}
+    write.csv(df_protein,
+              paste0("interaction/",df_all$receptor_ligand[j],"/",df_all$size_of_group[j],"/",df_all$center[j],"/",df_all$models.y[j],".csv"),
+              row.names = F)
+  }
+}
+
 if (!dir.exists("din/interaction_fin/")){dir.create("din/interaction_fin/")}
 i<-1
 j<-1
@@ -24,7 +63,7 @@ for (j in 1:nrow(df_topology)) {
   if(length(v_groups)>0){
     print(j)
     for (i in 1:length(v_groups)) {
-      v_frame<-list.files(paste0("din/interaction/",df_topology$name[j],"/",v_groups[i]))
+      v_frame<-list.files(paste0("din/interaction/",df_all$receptor_ligand[j]))
       df_pdb<-pdb$atom
       df_pdb<-df_pdb%>%filter(elety=="CA")
       df_pdb<-df_pdb%>%mutate(number_interactions=0)
@@ -34,7 +73,7 @@ for (j in 1:nrow(df_topology)) {
       df_pdb<-df_pdb%>%mutate(grops=v_groups[i])
       df_pdb<-df_pdb%>%mutate(grops_number=i)
       for (q in 1:length(v_frame)) {
-        df_interaction<-read.csv(paste0("din/interaction/",df_topology$name[j],"/",v_groups[i],"/",v_frame[q]),stringsAsFactors = F)
+        df_interaction<-read.csv(paste0("interaction/",df_all$receptor_ligand[j],"/",df_all$size_of_group[j],"_",df_all$center[j],"/",df_all$models.y[j],".csv"),stringsAsFactors = F)
         colnames(df_interaction)<-c(colnames(df_interaction)[2],colnames(df_interaction)[1])
         df_pdb$number_interactions[df_pdb$resno%in%df_interaction$resno]<-df_pdb$number_interactions[df_pdb$resno%in%df_interaction$resno]+1
       }
