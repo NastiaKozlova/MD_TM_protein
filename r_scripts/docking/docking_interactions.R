@@ -116,7 +116,7 @@ print(nrow(df_pdb))
 df_pdb<-df_pdb%>%mutate(sorter=paste(size_of_group,receptor_ligand))
 df_pdb<-df_pdb%>%group_by(sorter)%>%
 p<-ggplot(data=df_pdb)+geom_freqpoly(aes(x=total_persent_interactions))+theme_bw()+facet_grid(size_of_group~receptor_ligand)
-ggsave(p,filename = paste0(part_name,"tost.png"), width = 12, height = 12, units = c("cm"), dpi = 1000 ) 
+ggsave(p,filename = paste0(part_name,"interaction_ligand_receptor.png"), width = 12, height = 12, units = c("cm"), dpi = 1000 ) 
 
 
 df_pdb<-df_pdb%>%mutate(aminoacids=paste(resno,resid))

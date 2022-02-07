@@ -123,4 +123,4 @@ a<-seq(from=min(df_structure_RMSD$affinity),to=max(df_structure_RMSD$affinity),b
 df_structure_RMSD<-df_structure_RMSD%>%mutate(number=as.character(number))
 p<-ggplot(data=df_structure_RMSD)+geom_freqpoly(aes(x=affinity,colour=number),binwidth=0.1)+facet_grid(receptor~ligand)+
   scale_x_continuous(breaks=a,labels=a)+theme_bw()+guides(color = "none", size = "none")
-ggsave(p,filename = paste0("test.png"), width = 20, height = 15, units = c("cm"), dpi = 200 )
+ggsave(p,filename = paste0("energy_ligand_receptor_interactions.png"), width = 20, height = 15, units = c("cm"), dpi = 200 )

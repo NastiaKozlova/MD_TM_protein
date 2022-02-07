@@ -1,12 +1,13 @@
 part_start <- commandArgs(trailingOnly=TRUE)
 setwd(part_start)
 library(dplyr)
-library(ggplot2)
+library(Peptides)
 library(cowplot)
 library(bio3d)
 library(bio3d)
 library(ggplot2)
 library(dplyr)
+
 test_10<-seq(from=0,to=1000,by=10)
 v_pallete<-c("sheet"="#BBBBBB","helix"="#333333")
 df_topology<-read.csv(paste0(part_start,"start/df_topology.csv"),stringsAsFactors =  F)
@@ -21,9 +22,14 @@ v_part<-list.files(paste0(part,"din"))
 main_part<-c(8)
 i<-nrow(df_all_systems)
 main<-main_part[2]
+
+
+if (dir.exists(paste0(part,"fin_data"))) { system(command = paste0("rm -r ",part,"fin_data"))}
+if (dir.exists(paste0(part,"fin_plots"))) { system(command = paste0("rm -r ",part,"fin_plots"))}
 if (!dir.exists(paste0(part,"fin_data"))) {dir.create(paste0(part,"fin_data"))}
 if (!dir.exists(paste0(part,"fin_data/frame_data"))) {dir.create(paste0(part,"fin_data/frame_data"))}
 if (!dir.exists(paste0(part,"fin_data/str_data"))) {dir.create(paste0(part,"fin_data/str_data"))}
+if (!dir.exists(paste0(part,"fin_data/aminoacids_interactions/"))){dir.create(paste0(part,"fin_data/aminoacids_interactions/"))}
 
 if (!dir.exists(paste0(part,"fin_plots"))) {dir.create(paste0(part,"fin_plots"))}
 if (!dir.exists(paste0(part,"fin_plots/str_plots"))) {dir.create(paste0(part,"fin_plots/str_plots"))}
@@ -52,19 +58,6 @@ for (i in 1:nrow(df_all_systems)) {
         colnames(df_Energy_protein_water)<-c(colnames(df_Energy_protein_water)[1:2],paste0("protein_water_",colnames(df_Energy_protein_water)[3:ncol(df_Energy_protein_water)]))
         df_Energy_protein_lipids<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/Energy/protein_lipid_energy_",main,".txt"), header=T, na.strings ="", stringsAsFactors= F)
         colnames(df_Energy_protein_lipids)<-c(colnames(df_Energy_protein_lipids)[1:2],paste0("protein_lipid_",colnames(df_Energy_protein_lipids)[3:ncol(df_Energy_protein_lipids)]))
-        
-        
-        #df_Energy_EMD4_water<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/Energy/EMD4_water_",main,".txt"), header=T, na.strings ="", stringsAsFactors= F)
-        #colnames(df_Energy_EMD4_water)<-c(colnames(df_Energy_EMD4_water)[1:2],paste0("EMD4_water_",colnames(df_Energy_EMD4_water)[3:ncol(df_Energy_EMD4_water)]))
-        #df_Energy_EMD4<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/Energy/EMD4_",main,".txt"), header=T, na.strings ="", stringsAsFactors= F)
-        #colnames(df_Energy_EMD4)<-c(colnames(df_Energy_EMD4)[1:2],paste0("EMD4_",colnames(df_Energy_EMD4)[3:ncol(df_Energy_protein)]))
-        #df_Energy_epitop_water<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/Energy/epitop_water_",main,".txt"), header=T, na.strings ="", stringsAsFactors= F)
-        #colnames(df_Energy_epitop_water)<-c(colnames(df_Energy_epitop_water)[1:2],paste0("epitop_water_",colnames(df_Energy_epitop_water)[3:ncol(df_Energy_epitop_water)]))
-        #df_Energy_epitop<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/Energy/epitop_",main,".txt"), header=T, na.strings ="", stringsAsFactors= F)
-        #colnames(df_Energy_epitop)<-c(colnames(df_Energy_epitop)[1:2],paste0("epitop_",colnames(df_Energy_epitop)[3:ncol(df_Energy_epitop)]))
-        
-        #      df_fin<-df_Energy_protein%>%mutate(frame=Frame)
-        
         df_fin<-full_join(df_ramachadran,df_Energy_protein,by=c("frame"="Frame"))
         df_fin$time<-NULL
         df_fin$Time<-NULL
@@ -74,18 +67,6 @@ for (i in 1:nrow(df_all_systems)) {
         df_fin<-left_join(df_fin,df_Energy_protein_lipids,by=c("frame"="Frame"))
         df_fin$Time<-NULL
         df_fin$time<-NULL
-#        df_fin<-left_join(df_fin,df_Energy_epitop,by=c("frame"="Frame"))
-#        df_fin$Time<-NULL
-#        df_fin$time<-NULL
-#        df_fin<-left_join(df_fin,df_Energy_epitop_water,by=c("frame"="Frame"))
-#        df_fin$Time<-NULL
-#        df_fin$time<-NULL
-#        df_fin<-left_join(df_fin,df_Energy_EMD4,by=c("frame"="Frame"))
-#        df_fin$Time<-NULL
-#        df_fin$time<-NULL
-#        df_fin<-left_join(df_fin,df_Energy_EMD4_water,by=c("frame"="Frame"))
-#        df_fin$Time<-NULL
-#        df_fin$time<-NULL
         df_SASA<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/SASA/",main,".txt"), sep="", header=F, na.strings ="", stringsAsFactors= F)
          colnames(df_SASA)<-c("frame","SASA_protein")
         df_fin<-left_join(df_fin,df_SASA,by=c("frame"))
@@ -93,21 +74,9 @@ for (i in 1:nrow(df_all_systems)) {
         df_fin$time<-NULL
         df_RMSD_protein<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/RMSD/",main,".txt"), sep="", header=F, na.strings ="", stringsAsFactors= F)
         colnames(df_RMSD_protein)<-c("frame","RMSD_protein")
-#        df_RMSD_epitop<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/RMSD/epitop_",main,".txt"), sep="", header=F, na.strings ="", stringsAsFactors= F)
-#        colnames(df_RMSD_epitop)<-c("frame","RMSD_epitop")
-#        df_RMSD_EMD4<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/RMSD/EM4_",main,".txt"), sep="", header=F, na.strings ="", stringsAsFactors= F)
-#        colnames(df_RMSD_EMD4)<-c("frame","RMSD_EMD4")
-        
         df_fin<-left_join(df_fin,df_RMSD_protein,by=c("frame"))
         df_fin$Time<-NULL
         df_fin$time<-NULL 
-#        df_fin<-left_join(df_fin,df_RMSD_epitop,by=c("frame"))
-#        df_fin$Time<-NULL
-#        df_fin$time<-NULL 
-#        df_fin<-left_join(df_fin,df_RMSD_EMD4,by=c("frame"))
-#        df_fin$Time<-NULL
-#        df_fin$time<-NULL 
-        #      df_fin<-df_fin%>%filter(frame>=20)
         df_fin<-df_fin%>%mutate(frame=frame/10)
         write.csv(df_fin,paste0(part,"fin_data/frame_data/",df_all_systems$fin_name[i],"_",main,".csv"),row.names = F)
         p_second<-ggplot(data = df_second_structure)+
@@ -227,14 +196,12 @@ for (i in 1:nrow(df_all_systems)) {
   }
 }
 i<-1
-if(!dir.exists(paste0(part,"fin_data/aminoacids_interactions/"))){dir.create(paste0(part,"fin_data/aminoacids_interactions/"))}
 for (i in 1:nrow(df_all_systems)) {
   for (main in main_part) {
     if (file.exists(paste0(part,"din/",df_all_systems$fin_name[i],"/",main,"_time_Ramachadran.csv"))){
       df_ramachadran_time <-read.csv(paste0(part,"din/",df_all_systems$fin_name[i],"/",main,"_time_Ramachadran.csv"),stringsAsFactors = F)
       if(file.exists(paste0(part_start,"MD_analysis/docking/receptor_start/",df_all_systems$fin_name[i],".pdb"))){
-        pdb<-read.pdb(paste0(part_start,"MD_analysis/docking/receptor_start/",df_all_systems$fin_name[i],".pdb"))  
-
+        pdb<-read.pdb(paste0(part_start,"MD_analysis/docking/receptor_start/",df_all_systems$fin_name[i],".pdb")) 
         df_seq<-pdb$atom
         df_seq<-df_seq%>%filter(elety=="CA")
         df_seq<-df_seq%>%select(resno,resid, x, y, z,type)
@@ -280,30 +247,26 @@ for (i in 1:nrow(df_all_systems)) {
         
         df_seq<-left_join(df_seq,df_ring,by=c("resno"="number.x"))
         df_seq$importance_ring[is.na(df_seq$importance_ring)]<-0
-        
+        df_seq<-df_seq%>%mutate(charge=charge(amino,pH = 7.4,pKscale = "Stryer"))
+        df_seq<-df_seq%>%mutate(hydrophobicity=hydrophobicity(amino,scale = "Engelman"))
         write.csv(df_seq,paste0(part,"fin_data/str_data/",df_all_systems$fin_name[i],".csv"),row.names = F)
         p_conserv<-ggplot(data = df_seq)+
-#          geom_rect(aes(xmin=seq_beg, xmax=seq_end, ymin=-Inf, ymax=Inf, fill=type),data=df_topology)+
           geom_point(aes(x = resno, y = conservative,colour=topology))+
           scale_x_continuous(breaks = test_10, labels =  test_10)+
           theme_bw()#+coord_flip()
         p_ramachadran<-ggplot(data = df_seq)+
-#          geom_rect(aes(xmin=seq_beg, xmax=seq_end, ymin=-Inf, ymax=Inf, fill=type),data=df_topology)+
           geom_point(aes(x = resno, y = ramachadran,colour=topology))+
           scale_x_continuous(breaks = test_10, labels =  test_10)+
           theme_bw()#+coord_flip()
         p_RMSF<-ggplot(data = df_seq)+
- #         geom_rect(aes(xmin=seq_beg, xmax=seq_end, ymin=-Inf, ymax=Inf, fill=type),data=df_topology)+
           geom_point(aes(x = resno, y = RMSF,colour=topology))+
           scale_x_continuous(breaks = test_10, labels =  test_10)+
           theme_bw()
         p_hbonds<-ggplot(data = df_seq)+
-#          geom_rect(aes(xmin=seq_beg, xmax=seq_end, ymin=-Inf, ymax=Inf, fill=type),data=df_topology)+
           geom_point(aes(x = resno, y = hbonds,colour=topology))+
           scale_x_continuous(breaks = test_10, labels =  test_10)+
           theme_bw()
         p_importance_ring<-ggplot(data = df_seq)+
- #         geom_rect(aes(xmin=seq_beg, xmax=seq_end, ymin=-Inf, ymax=Inf, fill=type),data=df_topology)+
           geom_point(aes(x = resno, y = importance_ring,colour=topology))+
           scale_x_continuous(breaks = test_10, labels =  test_10)+
           theme_bw()
@@ -323,8 +286,7 @@ for (i in 1:nrow(df_all_systems)) {
     
     if(file.exists(paste0(part_start,"MD_analysis/docking/docking_first/interaction_fin.csv"))){
       df_str<-read.csv(paste0(part,"fin_data/str_data/",df_all_systems$fin_name[i],".csv"),stringsAsFactors = )
-      df_docking<-read.csv(paste0(part_start,"MD_analysis/docking/docking_first/interaction_fin.csv"),stringsAsFactors = F)
-      df_docking<-df_docking%>%mutate(receptor=system)
+      df_docking<-read.csv(paste0(part_start,"MD_analysis/docking/docking_first//din/interaction_fin/",df_all_systems$fin_name[i],".csv"),stringsAsFactors = F)
       df_docking<-df_docking%>%filter(receptor==paste0(df_all_systems$fin_name[i]))
       df_docking<-df_docking%>%select(resno, number_interactions, receptor, center, ligand, grops, grops_number, persent_interactions, aminoacids)
       df_docking<-unique(df_docking)
