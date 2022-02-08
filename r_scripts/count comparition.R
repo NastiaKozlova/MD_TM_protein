@@ -3,9 +3,7 @@ library(dplyr)
 library(ggplot2)
 library(cowplot)
 library(bio3d)
-library(bio3d)
-library(ggplot2)
-library(dplyr)
+
 test_10<-seq(from=0,to=1000,by=10)
 
 part<-paste0(part_start,"MD_analysis/")
@@ -15,17 +13,14 @@ df_all_systems<-read.csv(paste0(part_start,"start/all_systems.csv"),stringsAsFac
 df_all_systems$system_name<-as.character(df_all_systems$system_name)
 df_all_systems<-df_all_systems%>%mutate(fin_name=paste0("charmm-gui-",system_name))
 v_part<-list.files(paste0(part,"din"))
-for (main in main_part) {
-  df_fin<-read.csv(paste0(part,"fin_data/frame_data/",df_all_systems$fin_name[1],"_",main,".csv"),stringsAsFactors = F)
-  df_fin<-df_fin%>%mutate(main=main)
-  df_fin<-df_fin%>%mutate(system=df_all_systems$fin_name[1])
-  for (i in 2:nrow(df_all_systems)) {
-    df_fin_add<-read.csv(paste0(part,"fin_data/frame_data/",df_all_systems$fin_name[i],"_",main,".csv"),stringsAsFactors = F)
-    df_fin_add<-df_fin_add%>%mutate(main=main)
-    df_fin_add<-df_fin_add%>%mutate(system=df_all_systems$fin_name[i])
-    df_fin<-rbind(df_fin,df_fin_add)
-  }
+df_fin<-read.csv(paste0(part,"fin_data/frame_data/",df_all_systems$fin_name[1],".csv"),stringsAsFactors = F)
+df_fin<-df_fin%>%mutate(system=df_all_systems$fin_name[1])
+for (i in 2:nrow(df_all_systems)) {
+  df_fin_add<-read.csv(paste0(part,"fin_data/frame_data/",df_all_systems$fin_name[i],".csv"),stringsAsFactors = F)
+  df_fin_add<-df_fin_add%>%mutate(system=df_all_systems$fin_name[i])
+  df_fin<-rbind(df_fin,df_fin_add)
 }
+
 df_fin<-df_fin%>%mutate(protein_protein_Total=protein_Total-protein_water_Total-protein_lipid_Total)
 df_fin<-left_join(df_fin,df_all_systems,by=c("system"="fin_name"))
 #df_fin<-df_fin%>%filter(frame>10)
@@ -51,3 +46,5 @@ p_all<-plot_grid(p_protein_lipid_histo+theme(legend.position = "none"),
                  rel_heights=c(1,1),
                  nrow=2,  labels = c("A","B","C","D"),align="hv",ncol = 2,axis="bt")
 p_test<-plot_grid(p_all,legend_test,nrow=2,rel_heights=c(1,0.1))
+ggsave(p_test,filename = paste0(part,"fin_plots/protein_energy_compation.png"), width = 15, height = 12, units = c("cm"), dpi = 1000 ) 
+

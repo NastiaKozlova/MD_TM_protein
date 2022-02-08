@@ -41,11 +41,11 @@ for (q in 1:nrow(df_all_systems)) {
       print(df_all_systems$fin_name[q])
       df_seq<-read.csv(paste0("fin_data/str_data/",df_all_systems$fin_name[q],".csv"),stringsAsFactors = F)
       df_ring<-read.csv(paste0("fin_data/aminoacids_interactions/",df_all_systems$fin_name[q],".csv"),stringsAsFactors = F)
-      df_ring<-df_ring%>%filter(persent_ring>0)
+      df_ring<-df_ring%>%filter(persent_intractions>0)
       df_ring<-left_join(df_ring,df_seq,by=c("number.x"="resno"))
       df_ring<-left_join(df_ring,df_seq,by=c("number.y"="resno"))
 
-      df_ring_sorted<-df_ring%>%filter(persent_ring>quantile(df_ring$persent_ring,probs = 0.75))
+      df_ring_sorted<-df_ring%>%filter(persent_intractions>quantile(df_ring$persent_intractions,probs = 0.75))
       df_ring_sorted<-df_ring_sorted%>%filter(abs(number.y-number.x)>5)
       df_ring<-df_ring%>%filter(abs(number.y-number.x)>5)
       df_interactions_TMD<-df_ring_sorted%>%filter(number.x<number.y)
@@ -96,7 +96,7 @@ for (q in 1:nrow(df_all_systems)) {
 
         p<-ggnet2(mm.net, color = mm.col[ mm.net %v% "topology" ],
                   label = T,
-                  edge.size = "persent_ring",
+                  edge.size = "persent_intractions",
                   size = 5, vjust = -0.6, mode = "fruchtermanreingold", label.size = 5)
         ggsave(p,filename = paste0("fin_plots/aminoacids_interactions/",df_all_systems$fin_name[q],"_",df_all_systems$Membrane[q],"_",df_all_systems$Structure[q],".png"), width = 30, height = 30, units = c("cm"), dpi = 200 ) 
       }
@@ -113,7 +113,7 @@ for (q in 1:nrow(df_all_systems)) {
         )
         p<-ggnet2(mm.net, color = mm.col[ mm.net %v% "topology" ],
                   label = T,
-                  edge.size = "persent_ring",
+                  edge.size = "persent_intractions",
                   node.size = "importance_ring", vjust = -0.6, mode = "fruchtermanreingold", label.size = 5)
         ggsave(p,filename = paste0("fin_plots/aminoacids_interactions_sort/",df_all_systems$fin_name[q],"_",df_all_systems$Membrane[q],"_",df_all_systems$Structure[q],".png"), width = 30, height = 30, units = c("cm"), dpi = 200 ) 
       }

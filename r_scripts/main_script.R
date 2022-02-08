@@ -50,7 +50,7 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/ring/ring2_g
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/find_conservative_aminoacids.R ",part_start),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/make_plots_RMSD_RMSF.R ",part_start),ignore.stdout=T,wait = T)
 # make random plot
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/count_compatition.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/count comparition.R ",part_start),ignore.stdout=T,wait = T)
 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/domain_interactions.R ",part_start),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/amino_analysis.R ",part_start),ignore.stdout=T,wait = T)
