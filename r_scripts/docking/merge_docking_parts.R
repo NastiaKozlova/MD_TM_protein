@@ -4,7 +4,7 @@ library(bio3d)
 library(dplyr)
 library(ggplot2)
 v_rmsd<-1
-group_size<-3
+group_size<-0
 setwd(part_name)
 df_all<-read.csv(paste0(part_name,"df_all.csv"),stringsAsFactors = F)
 df_all<-df_all%>%mutate(name=paste0(receptor,"_",ligand,"_",center))
