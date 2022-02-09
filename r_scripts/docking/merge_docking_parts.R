@@ -4,10 +4,12 @@ library(bio3d)
 library(dplyr)
 library(ggplot2)
 v_rmsd<-1
-group_size<-0
+
 setwd(part_name)
 df_all<-read.csv(paste0(part_name,"df_all.csv"),stringsAsFactors = F)
 df_all<-df_all%>%mutate(name=paste0(receptor,"_",ligand,"_",center))
+
+group_size<-round(nrow(df_all)/100,digits = 0)
 
 part<-paste0(part_name,"din/")
 setwd(part)
