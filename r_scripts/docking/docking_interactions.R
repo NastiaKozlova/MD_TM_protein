@@ -111,7 +111,5 @@ if(length(v_groups)>1){
 
 df_pdb<-df_pdb%>%filter(total_persent_interactions>0)
 
-#df_pdb<-df_pdb%>%filter(total_persent_interactions==100)
-
 p<-ggplot(data=df_pdb)+geom_freqpoly(aes(x=total_persent_interactions))+theme_bw()+facet_grid(size_of_group~receptor_ligand)
 ggsave(p,filename = paste0(part_name,"interaction_ligand_receptor.png"), width = 12, height = 12, units = c("cm"), dpi = 1000 ) 
