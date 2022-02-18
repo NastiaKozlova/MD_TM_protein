@@ -14,18 +14,18 @@ for (name in v_name) {
     }
   }
   #  grepl( df_tcl[1,i], "outputName", fixed = TRUE)
-}
-df_conf<-df_tcl
-i<-0
-df_conf[set_inputname,1]<-paste0("set inputname           step7_production;\n")
-df_conf[finish_file,1]<-paste0("outputName              step7.",i+1,"_production; # base name for output from this run\n")
-write.table(df_conf,paste0("MD/",name,"/namd/step7.",i+1,"_production.inp"),row.names=F,col.names=F,quote = F)
-i<-2
-for (i in 1:v_namd) {
+  
   df_conf<-df_tcl
+  i<-0
+  df_conf[set_inputname,1]<-paste0("set inputname           step7_production;\n")
   df_conf[finish_file,1]<-paste0("outputName              step7.",i+1,"_production; # base name for output from this run\n")
-  df_conf[set_inputname,1]<-paste0("set inputname           step7.",i,"_production;\n")
   write.table(df_conf,paste0("MD/",name,"/namd/step7.",i+1,"_production.inp"),row.names=F,col.names=F,quote = F)
+  for (i in 1:v_namd) {
+    df_conf<-df_tcl
+    df_conf[finish_file,1]<-paste0("outputName              step7.",i+1,"_production; # base name for output from this run\n")
+    df_conf[set_inputname,1]<-paste0("set inputname           step7.",i,"_production;\n")
+    write.table(df_conf,paste0("MD/",name,"/namd/step7.",i+1,"_production.inp"),row.names=F,col.names=F,quote = F)
+  }
 }
 df_namd<-data.frame(matrix(ncol=2,nrow = 1007))
 colnames(df_namd)<-c("comand","conf")
