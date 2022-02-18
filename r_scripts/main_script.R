@@ -16,6 +16,9 @@ if (!dir.exists(paste0(part_start,'MD_analysis/'))){dir.create(paste0(part_start
 #combine all dcd files of Productive MD runs 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/combine_dcd.R ",part_start),ignore.stdout=T,wait = T) 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/prepare_tcl_din.R ",part_start),ignore.stdout=T,wait = T) 
+if(file.exists("start/domains_of_interest.csv")){
+  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/prepare_tcl_domain_of_interest.R ",part_start),ignore.stdout=T,wait = T) 
+}
 #check installation of dssp
 #sudo apt-get install dssp may help
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/compare_second_str.R ",part_start),ignore.stdout=T,wait = T) 
