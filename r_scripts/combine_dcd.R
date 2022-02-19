@@ -17,7 +17,7 @@ for (j in 1:length(v_parta)) {
   
   if (!dir.exists(paste0(part,'/din'))){dir.create(paste0(part,'/din'))}
   if (!dir.exists(paste0(part,'/din/pdb_second'))){dir.create(paste0(part,'/din/pdb_second'))}
-
+  
   if (!dir.exists(paste0(part,'/din/RMSD'))){dir.create(paste0(part,'/din/RMSD'))}
   if (!dir.exists(paste0(part,'/din/RMSF'))){dir.create(paste0(part,'/din/RMSF'))}
   if (!dir.exists(paste0(part,'/din/SASA'))){dir.create(paste0(part,'/din/SASA'))}
@@ -34,21 +34,23 @@ for (j in 1:length(v_parta)) {
     }
   }
   df_tcl[p+2,1]<-paste0('set ref [atomselect top "protein and name CA" frame 0]\n',
-  'set sel [atomselect top "protein and name CA"]\n',
-  'set all [atomselect top all]\n',
-  'set n [molinfo top get numframes]\n',
-  'set fin [expr $n-1]\n',
-    'for { set i 1 } { $i < $n } { incr i } {\n',
-      '  $sel frame $i\n',
-      '  $all frame $i\n',
-      '  $all move [measure fit $sel $ref]\n',
-      '}\n')
+                        'set sel [atomselect top "protein and name CA"]\n',
+                        'set all [atomselect top all]\n',
+                        'set n [molinfo top get numframes]\n',
+                        'set fin [expr $n-1]\n',
+                        'for { set i 1 } { $i < $n } { incr i } {\n',
+                        '  $sel frame $i\n',
+                        '  $all frame $i\n',
+                        '  $all move [measure fit $sel $ref]\n',
+                        '}\n')
   df_tcl[p+3,1]<-paste0('animate write dcd step8.dcd waitfor all')
   df_tcl[p+4,1]<-paste0('mol delete all\n\nexit now')
   
   write.table(df_tcl,file =paste0(part_start,'MD_analysis/tcl/',parta,'_combine.tcl'),sep = ' ',na = '' ,row.names = F,col.names = F,quote = F)
   print( paste0('vmd -dispdev text -e ',part_start,'MD_analysis/tcl/',parta,'_combine.tcl'))
-  system(command = paste0('vmd -dispdev text -e ',part_start,'MD_analysis/tcl/',parta,'_combine.tcl'),ignore.stdout=T,wait = T) 
+  if(file.exists(paste0(part,'/namd/step7.1_production.dcd'))){
+    system(command = paste0('vmd -dispdev text -e ',part_start,'MD_analysis/tcl/',parta,'_combine.tcl'),ignore.stdout=T,wait = T) 
+  }
   #combine MD simulation dcd files
   df_tcl<-data.frame(matrix(nrow = 2,ncol = 2))
   df_tcl[1,1]<-paste0('cd ', part,'/namd/\n\npackage require animate\n')
@@ -63,5 +65,7 @@ for (j in 1:length(v_parta)) {
   
   write.table(df_tcl,file =paste0(part_start,'MD_analysis/tcl/',parta,'_combine_non_align.tcl'),sep = ' ',na = '' ,row.names = F,col.names = F,quote = F)
   print( paste0('vmd -dispdev text -e ',part_start,'MD_analysis/tcl/',parta,'_combine_non_align.tcl'))
-  system(command = paste0('vmd -dispdev text -e ',part_start,'MD_analysis/tcl/',parta,'_combine_non_align.tcl'),ignore.stdout=T,wait = T) 
+  if(file.exists(paste0(part,'/namd/step7.1_production.dcd'))){
+    system(command = paste0('vmd -dispdev text -e ',part_start,'MD_analysis/tcl/',parta,'_combine_non_align.tcl'),ignore.stdout=T,wait = T) 
+  }
 }
