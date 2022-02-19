@@ -5,10 +5,13 @@ library(bio3d)
 #library(readr)
 library(dplyr)
 library(ggplot2)
-v_rmsd<-4
+v_rmsd<-1
 setwd(part_name)
 part<-paste0(part_name,"din/")
 setwd(part)
+if (dir.exists(paste0("groups/"))) { system(command = paste0("rm -r ",part_name,"din/groups/"))}
+if (dir.exists(paste0("groups_fin/"))) {system(command = paste0("rm -r ",part_name,"din/groups_fin/"))}
+if (dir.exists(paste0("str_fin/"))) {system(command = paste0("rm -r ",part_name,"din/str_fin/"))}
 
 if (!dir.exists("groups")) {dir.create("groups")}
 
@@ -50,11 +53,11 @@ df_all<-df_all%>%mutate(name=paste0(receptor,"_",ligand,"_",center))
 #sort to grops
 i<-1
 for (i in 1:nrow(df_all)) {
-
+  
   if(file.exists(paste0("RMSD_analysis/",df_all$name[i],".csv"))){
     if (!dir.exists(paste0("groups/",df_all$name[i]))) {dir.create(paste0("groups/",df_all$name[i]))}
     df_RMSD_all<-read.csv(paste0("RMSD_analysis/",df_all$name[i],".csv"),stringsAsFactors = F)
-    df_RMSD_all<-df_RMSD_all%>%filter(RMSD<4)
+    df_RMSD_all<-df_RMSD_all%>%filter(RMSD<v_rmsd)
     df_RMSD_all<-df_RMSD_all%>%group_by(models.x)%>%mutate(number=n())
     df_RMSD_all<-ungroup(df_RMSD_all)                                             
     df_RMSD_all<-df_RMSD_all%>%filter(number>5)
@@ -99,7 +102,7 @@ for (i in 1:nrow(df_all)) {
     
     df_groups<-df_groups%>%mutate(group=v_groups[1])
     df_groups<-df_groups%>%mutate(ligand_center=df_all$name[i])
-
+    
     if (length(v_groups)>1) {
       for (j in 2:length(v_groups)) {
         df_groups_add<-read.csv(paste0("groups/",df_all$name[i],"/",v_groups[j]))
