@@ -6,10 +6,10 @@ v_rmsd<-4
 
 setwd(part_name)
 setwd("din")
-main_part<-list.files("interaction")
+
 
 df_all<-read.csv(paste0("df_merge_structure_log.csv"),stringsAsFactors = F)
-
+df_all<-df_all%>%mutate(receptor_ligand=paste0(receptor,"_",ligand))
 
 j<-1
 
@@ -21,6 +21,7 @@ if (!dir.exists(paste0("interaction/"))) { dir.create(paste0("interaction/"))}
 if (!dir.exists("interaction_TEMP/")){dir.create("interaction_TEMP/")}
 if (!dir.exists("interaction_fin/")){dir.create("interaction_fin/")}
 i<-1
+j<-1
 for (j in 1:nrow(df_all)) {
   if(file.exists(paste0("groups_fin/",df_all$ligand_center[j],".csv"))){
     
