@@ -86,13 +86,7 @@ for (q in 1:nrow(df_analysis)) {
       df_RMSD$name.x[df_RMSD$name.x%in%df_structure_RMSD_complex_test$name.x]<-NA
     }
   }
-  
-  
-  i<-1
   v_structure<-list.files(paste0("groups_merged/",df_analysis$receptor_ligand[q]))
-  if (!dir.exists(paste0("structure_merged/",df_analysis$receptor_ligand[q]))) {
-    dir.create(paste0("structure_merged/",df_analysis$receptor_ligand[q]))
-  }
   df_structure_RMSD_analysis_start<-read.csv(paste0("groups_merged/",df_analysis$receptor_ligand[q],"/",v_structure[1]))
   df_structure_RMSD_analysis_start<-df_structure_RMSD_analysis_start%>%filter(RMSD<0)
   for (j in 1:length(v_structure)) {
@@ -101,8 +95,6 @@ for (q in 1:nrow(df_analysis)) {
     write.pdb(pdb_1,paste0("structure_merged/",unique(df_structure_RMSD_analysis$name.x)))
     print(paste0(nrow(df_structure_RMSD_analysis_start)," ",nrow(df_structure_RMSD_analysis)))
     df_structure_RMSD_analysis_start<-rbind(df_structure_RMSD_analysis_start,df_structure_RMSD_analysis)
-    
-    
   }
   df_structure_RMSD_analysis_start<-df_structure_RMSD_analysis_start%>%group_by(name.x)%>%mutate(size_of_group=n())
   write.csv(df_structure_RMSD_analysis_start,paste0("fin_merged/",df_analysis$receptor_ligand[q],".csv"),row.names = F)
