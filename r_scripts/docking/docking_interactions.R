@@ -25,7 +25,7 @@ j<-1
 for (j in 1:nrow(df_all)) {
   if(file.exists(paste0("groups_fin/",df_all$ligand_center[j],".csv"))){
     
-    a<-read.pdb(paste0(part_name,"receptor_start/",df_all$receptor[i],".pdb"))
+    a<-read.pdb(paste0(part_name,"receptor_start/",df_all$receptor[j],".pdb"))
     b<-read.pdb(paste0("pdb_second/",df_all$ligand_center[j],"/",df_all$models.y[j]))
     bs<-binding.site(a,b)
     m<-bs$resnames
