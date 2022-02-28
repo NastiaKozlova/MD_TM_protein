@@ -57,3 +57,6 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/count compar
 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/domain_interactions.R ",part_start),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/amino_analysis.R ",part_start),ignore.stdout=T,wait = T)
+
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/fin_structure_prepare.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/atom_interactions.R ",part_start),ignore.stdout=T,wait = T)
