@@ -25,13 +25,12 @@ if(!dir.exists("complex_structure")){dir.create("complex_structure")}
 if(!dir.exists("plot_tcl")){dir.create("plot_tcl")}
 df_merge<-df_merge%>%mutate(complex_name=paste0(receptor,"_",ligand,"_",size_of_group))
 for (i in 1:nrow(df_merge)) {
-  
-#  df_interactions<-read.csv(paste0("interaction_fin/",df_merge$receptor[i],"_",df_merge$ligand[i],".csv"),stringsAsFactors = F)
-#  df_interactions<-df_interactions%>%filter(total_persent_interactions>0)
-#  df_interactions<-df_interactions%>%select(resid,resno,receptor,ligand,size_of_group,total_persent_interactions)
-#  df_interactions<-unique(df_interactions)
-#  df_merge_TEMP<-df_merge[i,]
-#  df_interactions_TEMP<-semi_join(df_interactions,df_merge_TEMP,by = c("receptor", "ligand", "size_of_group"))
+  df_interactions<-read.csv(paste0("interaction_fin/",df_merge$receptor[i],"_",df_merge$ligand[i],".csv"),stringsAsFactors = F)
+  df_interactions<-df_interactions%>%filter(total_persent_interactions>0)
+  df_interactions<-df_interactions%>%select(resid,resno,receptor,ligand,size_of_group,total_persent_interactions)
+  df_interactions<-unique(df_interactions)
+  df_merge_TEMP<-df_merge[i,]
+  df_interactions_TEMP<-semi_join(df_interactions,df_merge_TEMP,by = c("receptor", "ligand", "size_of_group"))
   receptor_name<-paste0(part_start,"MD_analysis/docking/docking_first/receptor_start/",df_merge$receptor[i],".pdb")
   ligand_name<-paste0(part_name,"str_fin/",df_merge$name.x[i])
   protein<-read.pdb(receptor_name)
