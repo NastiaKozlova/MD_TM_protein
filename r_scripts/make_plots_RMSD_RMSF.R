@@ -366,6 +366,6 @@ p<-ggplot(data=df_structure_RMSD)+geom_freqpoly(aes(x=affinity,colour=number),bi
   scale_x_continuous(breaks=a,labels=a)+theme_bw()+guides(color = "none", size = "none")+
   labs(x="Affinity, kcal/mol")
 
-ggsave(p,filename = paste0(part,"fin_plots/energy_ligand_receptor_interactions.png"), width = 12, height = 12, units = c("cm"), dpi = 1000 ) 
+ggsave(p,filename = paste0(part,"fin_plots/energy_ligand_receptor_interactions.png"), width = 16, height = 12, units = c("cm"), dpi = 1000 ) 
 
 

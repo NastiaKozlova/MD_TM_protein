@@ -26,8 +26,6 @@ if(!dir.exists("plot_tcl")){dir.create("plot_tcl")}
 df_merge<-df_merge%>%mutate(complex_name=paste0(receptor,"_",ligand,"_",size_of_group))
 i<-1
 for (i in 1:nrow(df_merge)) {
-  df_hbonds<-read.csv(paste0(part_start,"MD_analysis/din/",df_merge$receptor[i],"/hbonds_8.csv"),stringsAsFactors = F)
-  df_hbonds<-df_hbonds%>%filter(persent>50)
   df_interactions<-read.csv(paste0("interaction_fin/",df_merge$receptor[i],"_",df_merge$ligand[i],".csv"),stringsAsFactors = F)
   df_interactions<-df_interactions%>%filter(total_persent_interactions>0)
   df_interactions<-df_interactions%>%select(resid,resno,receptor,ligand,size_of_group,total_persent_interactions)
@@ -54,8 +52,9 @@ for (i in 1:nrow(df_merge)) {
   
   df_test<-full_join(df_protein,df_ligand,by="type")
   df_test<-df_test%>%mutate(length=sqrt((x.x-x.y)^2+(y.x-y.y)^2+(z.x-z.y)^2))
-  df_test<-df_test%>%filter(length<12)
+  df_test<-df_test%>%filter(length<13.5)
   if (nrow(df_test)==0){
+    print(i)
     df_merge$name.x[i]<-NA
   }
 } 

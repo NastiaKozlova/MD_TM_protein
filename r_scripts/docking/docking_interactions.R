@@ -27,7 +27,7 @@ for (j in 1:nrow(df_all)) {
     
     a<-read.pdb(paste0(part_name,"receptor_start/",df_all$receptor[j],".pdb"))
     b<-read.pdb(paste0("pdb_second/",df_all$ligand_center[j],"/",df_all$models.y[j]))
-    bs<-binding.site(a,b)
+    bs<-binding.site(a,b,cutoff=12)
     m<-bs$resnames
     a<-c()
     b<-c()

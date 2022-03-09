@@ -3,7 +3,7 @@ part_name <- commandArgs(trailingOnly=TRUE)
 library(bio3d)
 library(dplyr)
 library(ggplot2)
-v_rmsd<-4
+v_rmsd<-3.5
 
 setwd(part_name)
 df_all<-read.csv(paste0(part_name,"df_all.csv"),stringsAsFactors = F)
@@ -40,17 +40,18 @@ for (q in 1:nrow(df_analysis)) {
   df_structure_RMSD_TEMP<-df_structure_RMSD_TEMP%>%filter(ligand==df_analysis$ligand[q])
   
   group_size<-round(nrow(df_structure_RMSD_TEMP)/100,digits = 0)
-  
-  df_structure_RMSD_analysis<-left_join(df_structure_RMSD_TEMP,df_structure_RMSD_TEMP,by=c("receptor","ligand","RMSD"))
-  df_structure_RMSD_analysis<-df_structure_RMSD_analysis%>%filter(name.x!=name.y)
-  
-  for (j in 1:nrow(df_structure_RMSD_analysis)) {
-    pdb_1<-read.pdb(paste0("str_fin/",df_structure_RMSD_analysis$name.x[j]))
-    pdb_2<-read.pdb(paste0("str_fin/",df_structure_RMSD_analysis$name.y[j]))
+  if(!file.exists(paste0("RMSD_merged/",df_analysis$receptor_ligand[q],".csv"))){
+    df_structure_RMSD_analysis<-left_join(df_structure_RMSD_TEMP,df_structure_RMSD_TEMP,by=c("receptor","ligand","RMSD"))
+    df_structure_RMSD_analysis<-df_structure_RMSD_analysis%>%filter(name.x!=name.y)
     
-    df_structure_RMSD_analysis$RMSD[j]<-rmsd(pdb_1,pdb_2)
+    for (j in 1:nrow(df_structure_RMSD_analysis)) {
+      pdb_1<-read.pdb(paste0("str_fin/",df_structure_RMSD_analysis$name.x[j]))
+      pdb_2<-read.pdb(paste0("str_fin/",df_structure_RMSD_analysis$name.y[j]))
+      
+      df_structure_RMSD_analysis$RMSD[j]<-rmsd(pdb_1,pdb_2)
+    }
+    write.csv(df_structure_RMSD_analysis,paste0("RMSD_merged/",df_analysis$receptor_ligand[q],".csv"),row.names=F)
   }
-  write.csv(df_structure_RMSD_analysis,paste0("RMSD_merged/",df_analysis$receptor_ligand[q],".csv"),row.names=F)
   df_structure_RMSD_analysis<-read.csv(paste0("RMSD_merged/",df_analysis$receptor_ligand[q],".csv"),stringsAsFactors = F)
   df_structure_RMSD_analysis<-df_structure_RMSD_analysis%>%filter(RMSD<v_rmsd)
   df_structure_RMSD_analysis<-df_structure_RMSD_analysis%>%group_by(name.x)%>%mutate(number=n())
@@ -120,4 +121,4 @@ write.csv(df_structure_RMSD,"df_merge_structure_log.csv",row.names = F)
 a<-seq(from=min(df_structure_RMSD$affinity),to=max(df_structure_RMSD$affinity),by=0.1)
 p<-ggplot(data=df_structure_RMSD)+geom_freqpoly(aes(x=affinity,colour=name.x),binwidth=0.1)+facet_grid(receptor~ligand)+
   scale_x_continuous(breaks=a,labels=a)+theme_bw()+guides(color = "none", size = "none")
-ggsave(p,filename = paste0("energy_ligand_receptor_interactions.png"), width = 20, height = 15, units = c("cm"), dpi = 200 )
+ggsave(p,filename = paste0("energy_ligand_receptor_interactions.png"), width = 24, height = 15, units = c("cm"), dpi = 200 )
