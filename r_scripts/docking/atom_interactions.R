@@ -24,7 +24,7 @@ i<-18
 if(!dir.exists("complex_structure")){dir.create("complex_structure")}
 if(!dir.exists("plot_tcl")){dir.create("plot_tcl")}
 df_merge<-df_merge%>%mutate(complex_name=paste0(receptor,"_",ligand,"_",size_of_group))
-i<-1
+i<-11
 for (i in 1:nrow(df_merge)) {
   df_interactions<-read.csv(paste0("interaction_fin/",df_merge$receptor[i],"_",df_merge$ligand[i],".csv"),stringsAsFactors = F)
   df_interactions<-df_interactions%>%filter(total_persent_interactions>0)
@@ -38,7 +38,22 @@ for (i in 1:nrow(df_merge)) {
   ligand<-read.pdb(ligand_name)
   df_protein<-protein$atom
   df_ligand<-ligand$atom
-  df_protein<-df_protein[df_protein$resno%in%df_interactions_TEMP$resno,]
+  protein_binding<-binding.site(protein,ligand)
+
+
+  q<-1
+  for (q in 1:nrow(df_protein)) {
+    df_protein$alt[q]<-strsplit(df_protein$elety[q],split = "",fixed = T)[[1]][1]
+  }
+  for (q in 1:nrow(df_ligand)) {
+    df_ligand$alt[q]<-strsplit(df_ligand$elety[q],split = "",fixed = T)[[1]][1]
+  }
+  df_ligand<-df_ligand%>%filter(alt!="C")
+  df_protein<-df_protein%>%filter(alt!="C")
+  
+  df_test<-full_join(df_protein,df_ligand,by="type")
+  df_test<-df_test%>%mutate(length=sqrt((x.x-x.y)^2+(y.x-y.y)^2+(z.x-z.y)^2))
+  df_test<-df_test%>%filter(length<12)
   
   q<-1
   for (q in 1:nrow(df_protein)) {
@@ -52,13 +67,23 @@ for (i in 1:nrow(df_merge)) {
   
   df_test<-full_join(df_protein,df_ligand,by="type")
   df_test<-df_test%>%mutate(length=sqrt((x.x-x.y)^2+(y.x-y.y)^2+(z.x-z.y)^2))
-  df_test<-df_test%>%filter(length<13.5)
-  if (nrow(df_test)==0){
-    print(i)
-    df_merge$name.x[i]<-NA
+  df_test<-df_test%>%filter(length<12)
+  df_interaction<-df_test%>%group_by(resno.x)%>%mutate(length_test=min(length))
+  df_interaction<-df_interaction%>%group_by(resno.x)%>%filter(length_test==length)
+  
+  df_interaction<-ungroup(df_interaction)
+  
+  df_TEMP<-df_interaction[df_interaction$resno.x%in%df_interactions_TEMP$resno,]
+  
+  if (nrow(df_TEMP)==0){
+    print(paste0(i,nrow(df_TEMP),nrow(df_interaction),collapse = " "))
+#    df_merge$name.x[i]<-NA
   }
 } 
+print(nrow(df_merge))
 df_merge<-df_merge%>%filter(!is.na(name.x))
+print(nrow(df_merge))
+i<-1
 for (i in 1:nrow(df_merge)) {
   df_hbonds<-read.csv(paste0(part_start,"MD_analysis/din/",df_merge$receptor[i],"/hbonds_8.csv"),stringsAsFactors = F)
   df_hbonds<-df_hbonds%>%filter(persent>50)
@@ -72,11 +97,12 @@ for (i in 1:nrow(df_merge)) {
   ligand_name<-paste0(part_name,"str_fin/",df_merge$name.x[i])
   protein<-read.pdb(receptor_name)
   ligand<-read.pdb(ligand_name)
+  v_binding_test<-binding.site(protein,ligand,cutoff = 10)$resno
   df_protein<-protein$atom
   df_ligand<-ligand$atom
   df_protein<-df_protein[df_protein$resno%in%df_interactions_TEMP$resno,]
+  df_protein<-unique(df_protein[df_protein$resno%in%v_binding_test,])
   
-  q<-1
   for (q in 1:nrow(df_protein)) {
     df_protein$alt[q]<-strsplit(df_protein$elety[q],split = "",fixed = T)[[1]][1]
   }
@@ -94,7 +120,10 @@ for (i in 1:nrow(df_merge)) {
                             eleno.y,  elety.y,  alt.y,    resid.y,  resno.y,x.y,y.y,z.y, length)
   df_interaction<-df_test%>%group_by(resno.x)%>%mutate(length_test=min(length))
   df_interaction<-df_interaction%>%group_by(resno.x)%>%filter(length_test==length)
+  df_interaction<-ungroup(df_interaction)
   
+  df_interaction<-df_interaction%>%group_by(eleno.y)%>%mutate(length_test=min(length))
+  df_interaction<-df_interaction%>%group_by(eleno.y)%>%filter(length_test==length)
   df_interaction<-ungroup(df_interaction)
   
   df_tcl<-data.frame(matrix(nrow = 1,ncol = 1))
