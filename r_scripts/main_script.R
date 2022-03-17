@@ -60,3 +60,7 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/amino_analys
 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/fin_structure_prepare.R ",part_start),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/atom_interactions.R ",part_start),ignore.stdout=T,wait = T)
+
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/frame_statistical_analysis_two_systems.R ",part_start),ignore.stdout=T,wait = T)
+
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/claster_analysis_frame_data.R ",part_start),ignore.stdout=T,wait = T)
