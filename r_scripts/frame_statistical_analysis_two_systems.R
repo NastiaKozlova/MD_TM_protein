@@ -17,8 +17,9 @@ df_docking_interactions<-read.csv(paste0("docking_data/",df_all_systems$system_n
 df_frame_data<-read.csv(paste0("frame_data/",df_all_systems$system_name[1],".csv"),stringsAsFactors = F)
 df_frame_data<-df_frame_data%>%mutate(system_name=df_all_systems$system_name[1])
 i<-2
-df_aminoacids<-read.csv(paste0("str_data/",df_all_systems$system_name[1],".csv"),stringsAsFactors = F)
-df_aminoacids<-df_aminoacids%>%mutate(system_name=df_all_systems$system_name[1])
+
+df_best_cluster<-read.csv(paste0(part_start,"MD_analysis/fin_data/claster_model/",df_all_systems$system_name[1],".csv"),stringsAsFactors = F)
+df_best_cluster<-df_best_cluster%>%mutate(system_name=df_all_systems$system_name[i])             
 #nrow(df_frame_data)
 if(nrow(df_all_systems)>1){
   for (i in 2:nrow(df_all_systems)) {
@@ -26,18 +27,16 @@ if(nrow(df_all_systems)>1){
     df_frame_data_add<-df_frame_data_add%>%mutate(system_name=df_all_systems$system_name[i])
     df_frame_data<-rbind(df_frame_data,df_frame_data_add)
     
-    df_aminoacids_add<-read.csv(paste0("str_data/",df_all_systems$system_name[i],".csv"),stringsAsFactors = F)
-    df_aminoacids_add<-df_aminoacids_add%>%mutate(system_name=df_all_systems$system_name[i])
-    df_aminoacids<-rbind(df_aminoacids,df_aminoacids_add)
+    df_best_cluster_model<-read.csv(paste0(part_start,"MD_analysis/fin_data/claster_model/",df_all_systems$system_name[i],".csv"),stringsAsFactors = F)
+    df_best_cluster_model<-df_best_cluster_model%>%mutate(system_name=df_all_systems$system_name[i])
+    df_best_cluster<-rbind(df_best_cluster,df_best_cluster_model)
   }
 }
 
 df_frame_data<-left_join(df_frame_data,df_all_systems,by = "system_name")
 df_frame_data<-df_frame_data%>%mutate(system=paste0(Structure,"_",Membrane))
-
-df_aminoacids<-left_join(df_aminoacids,df_all_systems,by = "system_name")
-df_aminoacids<-df_aminoacids%>%mutate(system=paste0(Structure,"_",Membrane))
-
+df_best_cluster<-left_join(df_best_cluster,df_all_systems,by = "system_name")
+df_best_cluster<-df_best_cluster%>%mutate(system=paste0(Structure,"_",Membrane))
 if(length(unique(df_frame_data$system))==2){
   wilcox_test_protein_Total <- df_frame_data %>% 
     wilcox_test(protein_Total ~ system)%>%
@@ -46,6 +45,7 @@ if(length(unique(df_frame_data$system))==2){
   p<-ggplot(data=df_frame_data)+    
     labs(title=paste0("Wilcoxon test, n = ", nrow(df_frame_data) ),
       x="Рrotein energy, kkal/mol")+
+  #  geom_vline(xintercept = df_best_cluster_model$protein_Total)+
     geom_density(aes(x=protein_Total,colour=system))+
     theme_bw()+
     theme(legend.position="none")

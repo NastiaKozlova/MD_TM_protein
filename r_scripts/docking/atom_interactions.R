@@ -77,7 +77,6 @@ for (i in 1:nrow(df_merge)) {
   
   if (nrow(df_TEMP)==0){
     print(paste0(i,nrow(df_TEMP),nrow(df_interaction),collapse = " "))
-#    df_merge$name.x[i]<-NA
   }
 } 
 print(nrow(df_merge))
@@ -165,9 +164,6 @@ for (i in 1:nrow(df_merge)) {
                             ' and name ',df_interaction$elety.x[p],
                             " and resname ",df_interaction$resid.x[p],')"] list]')
     df_tcl[(p+1),2]<-paste0('set atomID2 [[atomselect ',(i-1),
-                            #' "(resid ',df_interaction$resno.y[p],
-                            #' and name ',df_interaction$elety.y[p],
-                            #" and resname ",df_interaction$resid.y[p],' and ',
                             ' "(x > ',df_interaction$x.y[p]-0.5,' and x < ',df_interaction$x.y[p]+0.5,
                             ' and y > ',df_interaction$y.y[p]-0.5,' and y < ',df_interaction$y.y[p]+0.5,
                             ' and z > ',df_interaction$z.y[p]-0.5,' and z < ',df_interaction$z.y[p]+0.5,')"] list]')

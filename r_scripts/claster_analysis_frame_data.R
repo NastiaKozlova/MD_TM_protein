@@ -11,6 +11,9 @@ df_all_systems<-read.csv(paste0("start/all_systems.csv"),stringsAsFactors = F)
 df_all_systems<-df_all_systems%>%mutate(system_name=paste0("charmm-gui-",system_name))
 part_name<-paste0(part_start,"MD_analysis/fin_data/")
 if(!dir.exists("MD_analysis/statistic_plot")){dir.create("MD_analysis/statistic_plot")}
+if(!dir.exists("MD_analysis/fin_data/claster_model/")){dir.create("MD_analysis/fin_data/claster_model/")}
+if(!dir.exists("MD_analysis/fin_data/claster_pdb/")){dir.create("MD_analysis/fin_data/claster_pdb/")}
+
 setwd(part_name)
 #df_docking_interactions<-read.csv(paste0("docking_data/",df_all_systems$system_name[1],".csv"),stringsAsFactors = F)
 #nrow(df_frame_data)
@@ -19,6 +22,7 @@ j<-2
 for (j in 1:nrow(df_all_systems)) {
   #prepare data for analysis
   df_frame_data<-read.csv(paste0("frame_data/",df_all_systems$system_name[j],".csv"),stringsAsFactors = F)
+  row.names(df_frame_data)<-df_frame_data$number
   df_frame_data<-df_frame_data%>%select(ramachadran, protein_Total, protein_water_Total,
                                         protein_lipid_Total,SASA_protein,RMSD_protein)
   res.pca <- PCA(df_frame_data, scale.unit = TRUE, ncp = 5, graph = F)
@@ -36,8 +40,8 @@ for (j in 1:nrow(df_all_systems)) {
   df_best_cluster_model<-df_best_cluster_model%>%group_by(clust)%>%mutate(min_protein_Total=min(protein_Total))
   df_best_cluster_model<-df_best_cluster_model%>%filter(min_protein_Total==protein_Total)
   df_best_cluster_model<-ungroup(df_best_cluster_model)
-  write.csv(df_best_cluster_model,paste0(part_start,"MD_analysis/fin_data/",df_all_systems$system_name[j],".csv"),row.names=F)
-  
+  write.csv(df_best_cluster_model,paste0(part_start,"MD_analysis/fin_data/claster_model/",df_all_systems$system_name[j],".csv"),row.names=F)
+
   # describe PCA
   eig.val <- get_eigenvalue(res.pca)
   #PCA analysis and making plot
@@ -77,4 +81,26 @@ for (j in 1:nrow(df_all_systems)) {
   ggsave(p_fin,filename = paste0(part_start,"MD_analysis/statistic_plot/",df_all_systems$system_name[j],".png"),width=15,height=15)
   
 }
-
+i<-1
+for (j in 1:nrow(df_all_systems)) {
+  df_best_cluster_model<-read.csv(paste0(part_start,"MD_analysis/fin_data/claster_model/",df_all_systems$system_name[j],".csv"),
+                                  stringsAsFactors = F)
+  for (i in 1:nrow(df_best_cluster_model)) {
+    pdb<-read.pdb(paste0(part_start,"MD/",df_all_systems$system_name[j],"/din/pdb_second/8/frame_",df_best_cluster_model$frame[i],".pdb"))
+    write.pdb(pdb, paste0(part_start,"MD_analysis/fin_data/claster_pdb/",df_all_systems$system_name[j],"_",df_best_cluster_model$clust[i],".pdb"))
+  }
+}
+for (j in 1:nrow(df_all_systems)) {
+  df_best_cluster_model<-read.csv(paste0(part_start,"MD_analysis/fin_data/claster_model/",df_all_systems$system_name[j],".csv"),
+                                  stringsAsFactors = F)
+  df_best_cluster_model<-df_best_cluster_model%>%select(clust,frame)
+  df_best_cluster_model<-df_best_cluster_model%>%mutate(RMSD=NA)
+  
+  df_best_cluster<-left_join(df_best_cluster_model,df_best_cluster_model,by="RMSD")
+  for (i in 1:nrow(df_best_cluster)) {
+    pdb1<-read.pdb(paste0(part_start,"MD/",df_all_systems$system_name[j],"/din/pdb_second/8/frame_",df_best_cluster$frame.x[i],".pdb"))
+    pdb2<-read.pdb(paste0(part_start,"MD/",df_all_systems$system_name[j],"/din/pdb_second/8/frame_",df_best_cluster$frame.y[i],".pdb"))
+    df_best_cluster$RMSD[i]<-rmsd(pdb1,pdb2)
+  }
+}
+  
