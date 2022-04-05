@@ -15,9 +15,9 @@ df_all_systems<-df_all_systems%>%mutate(fin_name=paste0("charmm-gui-",system_nam
 q<-1
 for (q in 1:nrow(df_all_systems)) {
   if(file.exists(paste0("fin_data/str_data/",df_all_systems$fin_name[q],".csv"))){
-    if(file.exists(paste0("fin_data/aminoacids_importance/",df_all_systems$fin_name[q],".csv"))){
+    if(file.exists(paste0("fin_data/aminoacids_interactions/",df_all_systems$fin_name[q],".csv"))){
       df_start<-read.csv(paste0("fin_data/str_data/",df_all_systems$fin_name[q],".csv"),stringsAsFactors = F)
-      df_add<-read.csv(paste0("fin_data/aminoacids_importance/",df_all_systems$fin_name[q],".csv"),stringsAsFactors = F)
+      df_add<-read.csv(paste0("fin_data/aminoacids_interactions/",df_all_systems$fin_name[q],".csv"),stringsAsFactors = F)
       df_start<-left_join(df_start,df_add,by="resno")
       df_start<-df_start%>%mutate(system=df_all_systems$fin_name[q])
       df_start<-left_join(df_start,df_all_systems,by=c("system"="fin_name"))

@@ -22,9 +22,6 @@ p<-1
 q<-2
 
 if(!dir.exists(paste0(part,"fin_data/TMD_interactions/"))){dir.create(paste0(part,"fin_data/TMD_interactions/"))}
-if(!dir.exists(paste0(part,"fin_data/domain_importance/"))){dir.create(paste0(part,"fin_data/domain_importance/"))}
-#if(!dir.exists(paste0(part,"fin_data/aminoacids_interactions/"))){dir.create(paste0(part,"fin_data/aminoacids_interactions/"))}
-#if(!dir.exists(paste0(part,"fin_data/aminoacids_importance/"))){dir.create(paste0(part,"fin_data/aminoacids_importance/"))}
 if(!dir.exists(paste0(part,"fin_plots/aminoacids_interactions/"))){dir.create(paste0(part,"fin_plots/aminoacids_interactions/"))}
 if(!dir.exists(paste0(part,"fin_plots/aminoacids_interactions_sort/"))){dir.create(paste0(part,"fin_plots/aminoacids_interactions_sort/"))}
 if(!dir.exists(paste0(part,"fin_plots/TMD_interactions/"))){dir.create(paste0(part,"fin_plots/TMD_interactions/"))}
@@ -54,13 +51,10 @@ for (q in 1:nrow(df_all_systems)) {
       df_interactions_TMD<-ungroup(df_interactions_TMD)
       df_interactions_TMD<-df_interactions_TMD%>%filter(type.x!=type.y)
       df_interactions_TMD<-unique(df_interactions_TMD)
-#      write.csv(df_interactions_TMD,paste0("fin_data/TMD_interactions/",df_all_systems$fin_name[q],".csv"),
-#                row.names = F)
+
       df_interactions_TMD<-df_interactions_TMD%>%select(type.x,type.y,number_TMD_intractions)
       df_TMD_importance<-df_ring_sorted%>%select(type.x,topology.x)
       df_TMD_importance<-df_TMD_importance%>%group_by(type.x)%>%mutate(number_TMD_intractions=n())
-#      write.csv(df_TMD_importance,paste0("fin_data/domain_importance/",df_all_systems$fin_name[q],".csv"),
-#                row.names = F)
 
       if(nrow(df_interactions_TMD)>1){
         df_TMD_importance<-unique(df_TMD_importance)
