@@ -1,4 +1,4 @@
-part_start <- commandArgs(trailingOnly=TRUE)
+part_name <- commandArgs(trailingOnly=TRUE)
 #create new log file and save pdb_second
 
 library(bio3d)
@@ -6,18 +6,18 @@ library(bio3d)
 library(dplyr)
 library(ggplot2)
 v_rmsd<-4
-#part_start<-part_name
-setwd(part_start)
-df_all<-read.csv(paste0(part_start,"ligand_center.csv"),stringsAsFactors = F)
+#part_name<-part_name
+setwd(part_name)
+df_all<-read.csv(paste0(part_name,"ligand_center.csv"),stringsAsFactors = F)
 colnames(df_all)<-c("center","receptor","ligand")
 df_all<-df_all%>%mutate(name=paste0(receptor,"_",ligand,"_",center))
 write.csv(df_all,"df_all.csv",row.names = F)
 num_model<-1
 max_num<-5
 if (!file.exists("din/")) {dir.create("din/")}
-if (!dir.exists(paste0(part_start,"din/"))){dir.create(paste0(part_start,"din/"))}
-if (!dir.exists(paste0(part_start,"din/log/"))){dir.create(paste0(part_start,"din/log/"))}
-if (!dir.exists(paste0(part_start,"din/pdb_second/"))){dir.create(paste0(part_start,"din/pdb_second/"))}
+if (!dir.exists(paste0(part_name,"din/"))){dir.create(paste0(part_name,"din/"))}
+if (!dir.exists(paste0(part_name,"din/log/"))){dir.create(paste0(part_name,"din/log/"))}
+if (!dir.exists(paste0(part_name,"din/pdb_second/"))){dir.create(paste0(part_name,"din/pdb_second/"))}
 a<-list.files(paste0("out/"))
 df_topology<-data.frame(matrix(nrow=length(a),ncol =  3))
 colnames(df_topology)<-c("name","run","name_log")
@@ -30,7 +30,7 @@ for (i in 1:length(a)) {
   b<-strsplit(b,split = "_")[[1]]
   df_topology$run[i]<-b[length(b)]
   df_topology$name[i]<-paste0(b[1:(length(b)-1)],collapse="_")
-  if (file.exists(paste0("out/",df_topology$name_log[i],".pdbqt"))){
+  if (file.exists(paste0("din/log/",df_topology$name_log[i],".csv"))){
     df_topology$exists[i]<-"YES"
   }
 }
@@ -80,7 +80,7 @@ df_fina<-df_fin%>%group_by(name)%>%mutate(new_number=1:n())
 df_fina<-ungroup(df_fina)
 i<-1
 for (i in 1:nrow(df_fina)){
-  if (!file.exists(paste0("din/pdb_second/",df_fina$name[i]))) {dir.create(paste0("din/pdb_second/",df_fina$name[i]))}
+  if (!dir.exists(paste0("din/pdb_second/",df_fina$name[i]))) {dir.create(paste0("din/pdb_second/",df_fina$name[i]))}
   pdb<-read.pdb(paste0("analysis/",df_fina$files[i]))
   write.pdb(pdb,paste0("din/pdb_second/",df_fina$name[i],"/frame_",df_fina$new_number[i],".pdb"))
 }
