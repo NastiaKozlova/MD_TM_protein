@@ -72,6 +72,7 @@ for (j in 2:nrow(df_all)) {
   df_model_all<-rbind(df_model_all,df_model)
 }
 df_all<-df_model_all  
+write.csv(df_all,paste0("df_merge_center.csv"),row.names = F)
 j<-1
 for (j in 1:nrow(df_all)) {
   

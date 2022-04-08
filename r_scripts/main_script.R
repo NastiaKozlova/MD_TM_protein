@@ -2,6 +2,8 @@
 part_start<-'path to MD_TM_protein/'
 part_start<-paste0(getwd(),"/")
 setwd(part_start)
+#if you want don't count cout interactions of protein with protein surface surphase_conut<-F
+surphase_conut<-T
 
 v_MD<-list.files(paste0("MD"))
 if(!dir.exists("MD_count")){dir.create("MD_count")}
@@ -40,8 +42,15 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/test_hbonds.
 #docking python
 #/home/nastia/projects/MD_TM_protein/r_scripts/docking/docking_prepare_receptor_pdb.R
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_prepare_receptor_pdb.R ",part_start),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_add_serf_active_center.R ",part_start),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_main.R ",part_start),ignore.stdout=T,wait = T)
+
+#if you want don't count cout interactions of protein w9ith protein serfuce v_surphase_conut<-F
+if(surphase_conut){
+  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_add_serf_active_center.R ",part_start),ignore.stdout=T,wait = T)
+  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_main.R ",part_start),ignore.stdout=T,wait = T)
+}else{
+  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_convert_active_center.R ",part_start),ignore.stdout=T,wait = T)
+  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_main.R ",part_start),ignore.stdout=T,wait = T)
+}
 
 #ring2 
 #check comand ring2 
@@ -57,10 +66,13 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/count compar
 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/domain_interactions.R ",part_start),ignore.stdout=T,wait = T)
 #system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/amino_analysis.R ",part_start),ignore.stdout=T,wait = T)
-
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/fin_structure_prepare.R ",part_start),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/atom_interactions.R ",part_start),ignore.stdout=T,wait = T)
-
+if(surphase_conut){
+  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/fin_structure_prepare.R ",part_start),ignore.stdout=T,wait = T)
+  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/atom_interactions.R ",part_start),ignore.stdout=T,wait = T)
+}else{
+  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/fin_structure_prepare_center.R ",part_start),ignore.stdout=T,wait = T)
+  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/atom_interactions_center.R ",part_start),ignore.stdout=T,wait = T)
+}
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/claster_analysis_frame_data.R ",part_start),ignore.stdout=T,wait = T)
 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/frame_statistical_analysis_two_systems.R ",part_start),ignore.stdout=T,wait = T)
