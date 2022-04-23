@@ -11,7 +11,7 @@ df_merge<-df_merge%>%mutate(name=paste0(ligand_center,"_",grop_number,"_",models
 df_merge<-df_merge%>%select(name,receptor,ligand,center,size_of_group)
 df_merge<-unique(df_merge)
 i<-1
-if(!dir.exists("complex_structure_center")){dir.create("complex_structure_center")}
+if(!dir.exists("MD_analysis/docking/docking_first/din/complex_structure_center")){dir.create("MD_analysis/docking/docking_first/din/complex_structure_center")}
 for (i in 1:nrow(df_merge)) {
   receptor_name<-paste0(part_start,"MD_analysis/docking/docking_first/receptor_start/",df_merge$receptor[i],".pdb")
   ligand_name<-paste0(part_start,"MD_analysis/docking/docking_first/din/str_fin/",df_merge$name[i])

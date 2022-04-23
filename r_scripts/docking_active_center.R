@@ -63,3 +63,4 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/dock
 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_interactions_start.R ",part_name),ignore.stdout=T,wait = T)
 #system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/analysis.R ",part_name),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/fin_structure_prepare_center.R ",part_start),ignore.stdout=T,wait = T)
