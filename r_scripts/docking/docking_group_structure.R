@@ -15,39 +15,6 @@ if (dir.exists(paste0("str_fin/"))) {system(command = paste0("rm -r ",part_name,
 
 if (!dir.exists("groups")) {dir.create("groups")}
 
-if (!dir.exists("RMSD_analysis/")){dir.create("RMSD_analysis/")}
-df_all<-read.csv(paste0(part_name,"df_all.csv"),stringsAsFactors = F)
-df_all<-df_all%>%mutate(name=paste0(receptor,"_",ligand,"_",center))
-i<-1
-v_RMSD_analysis<-list.files("RMSD_analysis/")
-i<-1
-if(length(v_RMSD_analysis)>0){
-  a<-c()
-  for (i in 1:length(v_RMSD_analysis)) {
-    b<-strsplit(v_RMSD_analysis[i],split = ".",fixed = T)[[1]][1]
-    a<-c(a,b)
-  }
-  v_RMSD_analysis<-a
-  df_all<-df_all[!df_all$name%in%v_RMSD_analysis,]
-}
-if(nrow(df_all)>0){
-  for (i in 1:nrow(df_all)) {
-    models<-list.files(paste0("pdb_second/",df_all$name[i]))
-    if(length(models)>1){
-      df_RMSD<-data.frame(matrix(ncol = 2,nrow=length(models)))
-      colnames(df_RMSD)<-c("models","RMSD")
-      df_RMSD$models<-models
-      df_RMSD_all<-full_join(df_RMSD,df_RMSD,by="RMSD")
-      df_RMSD_all<-df_RMSD_all%>%filter(models.x!=models.y)
-      for (j in 1:nrow(df_RMSD_all)) {
-        pdb_1<-read.pdb(paste0("pdb_second/",df_all$name[i],"/",df_RMSD_all$models.x[j]))
-        pdb_2<-read.pdb(paste0("pdb_second/",df_all$name[i],"/",df_RMSD_all$models.y[j]))
-        df_RMSD_all$RMSD[j]<-rmsd(pdb_1,pdb_2)
-      }
-      write.csv(df_RMSD_all,paste0("RMSD_analysis/",df_all$name[i],".csv"),row.names = F)
-    }
-  }
-}
 df_all<-read.csv(paste0(part_name,"df_all.csv"),stringsAsFactors = F)
 df_all<-df_all%>%mutate(name=paste0(receptor,"_",ligand,"_",center))
 #sort to grops
@@ -149,9 +116,9 @@ for (j in 1:length(df_all$name)) {
     }
   }
 }
-
-
 #energy bonding
+df_all<-read.csv(paste0(part_name,"df_all.csv"),stringsAsFactors = F)
+df_all<-df_all%>%mutate(name=paste0(receptor,"_",ligand,"_",center))
 i<-1
 if (!dir.exists("log_fin")) {dir.create("log_fin")}
 #if (!dir.exists("plot")) {dir.create("plot")}
@@ -164,6 +131,7 @@ for (i in 1:nrow(df_all)) {
     write.csv(df_fin,paste0("log_fin/",df_all$name[i],".csv"),row.names = F)
   }
 }
+
 df_fin<-read.csv(paste0("log_fin/",df_all$name[1],".csv"),stringsAsFactors = F)
 for (i in 2:length(df_all$name)) {
   if(file.exists(paste0("groups_fin/",df_all$name[i],".csv"))){
@@ -171,6 +139,7 @@ for (i in 2:length(df_all$name)) {
     df_fin<-rbind(df_fin,df_fin_add)
   }
 }
+
 p<-ggplot(df_fin)+
   geom_freqpoly(aes(x=affinity,colour=group),binwidth=0.3)+
   facet_grid(receptor~ligand)+
