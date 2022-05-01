@@ -7,7 +7,7 @@ v_rmsds<-seq(from=0,to=100,by=1)
 setwd(part_name)
 part<-paste0(part_name,"din/")
 setwd(part)
-
+if (!dir.exists("df_RMSD_all")) {dir.create("df_RMSD_all")}
 df_all<-read.csv(paste0(part_name,"df_all.csv"),stringsAsFactors = F)
 df_all<-df_all%>%mutate(name=paste0(receptor,"_",ligand,"_",center))
 
