@@ -49,7 +49,8 @@ if(surphase_conut){
   system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_main.R ",part_start),ignore.stdout=T,wait = T)
 }else{
   system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_convert_active_center.R ",part_start),ignore.stdout=T,wait = T)
-  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_main.R ",part_start),ignore.stdout=T,wait = T)
+  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_active_center.R ",part_start),ignore.stdout=T,wait = T)
+  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/cascade_docking.R ",part_start),ignore.stdout=T,wait = T)
 }
 
 #ring2 
@@ -70,7 +71,7 @@ if(surphase_conut){
   system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/fin_structure_prepare.R ",part_start),ignore.stdout=T,wait = T)
   system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/atom_interactions.R ",part_start),ignore.stdout=T,wait = T)
 }else{
-  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/fin_structure_prepare_center.R ",part_start),ignore.stdout=T,wait = T)
+#  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/fin_structure_prepare_center.R ",part_start),ignore.stdout=T,wait = T)
   system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/atom_interactions_center.R ",part_start),ignore.stdout=T,wait = T)
 }
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/claster_analysis_frame_data.R ",part_start),ignore.stdout=T,wait = T)
