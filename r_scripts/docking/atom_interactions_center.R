@@ -140,7 +140,7 @@ for (i in 1:nrow(df_merge)) {
                         'color Labels Atoms black\n',
                         'color Labels Bonds black\n\n')
     
-    df_tcl[1,3]<-paste0('mol modselect 0 ',i-1,' protein\n',
+    df_tcl[1,3]<-paste0('mol modselect 0 ',i-1,' protein and abs(z)<20\n',
                         'mol modstyle 0 ' ,i-1, ' NewCartoon\n',
                         'mol selection resid ',paste0(unique(df_hbonds$number),collapse = " "))
     df_tcl[1,4]<-paste0('mol material Transparent\n',
@@ -149,9 +149,9 @@ for (i in 1:nrow(df_merge)) {
                         'mol modcolor 1 ',(i-1),' Type \n')
     
     df_tcl[1,5]<-paste0('mol selection resid ',paste0(c(158:161,431:434),collapse = " "))
-    df_tcl[1,6]<-paste0('mol material Transparent\n',
+    df_tcl[1,6]<-paste0('mol material Opaque\n',
                         'mol addrep ',(i-1),'\n',
-                        'mol modstyle 2 ',(i-1),' QuickSurf\n',
+                        'mol modstyle 2 ',(i-1),' Licorice\n',
                         'mol modcolor 2 ',(i-1),' ColorID 16 \n')
     if (nrow(df_interaction)>0){
       df_tcl[1,7]<-paste0('mol selection resname ',paste0(unique(df_interaction$resid.y),collapse = " "))
