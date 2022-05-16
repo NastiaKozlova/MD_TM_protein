@@ -3,14 +3,15 @@ part_start <- commandArgs(trailingOnly=TRUE)
 library(bio3d)
 library(dplyr)
 library(ggplot2)
+part_name<-paste0(part_start,"MD_analysis/docking/docking_first/din/")
 setwd(paste0(part_start,"MD_analysis/docking/docking_first/"))
-df_all<-read.csv(paste0("df_merge_center.csv"),stringsAsFactors = F)
+df_all<-read.csv(paste0("din/df_merge_center.csv"),stringsAsFactors = F)
 #df_all<-df_all%>%select(receptor,ligand,center)
 #df_all<-unique(df_all)
 
 i<-18
-if(!dir.exists("complex_structure_center")){dir.create("complex_structure_center")}
-if(!dir.exists("plot_complex_tcl")){dir.create("plot_complex_tcl")}
+if(!dir.exists("din/complex_structure_center")){dir.create("din/complex_structure_center")}
+if(!dir.exists("din/plot_complex_tcl")){dir.create("din/plot_complex_tcl")}
 df_merge<-df_all
 df_merge<-df_merge%>%mutate(complex_name=paste0(receptor,"_",ligand,"_",center,"_",grop_number,"_",models.x))
 df_merge<-df_merge%>%mutate(pdb_name=paste0(receptor,"_",ligand,"_",center,"_",size_of_group))
@@ -31,7 +32,7 @@ for (i in 1:nrow(df_merge)) {
   
   #  complex_name<-paste0("complex_structure_center/",df_merge$complex_name[i],".pdb")
   #  ligand_name<-paste0(part_name,"str_fin/",df_merge$name.x[i])
-  receptor<-read.pdb(receptor_name)
+  protein<-read.pdb(receptor_name)
   ligand<-read.pdb(ligand_name)
   df_protein<-protein$atom
   df_ligand<-ligand$atom
@@ -125,7 +126,7 @@ for (i in 1:nrow(df_merge)) {
     df_interaction<-ungroup(df_interaction)
     
     df_tcl<-data.frame(matrix(nrow = 1,ncol = 1))
-    df_tcl[1,1]<-paste0('cd ', part_name,"din/complex_structure_center/\n\n",
+    df_tcl[1,1]<-paste0('cd ', part_name,"complex_structure_center/\n\n",
                         'mol new {',df_merge$pdb_name[i],'.pdb} type {pdb}')
     b<-paste('(resid ',df_interaction$resno.x,' and name ',df_interaction$elety.x," and resname ",df_interaction$resid.x,")")
     a<-paste0(b,collapse = " or ")
@@ -142,21 +143,27 @@ for (i in 1:nrow(df_merge)) {
     df_tcl[1,3]<-paste0('mol modselect 0 ',i-1,' protein\n',
                         'mol modstyle 0 ' ,i-1, ' NewCartoon\n',
                         'mol selection resid ',paste0(unique(df_hbonds$number),collapse = " "))
-    df_tcl[1,4]<-paste0('mol material Opaque\n',
+    df_tcl[1,4]<-paste0('mol material Transparent\n',
                         'mol addrep ',(i-1),'\n',
-                        'mol modstyle 1 ',(i-1),' Licorice\n',
-                        'mol modcolor 1 ',(i-1),' ColorID 0\n')
+                        'mol modstyle 1 ',(i-1),' QuickSurf\n',
+                        'mol modcolor 1 ',(i-1),' Type \n')
+    
+    df_tcl[1,5]<-paste0('mol selection resid ',paste0(c(158:161,431:434),collapse = " "))
+    df_tcl[1,6]<-paste0('mol material Transparent\n',
+                        'mol addrep ',(i-1),'\n',
+                        'mol modstyle 2 ',(i-1),' QuickSurf\n',
+                        'mol modcolor 2 ',(i-1),' ColorID 16 \n')
     if (nrow(df_interaction)>0){
-      df_tcl[1,5]<-paste0('mol selection resname ',paste0(unique(df_interaction$resid.y),collapse = " "))
-      df_tcl[1,6]<-paste0('mol material Opaque\n',
-                          'mol addrep ',(i-1),'\n',
-                          'mol modstyle 2 ',(i-1),' Licorice\n',
-                          'mol modcolor 2 ',(i-1),' ColorID 16\n')
-      df_tcl[1,7]<-paste0('mol selection (resid ',paste0(unique(df_interaction$resno.x),collapse = " "),")")
-      df_tcl[1,8]<-paste0(' mol material Opaque\n',
+      df_tcl[1,7]<-paste0('mol selection resname ',paste0(unique(df_interaction$resid.y),collapse = " "))
+      df_tcl[1,8]<-paste0('mol material Opaque\n',
                           'mol addrep ',(i-1),'\n',
                           'mol modstyle 3 ',(i-1),' Licorice\n',
-                          'mol modcolor 3 ',(i-1),' ColorID 1')
+                          'mol modcolor 3 ',(i-1),' Name\n')
+      df_tcl[1,9]<-paste0('mol selection (resid ',paste0(unique(df_interaction$resno.x),collapse = " "),")")
+      df_tcl[1,10]<-paste0(' mol material Opaque\n',
+                           'mol addrep ',(i-1),'\n',
+                           'mol modstyle 4 ',(i-1),' Licorice\n',
+                           'mol modcolor 4 ',(i-1),' Type')
       
       for (p in 1:nrow(df_interaction)) {
         df_tcl[(p+1),1]<-paste0('set atomID1 [[atomselect ',(i-1),' "(resid ',df_interaction$resno.x[p],
