@@ -23,7 +23,7 @@ df_all_systems<-read.csv("start/all_systems.csv",stringsAsFactors = F)
 part_name<-paste0(part_start,"MD_analysis/")
 setwd(part_name)
 
-j<-1
+j<-14
 if(!dir.exists(paste0("docking/active_center_TEMP/"))){dir.create("docking/active_center_TEMP/")}
 for (j in 1:nrow(df_all_systems)) {
   start<-read.pdb(paste0("docking/receptor_start/charmm-gui-",df_all_systems$system_name[j],".pdb"))
@@ -91,10 +91,13 @@ j<-3
 df_type<-read.csv(paste0("docking/active_center_TEMP/charmm-gui-",df_all_systems$system_name[1],"_active_center.csv"),stringsAsFactors =  F)
 print(nrow(df_type))
 for (j in 2:nrow(df_all_systems)) {
-  df_type_add<-read.csv(paste0("docking/active_center_TEMP/charmm-gui-",df_all_systems$system_name[j],"_active_center.csv"),stringsAsFactors =  F)
-  print(paste(df_all_systems$system_name[j],nrow(df_type_add)))
-  df_type<-rbind(df_type,df_type_add)
-  print(nrow(df_type))
+  if(file.exists(paste0("docking/active_center_TEMP/charmm-gui-",df_all_systems$system_name[j],"_active_center.csv"))){
+    df_type_add<-read.csv(paste0("docking/active_center_TEMP/charmm-gui-",df_all_systems$system_name[j],"_active_center.csv"),stringsAsFactors =  F)
+#    print(paste(df_all_systems$system_name[j],nrow(df_type_add)))
+    df_type<-rbind(df_type,df_type_add)}else{
+#    print(paste(df_all_systems$system_name[j],nrow(df_type_add)))
+    print(j)  
+  }
 }
 
 write.csv(df_type,paste0("docking/docking_first/active_center.csv"),row.names = F)
