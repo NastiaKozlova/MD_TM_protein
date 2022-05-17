@@ -37,7 +37,7 @@ for (j in 1:length(v_structure)) {
       
     }
   }
-  df_pdb<-df_pdb%>%filter(tested_structure!=total_structure)
+  df_pdb<-df_pdb%>%filter(tested_structure==total_structure)
   if(nrow(df_pdb)>0){
     write.csv(df_pdb,
               paste0("interaction_serf/",v_structure[j],".csv"),row.names = F)
