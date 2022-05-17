@@ -22,33 +22,33 @@ i<-1
 j<-1
 for (j in 1:nrow(df_all)) {
   if(dir.exists(paste0("pdb_second/",df_all$receptor_ligand[j]))){
-  if(!file.exists( paste0("interaction/",df_all$receptor_ligand[j],"/",df_all$new_number[j],".csv")){
-    a<-read.pdb(paste0(part_name,"receptor_start/",df_all$receptor[j],".pdb"))
-    b<-read.pdb(paste0("pdb_second/",df_all$receptor_ligand[j],"/frame_",df_all$new_number[j],".pdb"))
-    bs<-binding.site(a,b,cutoff=12)
-    m<-bs$resnames
-    a<-c()
-    b<-c()
-    y<-1
-    for (y in 1:length(m)) {
-      p<-strsplit(m[y],split = " ",fixed = T)[[1]][2]
-      a<-c(a,p)
-      p<-strsplit(m[y],split = " ",fixed = T)[[1]][1]
-      b<-c(b,p)
-    }
-    a<-as.numeric(a)
-    df_protein<-data.frame(matrix(ncol=2,nrow=length(a)))
-    colnames(df_protein)<-c("resid","resno")
-    df_protein$resid<-a
-    df_protein$resno<-b
-    if (!dir.exists(paste0("interaction/",df_all$receptor_ligand[j]))) { dir.create(paste0("interaction/",df_all$receptor_ligand[j]))}
-#    if (!dir.exists(paste0("interaction/",df_all$receptor_ligand[j],"/",df_all$size_of_group[j]))) {
-#      dir.create(paste0("interaction/",df_all$receptor_ligand[j],"/",df_all$size_of_group[j]))}
-#    if (!dir.exists(paste0("interaction/",df_all$receptor_ligand[j],"/",df_all$size_of_group[j],"/",df_all$size_of_group[j],"/"))) {
- #     dir.create(paste0("interaction/",df_all$receptor_ligand[j],"/",df_all$size_of_group[j],"/",df_all$center[j],"/"))}
-    write.csv(df_protein,
-              paste0("interaction/",df_all$receptor_ligand[j],"/",df_all$new_number[j],".csv"),
-              row.names = F)
+    if(!file.exists(paste0("interaction/",df_all$receptor_ligand[j],"/",df_all$new_number[j],".csv"))){
+      a<-read.pdb(paste0(part_name,"receptor_start/",df_all$receptor[j],".pdb"))
+      b<-read.pdb(paste0("pdb_second/",df_all$receptor_ligand[j],"/frame_",df_all$new_number[j],".pdb"))
+      bs<-binding.site(a,b,cutoff=12)
+      m<-bs$resnames
+      a<-c()
+      b<-c()
+      y<-1
+      for (y in 1:length(m)) {
+        p<-strsplit(m[y],split = " ",fixed = T)[[1]][2]
+        a<-c(a,p)
+        p<-strsplit(m[y],split = " ",fixed = T)[[1]][1]
+        b<-c(b,p)
+      }
+      a<-as.numeric(a)
+      df_protein<-data.frame(matrix(ncol=2,nrow=length(a)))
+      colnames(df_protein)<-c("resid","resno")
+      df_protein$resid<-a
+      df_protein$resno<-b
+      if (!dir.exists(paste0("interaction/",df_all$receptor_ligand[j]))) { dir.create(paste0("interaction/",df_all$receptor_ligand[j]))}
+      #    if (!dir.exists(paste0("interaction/",df_all$receptor_ligand[j],"/",df_all$size_of_group[j]))) {
+      #      dir.create(paste0("interaction/",df_all$receptor_ligand[j],"/",df_all$size_of_group[j]))}
+      #    if (!dir.exists(paste0("interaction/",df_all$receptor_ligand[j],"/",df_all$size_of_group[j],"/",df_all$size_of_group[j],"/"))) {
+      #     dir.create(paste0("interaction/",df_all$receptor_ligand[j],"/",df_all$size_of_group[j],"/",df_all$center[j],"/"))}
+      write.csv(df_protein,
+                paste0("interaction/",df_all$receptor_ligand[j],"/",df_all$new_number[j],".csv"),
+                row.names = F)
     }
   }
 }
