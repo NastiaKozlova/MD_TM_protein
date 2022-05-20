@@ -38,5 +38,5 @@ for (i in 1:nrow(df_merge)) {
   pdb_receptor<-read.pdb(receptor_name)
   pdb_ligand<-read.pdb(ligand_name)
   pdb_complex<-cat.pdb(pdb_receptor, pdb_ligand, rechain=TRUE)
-  write.pdb(pdb_complex,paste0("complex_structure/",df_merge$name.x[i],".pdb"))
+  write.pdb(pdb_complex,paste0("complex_structure/",df_merge$name.x[i]))
 }
