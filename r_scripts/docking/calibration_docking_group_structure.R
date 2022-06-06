@@ -10,6 +10,17 @@ setwd(part)
 if (!dir.exists("df_RMSD_all")) {dir.create("df_RMSD_all")}
 df_all<-read.csv(paste0(part_name,"df_all.csv"),stringsAsFactors = F)
 df_all<-df_all%>%mutate(name=paste0(receptor,"_",ligand,"_",center))
+df_all<-df_all%>%mutate(x=NA)
+df_all<-df_all%>%mutate(y=NA)
+df_all<-df_all%>%mutate(z=NA)
+i<-1
+for (i in 1:nrow(df_all)) {
+  a<-strsplit(df_all$center[i],split = "_")[[1]]
+  df_all$x[i]<-as.numeric(a[3])
+  df_all$y[i]<-as.numeric(a[5])
+  df_all$z[i]<-as.numeric(a[7])
+}
+df_all<-df_all%>%filter(!is.na(x))
 
 for (i in 1:nrow(df_all)) {
   if(!file.exists(paste0("RMSD_analysis/",df_all$name[i],".csv"))){
