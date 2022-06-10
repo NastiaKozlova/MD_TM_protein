@@ -34,9 +34,11 @@ i<-1
 if(!dir.exists("complex_structure")){dir.create("complex_structure")}
 for (i in 1:nrow(df_merge)) {
   receptor_name<-paste0(part_start,"MD_analysis/docking/docking_first/receptor_start/",df_merge$receptor[i],".pdb")
-  ligand_name<-paste0(part_name,"str_fin/",df_merge$name.x[i])
-  pdb_receptor<-read.pdb(receptor_name)
-  pdb_ligand<-read.pdb(ligand_name)
-  pdb_complex<-cat.pdb(pdb_receptor, pdb_ligand, rechain=TRUE)
-  write.pdb(pdb_complex,paste0("complex_structure/",df_merge$name.x[i]))
+  if(file.exists(paste0(part_name,"structure_merged/",df_merge$name.x[i]))){
+    ligand_name<-paste0(part_name,"structure_merged/",df_merge$name.x[i])
+    pdb_receptor<-read.pdb(receptor_name)
+    pdb_ligand<-read.pdb(ligand_name)
+    pdb_complex<-cat.pdb(pdb_receptor, pdb_ligand, rechain=TRUE)
+    write.pdb(pdb_complex,paste0("complex_structure/",df_merge$name.x[i]))
+  }
 }
