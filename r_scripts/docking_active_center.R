@@ -58,6 +58,7 @@ system(command = paste0("chmod +x ",part_name,"prepare_log_csv.py "),ignore.stdo
 system(command = paste0("python3 ", part_name,"prepare_log_csv.py"),ignore.stdout=T,wait = T)
 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_pre_analysis.R ",part_name),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_interactions.R ",part_name),ignore.stdout=T,wait = T)
 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/RMSD_docking_group_structure.R ",part_name),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/calibration_docking_group_center.R ",part_name),ignore.stdout=T,wait = T)
@@ -68,6 +69,7 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/cali
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/merge_docking_parts.R ",part_name),ignore.stdout=T,wait = T)
 
 
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_interactions_start.R ",part_name),ignore.stdout=T,wait = T)
-#system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/analysis.R ",part_name),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/fin_structure_prepare_center.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/merge_interactions_center.R ",part_name),ignore.stdout=T,wait = T)
+
+system(command = paste0("Rscript --vanilla  ",part_scriprs,"complex_structure_center.R ",part_analysis),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_scriprs,"atom_interactions_center.R ",part_analysis),ignore.stdout=T,wait = T)
