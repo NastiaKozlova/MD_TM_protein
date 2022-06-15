@@ -60,10 +60,11 @@ system(command = paste0("python3 ", part_name,"prepare_log_csv.py"),ignore.stdou
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_pre_analysis.R ",part_name),ignore.stdout=T,wait = T)
 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/RMSD_docking_group_structure.R ",part_name),ignore.stdout=T,wait = T)
-
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/calibration_docking_group_center.R ",part_name),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_group_structure.R ",part_name),ignore.stdout=T,wait = T)
 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/RMSD_merge_docking_center.R ",part_name),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/calibration_merge_structure_center.R ",part_name),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/merge_docking_parts.R ",part_name),ignore.stdout=T,wait = T)
 
 
