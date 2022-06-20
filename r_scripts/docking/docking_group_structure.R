@@ -1,27 +1,30 @@
-part_name <- commandArgs(trailingOnly=TRUE)
+part_analysis <- commandArgs(trailingOnly=TRUE)
 #group ligand structures
-#part_name<-part_name
+part_TEMP<-strsplit(part_analysis,split = ",")[[1]]
+part_start<-part_TEMP[1]
+v_rmsd<-as.numeric(part_TEMP[2])
 library(bio3d)
-#library(readr)
+library(readr)
 library(dplyr)
 library(ggplot2)
-v_rmsd<-1
-setwd(part_name)
-part<-paste0(part_name,"din/")
+
+setwd(part_start)
+part<-paste0(part_start,"din/")
 setwd(part)
-if (dir.exists(paste0("groups/"))) { system(command = paste0("rm -r ",part_name,"din/groups/"))}
-if (dir.exists(paste0("groups_fin/"))) {system(command = paste0("rm -r ",part_name,"din/groups_fin/"))}
-if (dir.exists(paste0("str_fin/"))) {system(command = paste0("rm -r ",part_name,"din/str_fin/"))}
-
+if(dir.exists(paste0(part,"groups"))) {system(command = paste0("rm -r ",part,"groups"),ignore.stdout=T,wait = T)}
+if(dir.exists(paste0(part,"groups_fin"))) {system(command = paste0("rm -r ",part,"groups_fin"),ignore.stdout=T,wait = T)}
+if(dir.exists(paste0(part,"str"))) {system(command = paste0("rm -r ",part,"str"),ignore.stdout=T,wait = T)}
+if(dir.exists(paste0(part,"str_fin"))) {system(command = paste0("rm -r ",part,"str_fin"),ignore.stdout=T,wait = T)}
 if (!dir.exists("groups")) {dir.create("groups")}
-
-df_all<-read.csv(paste0(part_name,"df_all.csv"),stringsAsFactors = F)
+if (!dir.exists("groups_fin")) {dir.create("groups_fin")}
+if (!dir.exists("str_fin")) {dir.create("str_fin")}
+df_all<-read.csv(paste0(part_start,"df_all.csv"),stringsAsFactors = F)
 df_all<-df_all%>%mutate(name=paste0(receptor,"_",ligand,"_",center))
 #sort to grops
-i<-1
 for (i in 1:nrow(df_all)) {
   
   if(file.exists(paste0("RMSD_analysis/",df_all$name[i],".csv"))){
+    print(df_all$name[i])
     if (!dir.exists(paste0("groups/",df_all$name[i]))) {dir.create(paste0("groups/",df_all$name[i]))}
     df_RMSD_all<-read.csv(paste0("RMSD_analysis/",df_all$name[i],".csv"),stringsAsFactors = F)
     df_RMSD_all<-df_RMSD_all%>%filter(RMSD<v_rmsd)
@@ -55,41 +58,28 @@ for (i in 1:nrow(df_all)) {
 
 
 #combine all groups logs files
-i<-1
-j<-1
+i<-3
 if (!dir.exists("groups_fin")) {dir.create("groups_fin")}
 for (i in 1:nrow(df_all)) {
   v_groups<-list.files(paste0("groups/",df_all$name[i]))
   if(length(v_groups)>0){
-    df_groups<-read.csv(paste0("groups/",df_all$name[i],"/",v_groups[1]),stringsAsFactors = F)
-    df_groups_TEMP<-df_groups%>%mutate(models.y=models.x)
-    df_groups_TEMP<-df_groups_TEMP%>%mutate(RMSD=0)
-    df_groups_TEMP<-unique(df_groups_TEMP)
-    df_groups<-rbind(df_groups,df_groups_TEMP)
-    
+    df_groups<-read.csv(paste0("groups/",df_all$name[i],"/",v_groups[1]))
     df_groups<-df_groups%>%mutate(group=v_groups[1])
     df_groups<-df_groups%>%mutate(ligand_center=df_all$name[i])
-    
     if (length(v_groups)>1) {
       for (j in 2:length(v_groups)) {
         df_groups_add<-read.csv(paste0("groups/",df_all$name[i],"/",v_groups[j]))
-        df_groups_TEMP<-df_groups_add%>%mutate(models.y=models.x)
-        df_groups_TEMP<-df_groups_TEMP%>%mutate(RMSD=0)
-        df_groups_TEMP<-unique(df_groups_TEMP)
-        df_groups_add<-rbind(df_groups_add,df_groups_TEMP)
-        
         df_groups_add<-df_groups_add%>%mutate(group=v_groups[j])
         df_groups_add<-df_groups_add%>%mutate(ligand_center=df_all$name[i])
         df_groups<-rbind(df_groups,df_groups_add)
       }
     }
-    df_groups<-df_groups%>%group_by(ligand_center)%>%mutate(group_size=n())
     write.csv(df_groups,paste0("groups_fin/",df_all$name[i],".csv"),row.names = F)
   }
 }
 
 #copy pdb files to groups spb dir
-if (!dir.exists("str")) {dir.create("str")}
+#if (!dir.exists("str")) {dir.create("str")}
 if (!dir.exists("str_fin")) {dir.create("str_fin")}
 i<-1
 j<-1
@@ -99,29 +89,20 @@ k<-2
 for (j in 1:length(df_all$name)) {
   if(file.exists(paste0("groups_fin/",df_all$name[j],".csv"))){
     df_RMSD<-read.csv(paste0("groups_fin/",df_all$name[j],".csv"),stringsAsFactors = F)
-    #  print(unique(df_RMSD$ligand_center))
-    if(nrow(df_RMSD)>1){
-      for (k in 1:nrow(df_RMSD)) {
-        if (!dir.exists(paste0("str/",df_RMSD$ligand_center[k]))) { dir.create(paste0("str/",df_RMSD$ligand_center[k]))}
-        if (!dir.exists(paste0("str/",df_RMSD$ligand_center[k],"/",df_RMSD$grop_number[k]))) {
-          dir.create(paste0("str/",df_RMSD$ligand_center[k],"/",df_RMSD$grop_number[k]))}
-        pdb<-read.pdb(paste0("pdb_second/",df_RMSD$ligand_center[k],"/",df_RMSD$models.y[k]))
-        write.pdb(pdb,paste0("str/",df_RMSD$ligand_center[k],"/",df_RMSD$grop_number[k],"/",df_RMSD$models.y[k]))
-      }
-      df_RMSD<-df_RMSD%>%filter(models.y==models.x)
-      for (k in 1:nrow(df_RMSD)) {
-        pdb<-read.pdb(paste0("pdb_second/",df_RMSD$ligand_center[k],"/",df_RMSD$models.y[k]))
-        write.pdb(pdb,paste0("str_fin/",df_RMSD$ligand_center[k],"_",df_RMSD$grop_number[k],"_",df_RMSD$models.y[k]))
-      }
+    df_RMSD<-df_RMSD%>%filter(models.y==models.x)
+    for (q in 1:nrow(df_RMSD)){
+      pdb<-read.pdb(paste0("pdb_second/",df_RMSD$ligand_center[q],"/",df_RMSD$models.y[q]))
+      
+      write.pdb(pdb,paste0("str_fin/",df_RMSD$ligand_center[q],"_",df_RMSD$grop_number[q],"_",df_RMSD$models.y[q]))
     }
   }
 }
+
+
 #energy bonding
-df_all<-read.csv(paste0(part_name,"df_all.csv"),stringsAsFactors = F)
-df_all<-df_all%>%mutate(name=paste0(receptor,"_",ligand,"_",center))
 i<-1
 if (!dir.exists("log_fin")) {dir.create("log_fin")}
-#if (!dir.exists("plot")) {dir.create("plot")}
+if (!dir.exists("plot")) {dir.create("plot")}
 df_log<-read.csv("df_log_all.csv",stringsAsFactors = F)
 df_log<-df_log%>%mutate(models.y=paste0("frame_",new_number,".pdb"))
 for (i in 1:nrow(df_all)) {
@@ -131,7 +112,6 @@ for (i in 1:nrow(df_all)) {
     write.csv(df_fin,paste0("log_fin/",df_all$name[i],".csv"),row.names = F)
   }
 }
-
 df_fin<-read.csv(paste0("log_fin/",df_all$name[1],".csv"),stringsAsFactors = F)
 for (i in 2:length(df_all$name)) {
   if(file.exists(paste0("groups_fin/",df_all$name[i],".csv"))){
@@ -139,10 +119,4 @@ for (i in 2:length(df_all$name)) {
     df_fin<-rbind(df_fin,df_fin_add)
   }
 }
-
-p<-ggplot(df_fin)+
-  geom_freqpoly(aes(x=affinity,colour=group),binwidth=0.3)+
-  facet_grid(receptor~ligand)+
-  theme_bw()+guides(color = "none", size = "none")
-ggsave(p,filename = paste0("ligand_energy.png"), width = 30, height = 20, units = c("cm"), dpi = 200 ) 
 write.csv(df_fin,"log_fin.csv",row.names = F)
