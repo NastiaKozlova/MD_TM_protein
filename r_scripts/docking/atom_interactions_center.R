@@ -3,25 +3,17 @@ part_analysis <- commandArgs(trailingOnly=TRUE)
 library(bio3d)
 library(dplyr)
 library(ggplot2)
-#paste0(part_analysis)
+
 df_all<-read.csv(paste0(part_analysis,"df_all.csv"),stringsAsFactors = F)
 df_all<-df_all%>%select(receptor,ligand)
 df_all<-unique(df_all)
 part_name<-paste0(part_analysis,"din/")
 setwd(part_name)
-i<-1
-#for (i in 1:nrow(df_all)) {
-#  if(!file.exists(paste0("interaction_fin/",df_all$receptor[i],"_",df_all$ligand[i],".csv"))){
-#    df_all$receptor[i]<-NA
-#  }
-#}
-#df_all<-df_all%>%filter(!is.na(receptor))
 df_merge<-read.csv(paste0(part_name,"df_merge_structure_log_center.csv"),stringsAsFactors = F)
-#df_merge<-semi_join(df_merge,df_all)
 df_merge<-df_merge%>%select(name.x,receptor,ligand, size_of_group)
 df_merge<-unique(df_merge)
-i<-1
-if(!dir.exists("complex_structure_center")){dir.create("complex_structure_center")}
+
+if (dir.exists(paste0("make_picture_tcl_center/"))) {system(command = paste0("rm -r ",part_analysis,"din/make_picture_tcl_center/"))}
 if(!dir.exists("make_picture_tcl_center")){dir.create("make_picture_tcl_center")}
 df_merge<-df_merge%>%mutate(complex_name=paste0(receptor,"_",ligand,"_",size_of_group))
 i<-1
@@ -85,19 +77,6 @@ for (i in 1:nrow(df_merge)) {
     df_tcl[1,3]<-paste0('mol modselect 0 ',i-1,' protein\n',
                         'mol modmaterial 0 ',(i-1),' Transparent\n',
                         'mol modstyle 0 ' ,i-1, ' NewCartoon\n')#,
-    #                      'mol modcolor 0 ' ,i-1, ' ColorID 11 \n'
-    #                      )#,
-    #  df_tcl[1,4]<-paste0('mol selection resid ',paste0(unique(df_hbonds$number),collapse = " "),'\n',
-    #                      'mol material Transparent\n',
-    #                      'mol addrep ',(i-1),'\n',
-    #                      'mol modstyle 1 ',(i-1),' QuickSurf\n',
-    #                      'mol modcolor 1 ',(i-1),' Type \n')
-    
-    #  df_tcl[1,4]<-paste0('mol selection resid ',paste0(c(158:161,431:434),collapse = " "))
-    #  df_tcl[1,5]<-paste0('mol material Opaque\n',
-    #                      'mol addrep ',(i-1),'\n',
-    #                      'mol modstyle 1 ',(i-1),' Licorice\n',
-    #                      'mol modcolor 1 ',(i-1),' ColorID 16 \n')
     if (nrow(df_interaction)>0){
       df_tcl[1,4]<-paste0('mol selection resname ',paste0(unique(df_interaction$resid.y),collapse = " "))
       df_tcl[1,5]<-paste0('mol modmaterial 1 ',(i-1),' Opaque\n',
@@ -124,14 +103,14 @@ for (i in 1:nrow(df_merge)) {
     }
     df_tcl[is.na(df_tcl)]<-""
     write.csv(df_tcl,paste0("make_picture_tcl_center/",df_merge$name.x[i],".tcl"),row.names = F)
-  }
+  }else{print(i)}
 } 
 
 v_structure<-list.files("make_picture_tcl_center/")
-df_tcl<-read.csv(paste0("make_picture_tcl_center/",v_structure[1],".tcl"),stringsAsFactors = F)
+df_tcl<-read.csv(paste0("make_picture_tcl_center/",v_structure[1]),stringsAsFactors = F)
 i<-2
 for (i in 2:length(v_structure)) {
-  df_tcl_add<-read.csv(paste0("make_picture_tcl_center/",v_structure[i],".tcl"),stringsAsFactors = F)
+  df_tcl_add<-read.csv(paste0("make_picture_tcl_center/",v_structure[i]),stringsAsFactors = F)
   df_tcl<-rbind(df_tcl,df_tcl_add)
 }
 write.table(df_tcl,paste0("make_picture_tcl_center.tcl"),row.names = F,col.names = F,quote = F,sep = "\n",na="")
