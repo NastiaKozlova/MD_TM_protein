@@ -19,7 +19,7 @@ if(!dir.exists("make_picture_tcl_surf")){dir.create("make_picture_tcl_surf")}
 df_merge<-df_merge%>%mutate(complex_name=paste0(receptor,"_",ligand,"_",size_of_group))
 
 for (i in 1:nrow(df_merge)) {
-  df_hbonds<-read.csv(paste0(part_analysis,"/hbonds.csv"),stringsAsFactors = F)
+  df_hbonds<-read.csv(paste0("din/charmm-gui-",df_merge$receptor[i],"/hbonds_8.csv"),stringsAsFactors = F)
   df_hbonds<-df_hbonds%>%filter(persent>50)
   if(file.exists(paste0("interaction_surf/",df_merge$name.x[i],".csv"))){
     df_interactions<-read.csv(paste0("interaction_surf/",df_merge$name.x[i],".csv"),stringsAsFactors = F)
