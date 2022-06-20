@@ -5,7 +5,7 @@ library(dplyr)
 library(ggplot2)
 paste0(part_analysis)
 
-df_merge<-read.csv(paste0(part_analysis,"din/","df_merge_structure_log_surf.csv"),stringsAsFactors = F)
+df_merge<-read.csv(paste0(part_analysis,"din/","df_merge_structure_log.csv"),stringsAsFactors = F)
 df_merge<-df_merge%>%select(name.x,receptor,ligand,size_of_group)
 df_merge<-unique(df_merge)
 if(dir.exists(paste0(part_analysis,"din/complex_structure_surf"))) {system(command = paste0("rm -r ",part_analysis,"din/complex_structure_surf"),ignore.stdout=T,wait = T)}
