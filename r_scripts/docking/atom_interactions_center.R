@@ -3,7 +3,9 @@ part_analysis <- commandArgs(trailingOnly=TRUE)
 library(bio3d)
 library(dplyr)
 library(ggplot2)
-
+part_hbonds<-strsplit(part_analysis,split = "/",fixed=T)[[1]]
+part_hbonds<-paste(part_hbonds[1:(length(part_hbonds)-2)],collapse = "/")
+part_hbonds<-paste0(part_hbonds,"/")
 df_all<-read.csv(paste0(part_analysis,"df_all.csv"),stringsAsFactors = F)
 df_all<-df_all%>%select(receptor,ligand)
 df_all<-unique(df_all)
@@ -17,8 +19,9 @@ if (dir.exists(paste0("make_picture_tcl_center/"))) {system(command = paste0("rm
 if(!dir.exists("make_picture_tcl_center")){dir.create("make_picture_tcl_center")}
 df_merge<-df_merge%>%mutate(complex_name=paste0(receptor,"_",ligand,"_",size_of_group))
 i<-1
+j<-1
 for (i in 1:nrow(df_merge)) {
-  df_hbonds<-read.csv(paste0(part_analysis,"/hbonds.csv"),stringsAsFactors = F)
+  df_hbonds<-read.csv(paste0(part_hbonds,"din/",df_merge$receptor[i],"/hbonds_8.csv"),stringsAsFactors = F)
   df_hbonds<-df_hbonds%>%filter(persent>50)
   if(file.exists(paste0("interaction_center/",df_merge$name.x[i],".csv"))){
     df_interactions<-read.csv(paste0("interaction_center/",df_merge$name.x[i],".csv"),stringsAsFactors = F)
