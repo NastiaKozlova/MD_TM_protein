@@ -70,5 +70,5 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/merg
 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/merge_interactions.R ",part_name),ignore.stdout=T,wait = T)
 
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/fin_structure_prepare.R ",part_name),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/complex_structure_surf.R ",part_name),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/atom_interactions.R ",part_name),ignore.stdout=T,wait = T)
