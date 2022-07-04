@@ -66,14 +66,7 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/make_plots_R
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/count comparition.R ",part_start),ignore.stdout=T,wait = T)
 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/domain_interactions.R ",part_start),ignore.stdout=T,wait = T)
-#system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/amino_analysis.R ",part_start),ignore.stdout=T,wait = T)
-#if(surphase_conut){
-#  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/fin_structure_prepare.R ",part_start),ignore.stdout=T,wait = T)
-#  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/atom_interactions.R ",part_start),ignore.stdout=T,wait = T)
-#}else{
-#  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/fin_structure_prepare_center.R ",part_start),ignore.stdout=T,wait = T)
-#  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/atom_interactions_center.R ",part_start),ignore.stdout=T,wait = T)
-#}
+
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/claster_analysis_frame_data.R ",part_start),ignore.stdout=T,wait = T)
 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/frame_statistical_analysis_two_systems.R ",part_start),ignore.stdout=T,wait = T)
