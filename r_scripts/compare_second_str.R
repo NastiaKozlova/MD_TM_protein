@@ -50,7 +50,9 @@ for (p in 1:length(v_part)) {
     frame_number<-length(list.files(path = main))-1
     if (file.exists(paste0(main,"/frame_",0,".pdb"))){
       pdb<-read.pdb(paste0(main,"/frame_",0,".pdb"))
-      protein.inds <- atom.select(pdb, "protein",resno=2:689)
+      start<-min(pdb$atom$resno)
+      finish<-max(pdb$atom$resno)
+      protein.inds <- atom.select(pdb, "protein",resno=(start+1):(finish-1))
       backpdb <- trim.pdb(pdb, protein.inds)
       df_pdb_all<-Extract_Secondary_Structure_From_Pdb(pdb = backpdb,number_of_pdb = 0)
       for (i in 1:frame_number) {
