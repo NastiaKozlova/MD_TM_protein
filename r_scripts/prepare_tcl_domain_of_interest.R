@@ -73,7 +73,7 @@ for (j in 1:length(v_parta)) {
       df_tcl[1,2]<-paste0('mol addfile {namd/step',8,'.dcd} type {dcd} first 0 last -1 step 1 waitfor all')
       df_tcl[1,3]<-paste0('set protein_0 [atomselect top "protein and name CA" frame 0]')
       df_tcl[1,4]<-paste0('set n [molinfo top get numframes]')
-      df_tcl[1,5]<-paste0('set output [open din/RMSD/',8,'.txt w] ')
+      df_tcl[1,5]<-paste0('set output [open din/RMSD/',8,"_",df_domains_of_interest$domain_name[p],'.txt w] ')
       df_tcl[1,6]<-paste0('for {set i 0} {$i < $n} {incr i} {')
       df_tcl[1,7]<-paste0('set protein_i [atomselect top "protein and name CA and ',
                           'resid>',(df_domains_of_interest$start[p]-1),
@@ -81,7 +81,7 @@ for (j in 1:length(v_parta)) {
       df_tcl[1,8]<-paste0('set rmsd [measure rmsd $protein_0 $protein_i]')
       df_tcl[1,9]<-paste0('puts $output "$i $rmsd"')
       df_tcl[1,10]<-paste0('}')
-      df_tcl[1,11]<-paste0('puts "output file: $n din/RMSD/',8,'.txt"')
+      df_tcl[1,11]<-paste0('puts "output file: $n din/RMSD/',8,"_",df_domains_of_interest$domain_name[p],'.txt"')
       df_tcl[1,12]<-paste0('close $output')
       df_tcl[1,13]<-paste0('mol delete all\n\n\n exit now')
       write.table(df_tcl,file =paste0(part_start,'MD_analysis/tcl/',parta[j],"_",df_domains_of_interest$domain_name[p],'_RMSD_',8,'.tcl'),sep = '\n', quote = F,na = '' ,row.names = F,col.names = F)
@@ -101,7 +101,7 @@ for (j in 1:length(v_parta)) {
       df_tcl[9,1]<-paste0('set sasa_protein [measure sasa 1.4 $protein]')
       df_tcl[10,1]<-paste0('puts $output " $i $sasa_protein "')
       df_tcl[11,1]<-paste0('}')
-      df_tcl[12,1]<-paste0('puts "output file: $n din/SASA/',8,'.txt"')
+      df_tcl[12,1]<-paste0('puts "output file: $n din/SASA/',8,"_",df_domains_of_interest$domain_name[p],'.txt"')
       df_tcl[13,1]<-paste0('close $output')
       df_tcl[14,1]<-paste0('mol delete all\n\n\n exit now')
       write.table(df_tcl,file =paste0(part_start,'MD_analysis/tcl/',parta[j],"_",df_domains_of_interest$domain_name[p],'_SASA_',8,'.tcl'),sep = '\n', quote = F,na = '' ,row.names = F,col.names = F)
