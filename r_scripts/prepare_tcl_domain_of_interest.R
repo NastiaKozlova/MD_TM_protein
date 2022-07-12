@@ -71,7 +71,7 @@ for (j in 1:length(v_parta)) {
       df_tcl<-data.frame(matrix(nrow = 1,ncol = 13))
       df_tcl[1,1]<-paste('cd', part,'\nmol new {namd/step5_input.psf} type {psf}')
       df_tcl[1,2]<-paste0('mol addfile {namd/step',8,'.dcd} type {dcd} first 0 last -1 step 1 waitfor all')
-      df_tcl[1,3]<-paste0('set protein_0 [atomselect top "protein and name CA  ',
+      df_tcl[1,3]<-paste0('set protein_0 [atomselect top "protein and name CA  and ',
                           'resid>',(df_domains_of_interest$start[p]-1),
                           ' and resid<',(df_domains_of_interest$finish[p]+1),'" frame 0]')
       df_tcl[1,4]<-paste0('set n [molinfo top get numframes]')
