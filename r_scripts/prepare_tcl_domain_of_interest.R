@@ -97,7 +97,7 @@ for (j in 1:length(v_parta)) {
                           'resid>',(df_domains_of_interest$start[p]-1),
                           ' and resid<',(df_domains_of_interest$finish[p]+1),'"]')
       df_tcl[5,1]<-paste0('set n [molinfo top get numframes]')
-      df_tcl[6,1]<-paste0('set output [open din/SASA/',8,'.txt w] ')
+      df_tcl[6,1]<-paste0('set output [open din/SASA/',8,"_",df_domains_of_interest$domain_name[p],'.txt w] ')
       df_tcl[7,1]<-paste0('for {set i 0} {$i < $n} {incr i} {')
       df_tcl[8,1]<-paste0('molinfo top set frame $i')
       df_tcl[9,1]<-paste0('set sasa_protein [measure sasa 1.4 $protein]')
