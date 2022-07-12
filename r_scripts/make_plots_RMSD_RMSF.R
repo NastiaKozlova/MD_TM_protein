@@ -40,155 +40,156 @@ for (i in 1:nrow(df_all_systems)) {
   for (main in main_part) {
     if (file.exists(paste0(parta,df_all_systems$fin_name[i],"/","din/Energy/protein_",main,".txt"))){
       if (file.exists(paste0(part,"din/",df_all_systems$fin_name[i],"/",main,"_time_Ramachadran.csv"))){
-        df_all_systems$Progress[i]<-"done"
-        df_second_structure<-read.csv(paste0(part,"din/",df_all_systems$fin_name[i],"/Second_structure_",main,".csv"),stringsAsFactors = F)
-        df_second_structure<-read.csv(paste0(part,"din/",df_all_systems$fin_name[i],"/Second_structure_",main,".csv"),stringsAsFactors = F)
-        
-        df_RMSF <- read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/RMSF/",main,".txt"), sep="", header=F, na.strings ="", stringsAsFactors= F)
-        colnames(df_RMSF)<-"RMSF"
-        df_RMSF <- df_RMSF%>% mutate(Resid=c(1:nrow(df_RMSF)))
-        
-        df_ramachadran <-read.csv(paste0(part,"din/",df_all_systems$fin_name[i],"/",main,"_time_Ramachadran.csv"),stringsAsFactors = F)
-        df_ramachadran<-df_ramachadran%>%mutate(frame=number)
-        df_Energy_protein<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/Energy/protein_",main,".txt"), header=T, na.strings ="", stringsAsFactors= F)
-        colnames(df_Energy_protein)<-c(colnames(df_Energy_protein)[1:2],paste0("protein_",colnames(df_Energy_protein)[3:ncol(df_Energy_protein)]))
-        df_Energy_protein_water<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/Energy/protein_water_energy_",main,".txt"), header=T, na.strings ="", stringsAsFactors= F)
-        colnames(df_Energy_protein_water)<-c(colnames(df_Energy_protein_water)[1:2],paste0("protein_water_",colnames(df_Energy_protein_water)[3:ncol(df_Energy_protein_water)]))
-        df_Energy_protein_lipids<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/Energy/protein_lipid_energy_",main,".txt"), header=T, na.strings ="", stringsAsFactors= F)
-        colnames(df_Energy_protein_lipids)<-c(colnames(df_Energy_protein_lipids)[1:2],paste0("protein_lipid_",colnames(df_Energy_protein_lipids)[3:ncol(df_Energy_protein_lipids)]))
-        df_fin<-full_join(df_ramachadran,df_Energy_protein,by=c("frame"="Frame"))
-        df_fin$time<-NULL
-        df_fin$Time<-NULL
-        df_fin<-left_join(df_fin,df_Energy_protein_water,by=c("frame"="Frame"))
-        df_fin$Time<-NULL
-        df_fin$time<-NULL
-        df_fin<-left_join(df_fin,df_Energy_protein_lipids,by=c("frame"="Frame"))
-        df_fin$Time<-NULL
-        df_fin$time<-NULL
-        df_SASA<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/SASA/",main,".txt"), sep="", header=F, na.strings ="", stringsAsFactors= F)
-         colnames(df_SASA)<-c("frame","SASA_protein")
-        df_fin<-left_join(df_fin,df_SASA,by=c("frame"))
-        df_fin$Time<-NULL
-        df_fin$time<-NULL
-        df_RMSD_protein<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/RMSD/",main,".txt"), sep="", header=F, na.strings ="", stringsAsFactors= F)
-        colnames(df_RMSD_protein)<-c("frame","RMSD_protein")
-        df_fin<-left_join(df_fin,df_RMSD_protein,by=c("frame"))
-        df_fin$Time<-NULL
-        df_fin$time<-NULL 
-        df_fin<-df_fin%>%mutate(frame=frame/10)
-        write.csv(df_fin,paste0(part,"fin_data/frame_data/",df_all_systems$fin_name[i],".csv"),row.names = F)
-        p_second<-ggplot(data = df_second_structure)+
-          ggtitle(paste0("Second structure ",main))+
-          labs(x = "Number of aminoasids", y = "Time (ns)")+
-          geom_rect(aes(xmin = start, ymin = level_min, xmax= finish, ymax = level_max, colour = type,fill=type))+
-          scale_color_manual(values = v_pallete)+ scale_fill_manual(values = v_pallete)+
-          scale_x_continuous(breaks = test_10, labels =  test_10)+
-          scale_y_continuous(breaks = test_10, minor_breaks = NULL)+
-          theme_bw()+theme(legend.position = "top")+guides(fill="none",colour="none")
-        p_RMSD<-ggplot(data = df_fin)+
-          ggtitle(paste0("RMSD"))+
-          labs(y = "RMSD (A)", x = "Time (ns)")+
-          geom_line(aes(x = frame, y = RMSD_protein))+
-          theme_bw()+coord_flip()+
-          scale_x_continuous(breaks = test_10, labels =  test_10)+
-          geom_hline(yintercept = median(df_fin$RMSD_protein,na.rm = T))
-        p_sasa<-ggplot(data = df_fin)+
-          labs(title=paste("SASA"),
-               x = "Time(ns)", y = "SASA (A^2)") +
-          geom_line(aes(x = frame,y=SASA_protein))+
-          scale_x_continuous(breaks = test_10, labels =  test_10)+
-          theme_bw()+coord_flip()+
-          geom_hline(yintercept = median(df_fin$SASA_protein,na.rm = T))
-        
-        p_Elec<-ggplot(data = df_fin)+
-          labs(title=paste("Electrostatic energy"),
-               x = "Time(ns)", y = "Electrostatic energy (kcal/mol)") +
-          geom_line(aes(x = frame,y=protein_Elec))+
-          scale_x_continuous(breaks = test_10, labels =  test_10)+
-          theme_bw()+coord_flip()+
-          geom_hline(yintercept = median(df_fin$protein_Elec))
-        p_ramachadran<-ggplot(data = df_fin)+
-          labs(title=paste("Ramachadran"), x = "Time(ns)", y = "Ramachadran") +
-          geom_line(aes(x = frame,y=ramachadran))+
-          scale_x_continuous(breaks = test_10, labels =  test_10)+
-          theme_bw()+coord_flip()+
-          geom_hline(yintercept = median(df_fin$ramachadran,na.rm = T))
-        
-        p_Total<-ggplot(data = df_fin)+
-          labs(title=paste("Total energy"),
-               x = "Time(ns)", y = "Total energy (kcal/mol)") +
-          geom_line(aes(x = frame,y=protein_Total))+
-          scale_x_continuous(breaks = test_10, labels =  test_10)+
-          theme_bw()+coord_flip()+
-          geom_hline(yintercept = median(df_fin$protein_Total,na.rm = T))
-        p_VdW<-ggplot(data = df_fin)+
-          labs(title=paste("VdW"),
-               x = "Time(ns)", y = "VdW (kcal/mol)") +
-          geom_line(aes(x = frame,y=protein_VdW))+
-          scale_x_continuous(breaks = test_10, labels =  test_10)+
-          theme_bw()+coord_flip()+
-          geom_hline(yintercept = median(df_fin$protein_VdW,na.rm = T))
-        p_rmsd_histo<-ggplot(data = df_fin)+
-          ggtitle(paste0("RMSD"))+
-          labs(x = "RMSD (A)")+
-          geom_freqpoly(aes(x = RMSD_protein))+
-          theme_bw()+scale_fill_grey()+
-          geom_text(x=median(df_fin$RMSD_protein), y=20,label=round(median(df_fin$RMSD_protein,na.rm = T),digits = 1))+
-          scale_x_continuous(breaks = test_10, labels =  test_10)+
-          geom_vline(xintercept = median(df_fin$RMSD_protein,na.rm = T))
-        p_sasa_histo<-ggplot(data = df_fin)+
-          labs(title="SASA", x = "SASA (A^2)") +
-          geom_freqpoly(aes(x = SASA_protein))+
-          theme_bw()+
-          geom_text(x=median(df_fin$SASA_protein), y=20,label=round(median(df_fin$SASA_protein,na.rm = T),digits = 1))+
-          scale_x_continuous(breaks = test_10, labels =  test_10)+
-          geom_vline(xintercept = median(df_fin$SASA_protein,na.rm = T))
-        p_Elec_histo<-ggplot(data = df_fin)+
-          labs(title=paste("Electrostatic energy"),
-               y = "", x = "Electrostatic energy (kcal/mol)") +
-          geom_freqpoly(aes(x = protein_Elec))+
-          theme_bw()+
-          geom_text(x=median(df_fin$protein_Elec,na.rm = T), y=20,label=round(median(df_fin$protein_Elec,na.rm = T),digits = 1))+
-          scale_x_continuous(breaks = test_10, labels =  test_10)+
-          geom_vline(xintercept = median(df_fin$protein_Elec,na.rm = T))
-        p_ramachadran_histo <- ggplot(data = df_fin)+
-          labs(title=paste("Ramachadran"),
-               y = "", x = "Ramachadran") +
-          geom_freqpoly(aes(x = ramachadran),bins=(max(df_fin$ramachadran)-min(df_fin$ramachadran)))+
-          theme_bw()+#coord_flip()+
-          geom_text(x=median(df_fin$ramachadran,na.rm = T), y=20,label=round(median(df_fin$ramachadran,na.rm = T),digits = 1))+
-          scale_x_continuous(breaks = test_10, labels =  test_10)+
-          geom_vline(xintercept = median(df_fin$ramachadran,na.rm = T))
-        p_Total_histo <- ggplot(data = df_fin)+
-          labs(title=paste("Total energy"), y = "", x = "Total energy (kcal/mol)") +
-          geom_freqpoly(aes(x = protein_Total))+
-          theme_bw()+
-          geom_vline(xintercept = median(df_fin$protein_Total,na.rm = T))+
-          scale_x_continuous(breaks = test_10, labels =  test_10)+
-          geom_text(x=median(df_fin$protein_Total,na.rm = T), y=20,label=round(median(df_fin$protein_Total,na.rm = T),digits = 1))
-        p_VdW_histo<-ggplot(data = df_fin)+
-          labs(title=paste("VdW"), x = "VdW (kcal/mol)") +
-          geom_freqpoly(aes(x =protein_VdW))+
-          scale_x_continuous(breaks = test_10, labels =  test_10)+
-          theme_bw()+
-          geom_text(x=median(df_fin$protein_VdW,na.rm = T), y=20,label=round(median(df_fin$protein_VdW,na.rm = T),digits = 1))+
-          geom_vline(xintercept = median(df_fin$protein_VdW,na.rm = T))
-        p_rmsf<-ggplot(data = df_RMSF)+
-          ggtitle(paste0("RMSF"))+
-          labs(x = "Number of aminoasids", y = "RMSF (A)")+
-          scale_x_continuous(breaks = test_10, labels =  test_10)+
-          #labs(x = "Номер аминокислоты", y = "RMSF (A)")+
-          geom_line(aes(x = Resid, y = RMSF))+
-          theme_bw()
-        p_all<-plot_grid(p_sasa,       p_RMSD,      p_ramachadran,      p_Total,   p_second,
-                         p_sasa_histo, p_rmsd_histo,p_ramachadran_histo,p_Total_histo,  p_rmsf,
-                         ncol=5,
-                         rel_heights = c(4.5,1),rel_widths = c(1,1,1,1,5),
-                         labels = c("A","B","C","D","E",
-                                    "", "", "", "",""),align="hv")
-        ggsave(p_all,   filename = paste0(part,"fin_plots/frame_plots/",df_all_systems$fin_name[i],"_disulfid_bonds_",df_all_systems$disulfid_bonds[i],"_glyco_",df_all_systems$Glyco[i],"_",df_all_systems$Membrane[i],"_",df_all_systems$Structure[i],".png"), width = 60, height = 40, units = c("cm"), dpi = 200 ) 
-        
-        
+        if (file.exists(paste0(parta,df_all_systems$fin_name[i],"/","din/RMSF/",main,".txt"))){
+          df_all_systems$Progress[i]<-"done"
+          df_second_structure<-read.csv(paste0(part,"din/",df_all_systems$fin_name[i],"/Second_structure_",main,".csv"),stringsAsFactors = F)
+          df_second_structure<-read.csv(paste0(part,"din/",df_all_systems$fin_name[i],"/Second_structure_",main,".csv"),stringsAsFactors = F)
+          
+          df_RMSF <- read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/RMSF/",main,".txt"), sep="", header=F, na.strings ="", stringsAsFactors= F)
+          colnames(df_RMSF)<-"RMSF"
+          df_RMSF <- df_RMSF%>% mutate(Resid=c(1:nrow(df_RMSF)))
+          
+          df_ramachadran <-read.csv(paste0(part,"din/",df_all_systems$fin_name[i],"/",main,"_time_Ramachadran.csv"),stringsAsFactors = F)
+          df_ramachadran<-df_ramachadran%>%mutate(frame=number)
+          df_Energy_protein<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/Energy/protein_",main,".txt"), header=T, na.strings ="", stringsAsFactors= F)
+          colnames(df_Energy_protein)<-c(colnames(df_Energy_protein)[1:2],paste0("protein_",colnames(df_Energy_protein)[3:ncol(df_Energy_protein)]))
+          df_Energy_protein_water<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/Energy/protein_water_energy_",main,".txt"), header=T, na.strings ="", stringsAsFactors= F)
+          colnames(df_Energy_protein_water)<-c(colnames(df_Energy_protein_water)[1:2],paste0("protein_water_",colnames(df_Energy_protein_water)[3:ncol(df_Energy_protein_water)]))
+          df_Energy_protein_lipids<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/Energy/protein_lipid_energy_",main,".txt"), header=T, na.strings ="", stringsAsFactors= F)
+          colnames(df_Energy_protein_lipids)<-c(colnames(df_Energy_protein_lipids)[1:2],paste0("protein_lipid_",colnames(df_Energy_protein_lipids)[3:ncol(df_Energy_protein_lipids)]))
+          df_fin<-full_join(df_ramachadran,df_Energy_protein,by=c("frame"="Frame"))
+          df_fin$time<-NULL
+          df_fin$Time<-NULL
+          df_fin<-left_join(df_fin,df_Energy_protein_water,by=c("frame"="Frame"))
+          df_fin$Time<-NULL
+          df_fin$time<-NULL
+          df_fin<-left_join(df_fin,df_Energy_protein_lipids,by=c("frame"="Frame"))
+          df_fin$Time<-NULL
+          df_fin$time<-NULL
+          df_SASA<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/SASA/",main,".txt"), sep="", header=F, na.strings ="", stringsAsFactors= F)
+          colnames(df_SASA)<-c("frame","SASA_protein")
+          df_fin<-left_join(df_fin,df_SASA,by=c("frame"))
+          df_fin$Time<-NULL
+          df_fin$time<-NULL
+          df_RMSD_protein<-read.table(paste0(parta,df_all_systems$fin_name[i],"/","din/RMSD/",main,".txt"), sep="", header=F, na.strings ="", stringsAsFactors= F)
+          colnames(df_RMSD_protein)<-c("frame","RMSD_protein")
+          df_fin<-left_join(df_fin,df_RMSD_protein,by=c("frame"))
+          df_fin$Time<-NULL
+          df_fin$time<-NULL 
+          df_fin<-df_fin%>%mutate(frame=frame/10)
+          write.csv(df_fin,paste0(part,"fin_data/frame_data/",df_all_systems$fin_name[i],".csv"),row.names = F)
+          p_second<-ggplot(data = df_second_structure)+
+            ggtitle(paste0("Second structure ",main))+
+            labs(x = "Number of aminoasids", y = "Time (ns)")+
+            geom_rect(aes(xmin = start, ymin = level_min, xmax= finish, ymax = level_max, colour = type,fill=type))+
+            scale_color_manual(values = v_pallete)+ scale_fill_manual(values = v_pallete)+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
+            scale_y_continuous(breaks = test_10, minor_breaks = NULL)+
+            theme_bw()+theme(legend.position = "top")+guides(fill="none",colour="none")
+          p_RMSD<-ggplot(data = df_fin)+
+            ggtitle(paste0("RMSD"))+
+            labs(y = "RMSD (A)", x = "Time (ns)")+
+            geom_line(aes(x = frame, y = RMSD_protein))+
+            theme_bw()+coord_flip()+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
+            geom_hline(yintercept = median(df_fin$RMSD_protein,na.rm = T))
+          p_sasa<-ggplot(data = df_fin)+
+            labs(title=paste("SASA"),
+                 x = "Time(ns)", y = "SASA (A^2)") +
+            geom_line(aes(x = frame,y=SASA_protein))+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
+            theme_bw()+coord_flip()+
+            geom_hline(yintercept = median(df_fin$SASA_protein,na.rm = T))
+          
+          p_Elec<-ggplot(data = df_fin)+
+            labs(title=paste("Electrostatic energy"),
+                 x = "Time(ns)", y = "Electrostatic energy (kcal/mol)") +
+            geom_line(aes(x = frame,y=protein_Elec))+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
+            theme_bw()+coord_flip()+
+            geom_hline(yintercept = median(df_fin$protein_Elec))
+          p_ramachadran<-ggplot(data = df_fin)+
+            labs(title=paste("Ramachadran"), x = "Time(ns)", y = "Ramachadran") +
+            geom_line(aes(x = frame,y=ramachadran))+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
+            theme_bw()+coord_flip()+
+            geom_hline(yintercept = median(df_fin$ramachadran,na.rm = T))
+          
+          p_Total<-ggplot(data = df_fin)+
+            labs(title=paste("Total energy"),
+                 x = "Time(ns)", y = "Total energy (kcal/mol)") +
+            geom_line(aes(x = frame,y=protein_Total))+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
+            theme_bw()+coord_flip()+
+            geom_hline(yintercept = median(df_fin$protein_Total,na.rm = T))
+          p_VdW<-ggplot(data = df_fin)+
+            labs(title=paste("VdW"),
+                 x = "Time(ns)", y = "VdW (kcal/mol)") +
+            geom_line(aes(x = frame,y=protein_VdW))+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
+            theme_bw()+coord_flip()+
+            geom_hline(yintercept = median(df_fin$protein_VdW,na.rm = T))
+          p_rmsd_histo<-ggplot(data = df_fin)+
+            ggtitle(paste0("RMSD"))+
+            labs(x = "RMSD (A)")+
+            geom_freqpoly(aes(x = RMSD_protein))+
+            theme_bw()+scale_fill_grey()+
+            geom_text(x=median(df_fin$RMSD_protein), y=20,label=round(median(df_fin$RMSD_protein,na.rm = T),digits = 1))+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
+            geom_vline(xintercept = median(df_fin$RMSD_protein,na.rm = T))
+          p_sasa_histo<-ggplot(data = df_fin)+
+            labs(title="SASA", x = "SASA (A^2)") +
+            geom_freqpoly(aes(x = SASA_protein))+
+            theme_bw()+
+            geom_text(x=median(df_fin$SASA_protein), y=20,label=round(median(df_fin$SASA_protein,na.rm = T),digits = 1))+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
+            geom_vline(xintercept = median(df_fin$SASA_protein,na.rm = T))
+          p_Elec_histo<-ggplot(data = df_fin)+
+            labs(title=paste("Electrostatic energy"),
+                 y = "", x = "Electrostatic energy (kcal/mol)") +
+            geom_freqpoly(aes(x = protein_Elec))+
+            theme_bw()+
+            geom_text(x=median(df_fin$protein_Elec,na.rm = T), y=20,label=round(median(df_fin$protein_Elec,na.rm = T),digits = 1))+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
+            geom_vline(xintercept = median(df_fin$protein_Elec,na.rm = T))
+          p_ramachadran_histo <- ggplot(data = df_fin)+
+            labs(title=paste("Ramachadran"),
+                 y = "", x = "Ramachadran") +
+            geom_freqpoly(aes(x = ramachadran),bins=(max(df_fin$ramachadran)-min(df_fin$ramachadran)))+
+            theme_bw()+#coord_flip()+
+            geom_text(x=median(df_fin$ramachadran,na.rm = T), y=20,label=round(median(df_fin$ramachadran,na.rm = T),digits = 1))+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
+            geom_vline(xintercept = median(df_fin$ramachadran,na.rm = T))
+          p_Total_histo <- ggplot(data = df_fin)+
+            labs(title=paste("Total energy"), y = "", x = "Total energy (kcal/mol)") +
+            geom_freqpoly(aes(x = protein_Total))+
+            theme_bw()+
+            geom_vline(xintercept = median(df_fin$protein_Total,na.rm = T))+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
+            geom_text(x=median(df_fin$protein_Total,na.rm = T), y=20,label=round(median(df_fin$protein_Total,na.rm = T),digits = 1))
+          p_VdW_histo<-ggplot(data = df_fin)+
+            labs(title=paste("VdW"), x = "VdW (kcal/mol)") +
+            geom_freqpoly(aes(x =protein_VdW))+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
+            theme_bw()+
+            geom_text(x=median(df_fin$protein_VdW,na.rm = T), y=20,label=round(median(df_fin$protein_VdW,na.rm = T),digits = 1))+
+            geom_vline(xintercept = median(df_fin$protein_VdW,na.rm = T))
+          p_rmsf<-ggplot(data = df_RMSF)+
+            ggtitle(paste0("RMSF"))+
+            labs(x = "Number of aminoasids", y = "RMSF (A)")+
+            scale_x_continuous(breaks = test_10, labels =  test_10)+
+            #labs(x = "Номер аминокислоты", y = "RMSF (A)")+
+            geom_line(aes(x = Resid, y = RMSF))+
+            theme_bw()
+          p_all<-plot_grid(p_sasa,       p_RMSD,      p_ramachadran,      p_Total,   p_second,
+                           p_sasa_histo, p_rmsd_histo,p_ramachadran_histo,p_Total_histo,  p_rmsf,
+                           ncol=5,
+                           rel_heights = c(4.5,1),rel_widths = c(1,1,1,1,5),
+                           labels = c("A","B","C","D","E",
+                                      "", "", "", "",""),align="hv")
+          ggsave(p_all,   filename = paste0(part,"fin_plots/frame_plots/",df_all_systems$fin_name[i],"_disulfid_bonds_",df_all_systems$disulfid_bonds[i],"_glyco_",df_all_systems$Glyco[i],"_",df_all_systems$Membrane[i],"_",df_all_systems$Structure[i],".png"), width = 60, height = 40, units = c("cm"), dpi = 200 ) 
+          
+        }
       }
     }
   }
@@ -248,8 +249,8 @@ for (i in 1:nrow(df_all_systems)) {
         df_ring<-df_ring%>%filter(persent_intractions>quantile(df_ring$persent_intractions,probs = 0.75))
         df_ring<-df_ring%>%filter(abs(number.y-number.x)>5)
         df_ring<-df_ring%>%group_by(number.x)%>%mutate(importance_interprotein_intractions=n())
-
-
+        
+        
         df_ring<-df_ring%>%select(number.x,importance_interprotein_intractions)
         df_ring<-unique(df_ring)
         
@@ -299,16 +300,16 @@ for (i in 1:nrow(df_all_systems)) {
   df_system<-df_system%>%filter(receptor==df_all_systems$fin_name[i])
   df_system<-left_join(df_system,df_all_systems,by=c("receptor"="fin_name"))
   df_docking<-read.csv(paste0(part_start,"MD_analysis/docking/docking_first/din/interaction_fin/",
-                            df_system$receptor[1],"_",df_system$ligand[1],".csv"),stringsAsFactors = F)
+                              df_system$receptor[1],"_",df_system$ligand[1],".csv"),stringsAsFactors = F)
   if(nrow(df_system)>1){
-  for (j in 2:nrow(df_system)) {
-    df_docking_add<-read.csv(paste0(part_start,"MD_analysis/docking/docking_first/din/interaction_fin/",
-                                    df_system$receptor[j],"_",df_system$ligand[j],".csv"),stringsAsFactors = F)
-    df_docking<-rbind(df_docking,df_docking_add)
-    df_docking<-unique(df_docking)
+    for (j in 2:nrow(df_system)) {
+      df_docking_add<-read.csv(paste0(part_start,"MD_analysis/docking/docking_first/din/interaction_fin/",
+                                      df_system$receptor[j],"_",df_system$ligand[j],".csv"),stringsAsFactors = F)
+      df_docking<-rbind(df_docking,df_docking_add)
+      df_docking<-unique(df_docking)
     }
   }
-
+  
   df_docking<-df_docking%>%mutate(persent_receptor_ligand_interaction=total_persent_interactions)
   df_docking<-df_docking%>%select(resid,resno,ligand,size_of_group,persent_receptor_ligand_interaction)
   df_docking<-unique(df_docking)
