@@ -1,35 +1,48 @@
 part_name <- commandArgs(trailingOnly=TRUE)
 #group ligand structures
-#part_name<-part_name
+v_test<-strsplit(part_name,split = ",")[[1]]
+part_start<-v_test[1]
+lig<-v_test[2]
+lig<-lig[!is.na(lig)]
 library(bio3d)
-#library(readr)
+library(readr)
 library(dplyr)
 library(ggplot2)
-v_rmsd<-1
-setwd(part_name)
-part<-paste0(part_name,"din/")
+#v_rmsd<-4
+setwd(part_start)
+part<-paste0(part_start,"din/")
 setwd(part)
-if (dir.exists(paste0("groups/"))) { system(command = paste0("rm -r ",part_name,"din/groups/"))}
-if (dir.exists(paste0("groups_fin/"))) {system(command = paste0("rm -r ",part_name,"din/groups_fin/"))}
-if (dir.exists(paste0("str_fin/"))) {system(command = paste0("rm -r ",part_name,"din/str_fin/"))}
 
 if (!dir.exists("groups")) {dir.create("groups")}
 
+df_all<-read.csv(paste0(part_start,"df_all.csv"),stringsAsFactors = F)
 if (!dir.exists("RMSD_analysis/")){dir.create("RMSD_analysis/")}
-df_all<-read.csv(paste0(part_name,"df_all.csv"),stringsAsFactors = F)
 df_all<-df_all%>%mutate(name=paste0(receptor,"_",ligand,"_",center))
+df_all<-df_all%>%mutate(number=0)
 i<-1
-v_RMSD_analysis<-list.files("RMSD_analysis/")
+print(Sys.time())
+for (i in 1:nrow(df_all)) {
+  models<-list.files(paste0("pdb_second/",df_all$name[i]))
+  df_all$number[i]<-length(models)
+}
+df_all<-df_all%>%filter(number>0)
+
+print(Sys.time())
+v_str<-list.files(paste0("RMSD_analysis/"))
+a<-c()
 i<-1
-if(length(v_RMSD_analysis)>0){
-  a<-c()
-  for (i in 1:length(v_RMSD_analysis)) {
-    b<-strsplit(v_RMSD_analysis[i],split = ".",fixed = T)[[1]][1]
+if(length(v_str)>0){
+  for (i in 1:length(v_str)) {
+    b<-strsplit(v_str[i],split = ".",fixed = T)[[1]][1]
     a<-c(a,b)
   }
-  v_RMSD_analysis<-a
-  df_all<-df_all[!df_all$name%in%v_RMSD_analysis,]
+  v_str<-a
+  df_all<-df_all[!df_all$name%in%v_str,]
 }
+if(length(lig)==1){
+  df_all<-df_all%>%filter(ligand==lig)
+}
+
 if(nrow(df_all)>0){
   for (i in 1:nrow(df_all)) {
     models<-list.files(paste0("pdb_second/",df_all$name[i]))
