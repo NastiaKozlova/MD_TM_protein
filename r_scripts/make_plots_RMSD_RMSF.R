@@ -155,7 +155,7 @@ for (i in 1:nrow(df_all_systems)) {
           p_ramachadran_histo <- ggplot(data = df_fin)+
             labs(title=paste("Ramachadran"),
                  y = "", x = "Ramachadran") +
-            geom_freqpoly(aes(x = ramachadran),bins=(max(df_fin$ramachadran)-min(df_fin$ramachadran)))+
+            geom_freqpoly(aes(x = ramachadran),bins=(max(df_fin$ramachadran,na.rm = T)-min(df_fin$ramachadran,na.rm = T)))+
             theme_bw()+#coord_flip()+
             geom_text(x=median(df_fin$ramachadran,na.rm = T), y=20,label=round(median(df_fin$ramachadran,na.rm = T),digits = 1))+
             scale_x_continuous(breaks = test_10, labels =  test_10)+
