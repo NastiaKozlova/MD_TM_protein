@@ -45,19 +45,21 @@ if(length(lig)==1){
 
 if(nrow(df_all)>0){
   for (i in 1:nrow(df_all)) {
-    models<-list.files(paste0("pdb_second/",df_all$name[i]))
-    if(length(models)>1){
-      df_RMSD<-data.frame(matrix(ncol = 2,nrow=length(models)))
-      colnames(df_RMSD)<-c("models","RMSD")
-      df_RMSD$models<-models
-      df_RMSD_all<-full_join(df_RMSD,df_RMSD,by="RMSD")
-      df_RMSD_all<-df_RMSD_all%>%filter(models.x!=models.y)
-      for (j in 1:nrow(df_RMSD_all)) {
-        pdb_1<-read.pdb(paste0("pdb_second/",df_all$name[i],"/",df_RMSD_all$models.x[j]))
-        pdb_2<-read.pdb(paste0("pdb_second/",df_all$name[i],"/",df_RMSD_all$models.y[j]))
-        df_RMSD_all$RMSD[j]<-rmsd(pdb_1,pdb_2)
+    if(!file.exists(paste0("RMSD_analysis/",df_all$name[i],".csv"))){
+      models<-list.files(paste0("pdb_second/",df_all$name[i]))
+      if(length(models)>1){
+        df_RMSD<-data.frame(matrix(ncol = 2,nrow=length(models)))
+        colnames(df_RMSD)<-c("models","RMSD")
+        df_RMSD$models<-models
+        df_RMSD_all<-full_join(df_RMSD,df_RMSD,by="RMSD")
+        df_RMSD_all<-df_RMSD_all%>%filter(models.x!=models.y)
+        for (j in 1:nrow(df_RMSD_all)) {
+          pdb_1<-read.pdb(paste0("pdb_second/",df_all$name[i],"/",df_RMSD_all$models.x[j]))
+          pdb_2<-read.pdb(paste0("pdb_second/",df_all$name[i],"/",df_RMSD_all$models.y[j]))
+          df_RMSD_all$RMSD[j]<-rmsd(pdb_1,pdb_2)
+        }
+        write.csv(df_RMSD_all,paste0("RMSD_analysis/",df_all$name[i],".csv"),row.names = F)
       }
-      write.csv(df_RMSD_all,paste0("RMSD_analysis/",df_all$name[i],".csv"),row.names = F)
     }
   }
 }
