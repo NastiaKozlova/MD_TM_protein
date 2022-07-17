@@ -76,5 +76,6 @@ p<-ggplot()+
   geom_point(aes(x=resno,y=number),data=df_pdb)+
 
   theme_bw()+facet_grid(ligand~., scales = "free")+
-  scale_x_continuous(breaks = v_seq,labels = v_seq)+guides(alpha = "none")
-ggsave(p,   filename = paste0("serf_interactions.png"), width = 60, height = 15, units = c("cm"), dpi = 200 ) 
+  scale_x_continuous(breaks = v_seq,labels = v_seq)+
+  guides(alpha = "none")
+ggsave(p,   filename = paste0("serf_interactions.png"), width = 60, height = 30, units = c("cm"), dpi = 200 ) 
