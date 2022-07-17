@@ -13,7 +13,7 @@ part<-paste0(part_start,"din/")
 setwd(part)
 if(dir.exists(paste0(part,"groups"))) {system(command = paste0("rm -r ",part,"groups"),ignore.stdout=T,wait = T)}
 if(dir.exists(paste0(part,"groups_fin"))) {system(command = paste0("rm -r ",part,"groups_fin"),ignore.stdout=T,wait = T)}
-if(dir.exists(paste0(part,"str"))) {system(command = paste0("rm -r ",part,"str"),ignore.stdout=T,wait = T)}
+#if(dir.exists(paste0(part,"str"))) {system(command = paste0("rm -r ",part,"str"),ignore.stdout=T,wait = T)}
 if(dir.exists(paste0(part,"str_fin"))) {system(command = paste0("rm -r ",part,"str_fin"),ignore.stdout=T,wait = T)}
 if (!dir.exists("groups")) {dir.create("groups")}
 if (!dir.exists("groups_fin")) {dir.create("groups_fin")}
@@ -27,6 +27,10 @@ for (i in 1:nrow(df_all)) {
     print(df_all$name[i])
     if (!dir.exists(paste0("groups/",df_all$name[i]))) {dir.create(paste0("groups/",df_all$name[i]))}
     df_RMSD_all<-read.csv(paste0("RMSD_analysis/",df_all$name[i],".csv"),stringsAsFactors = F)
+    df_RMSD_add<-df_RMSD_all%>%mutate(models.y=models.x)
+    df_RMSD_add<-df_RMSD_add%>%mutate(RMSD=0)
+    df_RMSD_add<-unique(df_RMSD_add)
+    df_RMSD_all<-rbind(df_RMSD_all,df_RMSD_add)
     df_RMSD_all<-df_RMSD_all%>%filter(RMSD<v_rmsd)
     df_RMSD_all<-df_RMSD_all%>%group_by(models.x)%>%mutate(number=n())
     df_RMSD_all<-ungroup(df_RMSD_all)                                             
