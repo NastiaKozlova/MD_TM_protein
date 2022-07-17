@@ -61,14 +61,3 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/dock
 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/RMSD_group_structure.R ",part_name),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/calibration_docking_group_structure.R ",part_name),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_group_structure.R ",part_start),ignore.stdout=T,wait = T)
-
-
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/RMSD_merge_docking_parts.R ",part_name),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/calibration_docking_merge_structure.R ",part_name),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/merge_docking_parts.R ",part_name),ignore.stdout=T,wait = T)
-
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/merge_interactions.R ",part_name),ignore.stdout=T,wait = T)
-
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/complex_structure_surf.R ",part_name),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/atom_interactions.R ",part_name),ignore.stdout=T,wait = T)
