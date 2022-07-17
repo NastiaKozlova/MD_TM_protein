@@ -1,12 +1,15 @@
 part_analysis <- commandArgs(trailingOnly=TRUE)
 name<-strsplit(part_analysis,split = "/",fixed = T)[[1]]
 name<-name[length(name)-2]
+part_TEMP<-strsplit(part_analysis,split = ",")[[1]]
+#part_start<-part_TEMP[1]
+v_rmsd<-as.numeric(part_TEMP[2])
+part_analysis<-part_TEMP[1]
 #group ligand structures
 library(bio3d)
 library(dplyr)
 library(ggplot2)
 library(rstatix)
-v_rmsd<-2.5
 
 setwd(part_analysis)
 df_all<-read.csv(paste0("df_all.csv"),stringsAsFactors = F)
