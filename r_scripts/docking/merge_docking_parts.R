@@ -1,12 +1,16 @@
 part_analysis <- commandArgs(trailingOnly=TRUE)
 #group ligand structures
+part_TEMP<-strsplit(part_analysis,split = ",")[[1]]
+#part_start<-part_TEMP[1]
+v_rmsd<-as.numeric(part_TEMP[2])
+part_analysis<-part_TEMP[1]
+#group ligand structures
 library(bio3d)
 library(dplyr)
 library(ggplot2)
-v_rmsd<-1
-group_size<-2.5
 
 setwd(part_analysis)
+print("kek")
 df_all<-read.csv(paste0(part_analysis,"df_all.csv"),stringsAsFactors = F)
 df_all<-df_all%>%mutate(name=paste0(receptor,"_",ligand,"_",center))
 
@@ -119,11 +123,16 @@ df_structure_RMSD<-ungroup(df_structure_RMSD)
 df_structure_RMSD<-df_structure_RMSD%>%group_by(name.x)%>%mutate(size_of_group=n())
 df_structure_RMSD<-df_structure_RMSD%>%filter(size_of_group>90)
 write.csv(df_structure_RMSD,"df_merge_structure_log.csv",row.names = F)
-a<-seq(from=min(df_structure_RMSD$affinity),to=max(df_structure_RMSD$affinity),by=0.1)
-p<-ggplot(data=df_structure_RMSD)+geom_freqpoly(aes(x=affinity,colour=name.x),binwidth=0.1)+facet_grid(receptor~ligand)+
+df_number<-df_structure_RMSD%>%select( name.x,receptor,ligand,receptor_ligand)
+df_number<-unique(df_number)
+df_number<-df_number%>%group_by(receptor_ligand)%>%mutate(number=1:n())
+df_structure_RMSD<-left_join(df_structure_RMSD,df_number)
+df_structure_RMSD<-df_structure_RMSD%>%mutate(number=as.character(number))
+
+a<-seq(from=min(df_structure_RMSD$affinity),to=max(df_structure_RMSD$affinity),by=0.5)
+p<-ggplot(data=df_structure_RMSD)+geom_freqpoly(aes(x=affinity,colour=number),binwidth=0.1)+facet_grid(receptor~ligand)+
   scale_x_continuous(breaks=a,labels=a)+theme_bw()+guides(color = "none", size = "none")
 ggsave(p,filename = paste0("energy_ligand_receptor_interactions.png"), width = 24, height = 15, units = c("cm"), dpi = 200 )
-
 
 df_structure_RMSD_analysis<-df_structure_RMSD%>%select(name.x,receptor,ligand,size_of_group)
 df_structure_RMSD_analysis<-unique(df_structure_RMSD_analysis)
