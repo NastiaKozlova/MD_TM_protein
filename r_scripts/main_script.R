@@ -43,10 +43,10 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/test_hbonds.
 #/home/nastia/projects/MD_TM_protein/r_scripts/docking/docking_prepare_receptor_pdb.R
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_prepare_receptor_pdb.R ",part_start),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_add_serf_active_center.R ",part_start),ignore.stdout=T,wait = T)
-
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_main.R ",part_start),ignore.stdout=T,wait = T)
 #if you want don't count cout interactions of protein w9ith protein serfuce v_surphase_conut<-F
 if(surphase_conut){
-  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_main.R ",part_start),ignore.stdout=T,wait = T)
+  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_surf.R ",part_start),ignore.stdout=T,wait = T)
 }else{
   system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_convert_active_center.R ",part_start),ignore.stdout=T,wait = T)
   system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_active_center.R ",part_start),ignore.stdout=T,wait = T)
