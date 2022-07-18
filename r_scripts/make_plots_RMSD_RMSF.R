@@ -299,11 +299,11 @@ for (i in 1:nrow(df_all_systems)) {
   df_system<-unique(df_system)
   df_system<-df_system%>%filter(receptor==df_all_systems$fin_name[i])
   df_system<-left_join(df_system,df_all_systems,by=c("receptor"="fin_name"))
-  df_docking<-read.csv(paste0(part_start,"MD_analysis/docking/docking_first/din/interaction_fin/",
+  df_docking<-read.csv(paste0(part_start,"MD_analysis/docking/docking_first/din/interaction_serf/",
                               df_system$receptor[1],"_",df_system$ligand[1],".csv"),stringsAsFactors = F)
   if(nrow(df_system)>1){
     for (j in 2:nrow(df_system)) {
-      df_docking_add<-read.csv(paste0(part_start,"MD_analysis/docking/docking_first/din/interaction_fin/",
+      df_docking_add<-read.csv(paste0(part_start,"MD_analysis/docking/docking_first/din/interaction_serf/",
                                       df_system$receptor[j],"_",df_system$ligand[j],".csv"),stringsAsFactors = F)
       df_docking<-rbind(df_docking,df_docking_add)
       df_docking<-unique(df_docking)
