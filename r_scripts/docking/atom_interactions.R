@@ -5,8 +5,12 @@ library(dplyr)
 library(ggplot2)
 
 part_hbonds<-strsplit(part_analysis,split = "/",fixed=T)[[1]]
+part_topology<-paste(part_hbonds[1:(length(part_hbonds)-3)],collapse = "/")
 part_hbonds<-paste(part_hbonds[1:(length(part_hbonds)-2)],collapse = "/")
+
 part_hbonds<-paste0(part_hbonds,"/")
+part_topology<-paste0(part_topology,"/start/")
+df_topology<-read.csv(paste0(part_topology,"df_topology.csv"),stringsAsFactors = F)
 df_all<-read.csv(paste0(part_analysis,"df_all.csv"),stringsAsFactors = F)
 df_all<-df_all%>%select(receptor,ligand)
 df_all<-unique(df_all)
@@ -32,14 +36,19 @@ for (i in 1:nrow(df_merge)) {
 df_merge<-df_merge%>%filter(exists)
 if(nrow(df_merge)>0){
   for (i in 1:nrow(df_merge)) {
+    df_topology_seclected<-df_topology%>%mutate(selected=F)
     df_hbonds<-read.csv(paste0(part_hbonds,"din/",df_merge$receptor[i],"/hbonds_8.csv"),stringsAsFactors = F)
     df_hbonds<-df_hbonds%>%filter(persent>50)
     
     df_interactions<-read.csv(paste0("interaction_serf/",df_merge$name.x[i],".csv"),stringsAsFactors = F)
-    df_interactions<-df_interactions%>%filter(persent_interactions>0)
+    df_interactions<-df_interactions%>%filter(persent_interactions==100)
     df_interactions<-df_interactions%>%select(resid,resno,persent_interactions)
     df_interactions<-unique(df_interactions)
-    
+    for (p in 1:nrow(df_topology_seclected)) {
+      v_domain<-c(df_topology_seclected$seq_beg[p]:df_topology_seclected$seq_end)
+      df_topology_seclected$selected[length(df_interactions$resno%in%v_domain)>0]<-T
+    }
+    df_topology_seclected<-df_topology_seclected%>%filter(selected)
     receptor_name<-paste0(part_analysis,"receptor_start/",df_merge$receptor[i],".pdb")
     ligand_name<-paste0(part_name,"str_fin/",df_merge$name.x[i])
     protein<-read.pdb(receptor_name)
@@ -115,6 +124,13 @@ if(nrow(df_merge)>0){
         df_tcl[(p+1),3]<-paste0('label add Bonds ',(i-1),'/$atomID1 ',(i-1),'/$atomID2')
       }
     }
+    v_selected<-c()
+    for (q in 1:nrow(df_topology_seclected)) {
+      v_selected<-c(v_selected,df_topology_seclected$seq_beg[q]:df_topology_seclected$seq_end[q])
+    }
+    df_tcl[p+2,1]<-paste0('mol modselect 0 ',i-1,' protein and resid ',v_selected,'\n',
+                        'mol modmaterial 0 ',(i-1),' Opaque\n',
+                        'mol modstyle 0 ' ,i-1, ' NewCartoon\n')#,
     df_tcl[is.na(df_tcl)]<-""
     write.csv(df_tcl,paste0("make_picture_tcl_surf/",df_merge$name.x[i],".tcl"),row.names = F)
   }
