@@ -181,11 +181,11 @@ for (i in 1:nrow(df_merge)) {
                         'mol modmaterial 7 ',(i-1),' Opaque\n',
                         'mol modstyle 7 ',(i-1),' NewCartoon \n',
                         'mol modcolor 7 ',(i-1),' ColorID 16\n')#,
-  #df_tcl[p+2,6]<-paste0('mol addrep ',(i-1),'\n',
-  #                      'mol modselect 8 ',i-1,' protein and resid ',paste0(unique(df_hbonds$number),collapse = ' '),'\n',
-  #                      'mol modmaterial 8 ',(i-1),' Transparent\n',
-  #                      'mol modstyle 8 ',(i-1),' QuickSurf \n',
-  #                      'mol modcolor 8 ',(i-1),' Name\n')#,
+  df_tcl[p+2,6]<-paste0('mol addrep ',(i-1),'\n',
+                        'mol modselect 8 ',i-1,' protein and resid ',paste0(unique(df_hbonds$number),collapse = ' '),'\n',
+                        'mol modmaterial 8 ',(i-1),' Transparent\n',
+                        'mol modstyle 8 ',(i-1),' QuickSurf \n',
+                        'mol modcolor 8 ',(i-1),' ResType\n')#,
   
 
   df_tcl[is.na(df_tcl)]<-""
