@@ -23,7 +23,9 @@ if(file.exists("start/domains_of_interest.csv")){
 }
 #check installation of dssp
 #sudo apt-get install dssp may help
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/compare_second_str.R ",part_start),ignore.stdout=T,wait = T) 
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/compare_second_str.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/analysis_second_str.R ",part_start),ignore.stdout=T,wait = T)
+
 #rama_4.csv were produse form
 #https://www.ebi.ac.uk/thornton-srv/software/PROCHECK/nmr_manual/parameters/manopt_01.html
 #install open babel sudo apt-get install openbabel
