@@ -61,3 +61,12 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/dock
 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/RMSD_group_structure.R ",part_name),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/calibration_docking_group_structure.R ",part_name),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_scriprs,"docking_group_structure.R ",part_analysis,",",1),ignore.stdout=T,wait = T)
+
+system(command = paste0("Rscript --vanilla  ",part_scriprs,"RMSD_merge_docking_parts.R ",part_analysis),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_scriprs,"calibration_merge_structure.R ",part_analysis),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_scriprs,"merge_docking_parts.R ",part_analysis),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_scriprs,"merge_interactions.R ",part_analysis),ignore.stdout=T,wait = T)
+
+system(command = paste0("Rscript --vanilla  ",part_scriprs,"complex_structure_surf.R ",part_analysis),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_scriprs,"atom_interactions_surf.R ",part_analysis),ignore.stdout=T,wait = T)
