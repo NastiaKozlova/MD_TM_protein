@@ -101,7 +101,14 @@ for (j in 1:length(df_all$name)) {
     }
   }
 }
-
+df_RMSD<-read.csv(paste0("groups_fin/",df_all$name[1],".csv"),stringsAsFactors = F)
+for (j in 2:length(df_all$name)) {
+  if(file.exists(paste0("groups_fin/",df_all$name[j],".csv"))){
+    df_RMSD_add<-read.csv(paste0("groups_fin/",df_all$name[j],".csv"),stringsAsFactors = F)
+    df_RMSD<-rbind(df_RMSD,df_RMSD_add)
+  }
+}
+write.csv(df_RMSD,"RMSD_group.csv",row.names = F)
 
 #energy bonding
 i<-1
