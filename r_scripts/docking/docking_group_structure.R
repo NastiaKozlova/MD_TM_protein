@@ -108,6 +108,7 @@ for (j in 2:length(df_all$name)) {
     df_RMSD<-rbind(df_RMSD,df_RMSD_add)
   }
 }
+df_RMSD<-left_join(df_RMSD,df_all,by=c("ligand_center"="name"))
 write.csv(df_RMSD,"RMSD_group.csv",row.names = F)
 
 #energy bonding
