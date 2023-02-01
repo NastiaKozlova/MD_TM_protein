@@ -55,6 +55,7 @@ df_RMSD_merged<-ungroup(df_RMSD_merged)
 df_RMSD_merged<-df_RMSD_merged%>%select(RMSD_new,group_new)
 df_RMSD_merged<-unique(df_RMSD_merged)
 p<-ggplot(data=df_RMSD_merged)+
+  labs(x="RMSD, A",y="count")+
   geom_line(aes(x=RMSD_new,y=group_new))+
   geom_point(aes(x=RMSD_new,y=group_new))+
   theme_bw()+
