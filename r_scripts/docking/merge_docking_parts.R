@@ -129,9 +129,13 @@ df_number<-df_number%>%group_by(receptor_ligand)%>%mutate(number=1:n())
 df_structure_RMSD<-left_join(df_structure_RMSD,df_number)
 df_structure_RMSD<-df_structure_RMSD%>%mutate(number=as.character(number))
 
-a<-seq(from=min(df_structure_RMSD$affinity),to=max(df_structure_RMSD$affinity),by=0.5)
-p<-ggplot(data=df_structure_RMSD)+geom_freqpoly(aes(x=affinity,colour=number),binwidth=0.1)+facet_grid(receptor~ligand)+
-  scale_x_continuous(breaks=a,labels=a)+theme_bw()+guides(color = "none", size = "none")
+a<-seq(from=min(df_structure_RMSD$affinity,na.rm = T),to=max(df_structure_RMSD$affinity,na.rm = T),by=0.5)
+p<-ggplot(data=df_structure_RMSD)+
+  labs(x="Affinity, Kkal/mol",y="count")+
+  geom_freqpoly(aes(x=affinity,colour=number),binwidth=0.1)+
+  facet_grid(receptor~ligand)+
+  scale_x_continuous(breaks=a,labels=a)+theme_bw()+
+  guides(color = "none", size = "none")
 ggsave(p,filename = paste0("energy_ligand_receptor_interactions.png"), width = 24, height = 15, units = c("cm"), dpi = 200 )
 
 df_structure_RMSD_analysis<-df_structure_RMSD%>%select(name.x,receptor,ligand,size_of_group)
