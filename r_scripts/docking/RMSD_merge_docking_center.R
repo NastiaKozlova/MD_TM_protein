@@ -59,13 +59,12 @@ df_analysis<-unique(df_analysis)
 df_analysis<-df_analysis%>%mutate(receptor_ligand=paste0(receptor,"_",ligand))
 q<-1
 for (q in 1:nrow(df_analysis)) {
-#  df_structure_RMSD_TEMP<-df_structure_RMSD%>%filter(receptor==df_analysis$receptor[q])
-#  df_structure_RMSD_TEMP<-df_structure_RMSD_TEMP%>%filter(ligand==df_analysis$ligand[q])
+  df_structure_RMSD_TEMP<-df_structure_RMSD%>%filter(receptor==df_analysis$receptor[q])
+  df_structure_RMSD_TEMP<-df_structure_RMSD_TEMP%>%filter(ligand==df_analysis$ligand[q])
   
 #  group_size<-round(nrow(df_structure_RMSD_TEMP)/100,digits = 0)
   if(!file.exists(paste0("RMSD_merged_center/",df_analysis$receptor_ligand[q],".csv"))){
     df_structure_RMSD_analysis<-left_join(df_structure_RMSD_TEMP,df_structure_RMSD_TEMP,by=c("receptor","ligand","RMSD"))
-    #   df_structure_RMSD_analysis<-df_structure_RMSD_analysis%>%filter(name.x!=name.y)
     
     for (j in 1:nrow(df_structure_RMSD_analysis)) {
       pdb_1<-read.pdb(paste0("str_fin/",df_structure_RMSD_analysis$name.x[j]))
