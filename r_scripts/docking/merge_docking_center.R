@@ -143,8 +143,9 @@ df_structure_RMSD<-ungroup(df_structure_RMSD)
 df_structure_RMSD<-df_structure_RMSD%>%group_by(name.x)%>%mutate(size_of_group=n())
 #df_structure_RMSD<-df_structure_RMSD%>%filter(size_of_group>90)
 write.csv(df_structure_RMSD,"df_merge_structure_log_center.csv",row.names = F)
-a<-seq(from=min(df_structure_RMSD$affinity),to=max(df_structure_RMSD$affinity),by=0.1)
-p<-ggplot(data=df_structure_RMSD)+geom_freqpoly(aes(x=affinity,colour=name.x),binwidth=0.1)+facet_grid(receptor~ligand)+
+a<-seq(from=round(min(df_structure_RMSD$affinity)),to=round(max(df_structure_RMSD$affinity)),by=1)
+p<-ggplot(data=df_structure_RMSD)+geom_freqpoly(aes(x=affinity,colour=name.x),binwidth=0.1)+
+  geom_vline(xintercept = 0)+facet_grid(receptor~ligand)+
   scale_x_continuous(breaks=a,labels=a)+theme_bw()+guides(color = "none", size = "none")
 ggsave(p,filename = paste0("energy_ligand_receptor_center.png"), width = 24, height = 15, units = c("cm"), dpi = 200 )
 
