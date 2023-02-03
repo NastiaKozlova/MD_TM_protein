@@ -17,9 +17,9 @@ if (!dir.exists(paste0("interaction_center/"))) { dir.create(paste0("interaction
 i<-1
 j<-1
 p<-1
-v_structure<-unique(df_all$name.x)
-for (j in 1:length(v_structure)) {
-  df_complex<-df_all%>%filter(name.x==v_structure[j])
+#v_structure<-unique(df_all$name.x)
+for (j in 1:nrow(df_all)) {
+  df_complex<-df_all%>%filter(name.x==df_all$name.x[j])
   pdb<-read.pdb(paste0(part_analysis,"receptor_start/",df_all$receptor[j],".pdb"))
   
   df_pdb<-pdb$atom
@@ -29,8 +29,8 @@ for (j in 1:length(v_structure)) {
   df_pdb<-df_pdb%>%mutate(total_structure=nrow(df_complex))
   test<-nrow(df_pdb)
   for (p in 1:nrow(df_complex)) {
-    if(file.exists(paste0("interaction/",df_complex$receptor_ligand[p],"_",df_complex$center.y[p],"/",df_complex$new_number[p],".csv"))){
-      df_protein<-read.csv(paste0("interaction/",df_complex$receptor_ligand[p],"_",df_complex$center.y[p],"/",df_complex$new_number[p],".csv"),
+    if(file.exists(paste0("interaction/",df_complex$receptor_ligand[p],"_",df_complex$center.x[p],"/",df_complex$new_number[p],".csv"))){
+      df_protein<-read.csv(paste0("interaction/",df_complex$receptor_ligand[p],"_",df_complex$center.x[p],"/",df_complex$new_number[p],".csv"),
                            stringsAsFactors = F) 
       df_pdb$number_interactions[df_pdb$resno%in%df_protein$resid]<-df_pdb$number_interactions[df_pdb$resno%in%df_protein$resid]+1
       df_pdb$tested_structure<-df_pdb$tested_structure+1
@@ -42,7 +42,7 @@ for (j in 1:length(v_structure)) {
     df_pdb<-df_pdb%>%select(resno,resid,x,y,z,number_interactions,tested_structure,total_structure)
     df_pdb<-df_pdb%>%mutate(persent_interactions=number_interactions/total_structure*100)
     write.csv(df_pdb,
-              paste0("interaction_center/",v_structure[j],".csv"),row.names = F)
+              paste0("interaction_center/",df_all$name.x[j],".csv"),row.names = F)
   }
 }
 df_all<-df_all%>%select(name.x,receptor,ligand,center.x,receptor_ligand)
