@@ -34,6 +34,7 @@ for (i in 1:nrow(df_merge)) {
   }
 }
 df_merge<-df_merge%>%filter(exists)
+i<-1
 if(nrow(df_merge)>0){
   for (i in 1:nrow(df_merge)) {
     df_topology_seclected<-df_topology%>%mutate(selected=F)
@@ -45,7 +46,7 @@ if(nrow(df_merge)>0){
     df_interactions<-df_interactions%>%select(resid,resno,persent_interactions)
     df_interactions<-unique(df_interactions)
     for (p in 1:nrow(df_topology_seclected)) {
-      v_domain<-c(df_topology_seclected$seq_beg[p]:df_topology_seclected$seq_end)
+      v_domain<-c(df_topology_seclected$seq_beg[p]:df_topology_seclected$seq_end[p])
       df_topology_seclected$selected[length(df_interactions$resno%in%v_domain)>0]<-T
     }
     df_topology_seclected<-df_topology_seclected%>%filter(selected)
@@ -128,17 +129,20 @@ if(nrow(df_merge)>0){
     for (q in 1:nrow(df_topology_seclected)) {
       v_selected<-c(v_selected,df_topology_seclected$seq_beg[q]:df_topology_seclected$seq_end[q])
     }
-    df_tcl[p+2,1]<-paste0('mol modselect 0 ',i-1,' protein and resid ',v_selected,'\n',
+    df_tcl[p+2,1]<-paste0('mol modselect 0 ',i-1,' protein and resid ',paste0(v_selected,collapse = " "),'\n',
                         'mol modmaterial 0 ',(i-1),' Opaque\n',
-                        'mol modstyle 0 ' ,i-1, ' NewCartoon\n')#,
+                        'mol modstyle 0 ' ,(i-1), ' NewCartoon\n')#,
     df_tcl[is.na(df_tcl)]<-""
     write.csv(df_tcl,paste0("make_picture_tcl_surf/",df_merge$name.x[i],".tcl"),row.names = F)
   }
   df_tcl<-read.csv(paste0("make_picture_tcl_surf/",df_merge$name.x[1],".tcl"),stringsAsFactors = F)
   i<-2
-  for (i in 2:nrow(df_merge)) {
-    df_tcl_add<-read.csv(paste0("make_picture_tcl_surf/",df_merge$name.x[i],".tcl"),stringsAsFactors = F)
-    df_tcl<-rbind(df_tcl,df_tcl_add)
-  }
-  write.table(df_tcl,paste0("make_picture_tcl_surf.tcl"),row.names = F,col.names = F,quote = F,sep = "\n",na="")
 }
+df_tcl<-read.csv(paste0("make_picture_tcl_surf/",df_merge$name.x[1],".tcl"),stringsAsFactors = F)
+i<-2
+for (i in 2:nrow(df_merge)) {
+  df_tcl_add<-read.csv(paste0("make_picture_tcl_surf/",df_merge$name.x[i],".tcl"),stringsAsFactors = F)
+  df_tcl<-rbind(df_tcl,df_tcl_add)
+}
+write.table(df_tcl,paste0("make_picture_tcl_surf.tcl"),row.names = F,col.names = F,quote = F,sep = "\n",na="")
+
