@@ -23,7 +23,7 @@ df_all_systems<-read.csv("start/all_systems.csv",stringsAsFactors = F)
 part_name<-paste0(part_start,"MD_analysis/")
 setwd(part_name)
 
-j<-14
+j<-1
 if(!dir.exists(paste0("docking/active_center_TEMP/"))){dir.create("docking/active_center_TEMP/")}
 for (j in 1:nrow(df_all_systems)) {
   if(file.exists(paste0("docking/receptor_start/charmm-gui-",df_all_systems$system_name[j],".pdb"))){
@@ -76,7 +76,7 @@ for (j in 1:nrow(df_all_systems)) {
                                         y_max = df_structure$y_max[i],
                                         z_min = df_structure$z_min[i],
                                         z_max = df_structure$z_max[i])
-      if(ncol(df_pdb_filtered)==3){
+      if(nrow(df_pdb_filtered)>3){
         df_type<-rbind(df_type,df_pdb_filtered)
         
       }else{df_structure$type[i]<-NA}
@@ -89,7 +89,7 @@ for (j in 1:nrow(df_all_systems)) {
     write.csv(df_type,paste0("docking/active_center_TEMP/charmm-gui-",df_all_systems$system_name[j],"_active_center.csv"),row.names = F)
   }
 }
-j<-3
+j<-1
 df_type<-read.csv(paste0("docking/active_center_TEMP/charmm-gui-",df_all_systems$system_name[1],"_active_center.csv"),stringsAsFactors =  F)
 print(nrow(df_type))
 for (j in 2:nrow(df_all_systems)) {
