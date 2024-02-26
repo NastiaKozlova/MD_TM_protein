@@ -62,11 +62,9 @@ for (j in 2:nrow(df_all)) {
   df_pdb<-rbind(df_pdb,df_pdb_add)
   df_pdb<-df_pdb%>%filter(persent_interactions==100)
 }
-#df_pdb<-df_pdb%>%filter(persent_interactions==100)
+
 df_pdb<-left_join(df_pdb,df_all,by="name.x")
-#df_pdb<-df_pdb[df_pdb$ligand%in%c("Na","HPO4"),]
-#df_pdb<-df_pdb%>%filter(receptor=="charmm-gui-1717818438")
-part_start<-strsplit(part_analysis,split = "/",fixed = T)[[1]]
+part_start<-strsplit(part_name,split = "/",fixed = T)[[1]]
 part_start<-paste0(part_start[1:(length(part_start)-3)],collapse = "/")
 part_start<-paste0(part_start,"/")
 df_topology<-read.csv(paste0(part_start,"start/df_topology.csv"),stringsAsFactors = F)

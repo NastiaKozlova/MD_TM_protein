@@ -46,7 +46,7 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/test_hbonds.
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_prepare_receptor_pdb.R ",part_start),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_add_serf_active_center.R ",part_start),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_main.R ",part_start),ignore.stdout=T,wait = T)
-#if you want don't count cout interactions of protein w9ith protein serfuce v_surphase_conut<-F
+#if you want don't count cout interactions of protein with protein serfuce v_surphase_conut<-F
 if(surphase_conut){
   system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_surf.R ",part_start),ignore.stdout=T,wait = T)
 }else{
@@ -64,6 +64,11 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/ring/ring2_g
 #correct alignemt file for another protein
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/find_conservative_aminoacids.R ",part_start),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/make_plots_RMSD_RMSF.R ",part_start),ignore.stdout=T,wait = T)
+#ligands_plasement
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/ligands_plasement.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_plot.R ",part_start),ignore.stdout=T,wait = T)
+#system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/ligand_placement.R ",part_start),ignore.stdout=T,wait = T)
+
 # make random plot
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/count comparition.R ",part_start),ignore.stdout=T,wait = T)
 
