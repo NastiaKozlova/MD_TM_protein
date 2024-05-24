@@ -6,7 +6,7 @@ library(ggplot2)
 library(cowplot)
 library(bio3d)
 
-test_10<-seq(from=0,to=1000,by=10)
+test_10<-seq(from=0,to=1000,by=50)
 v_pallete<-c("sheet"="#BBBBBB","helix"="#333333")
 df_topology<-read.csv(paste0(part_start,"start/df_topology.csv"),stringsAsFactors =  F)
 part<-paste0(part_start,"MD_analysis/")
@@ -330,7 +330,7 @@ p_RMSD<-ggplot(data = df_frame_data)+
  #coord_flip()+
   scale_x_continuous(breaks = test_10, labels =  test_10)#+
 
-ggsave(p_RMSD,   filename = paste0(part,"fin_plots/frame_statisitc/RMSD_graph.png"), width = 20, height = 15, units = c("cm"), dpi = 200 ) 
+ggsave(p_RMSD,   filename = paste0(part,"fin_plots/frame_statisitc/RMSD_graph.png"), width = 20, height = 15, units = c("cm"), dpi = 600 ) 
 
 df_frame_data<-df_frame_data%>%mutate(protein_protein_Total=protein_Total-protein_water_Total-protein_lipid_Total)
 #df_frame_data<-left_join(df_frame_data,df_all_systems,by=c("system"="fin_name"))
