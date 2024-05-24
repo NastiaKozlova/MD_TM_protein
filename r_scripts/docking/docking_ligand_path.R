@@ -12,14 +12,6 @@ setwd(part_name)
 df_merge<-read.csv(file = paste0(part_name,"din/df_structure.csv"),stringsAsFactors = F)
 df_convert<-df_merge%>%select( receptor,system_name,Membrane,Structure)
 df_convert<-unique(df_convert)
-#df_seq<-read.csv(paste0(part_start,"MD_analysis/fin_data/str_data/",df_convert$receptor[1],".csv"),stringsAsFactors = F)
-#df_seq<-df_seq%>%mutate(receptor=df_convert$receptor[1])
-#for (i in 2:nrow(df_convert)) {
-#  df_seq_add<-read.csv(paste0(part_start,"MD_analysis/fin_data/str_data/",df_convert$receptor[i],".csv"),stringsAsFactors = F)
-#  df_seq_add<-df_seq_add%>%mutate(receptor=df_convert$receptor[i])
-#  df_seq<-rbind(df_seq,df_seq_add)
-#}
-#/media/akozlova/Data2/Nastia_projects/lacY/MD_TMD_protein/MD_analysis/fin_data/str_data/
 
 if (!dir.exists(paste0(part_name,"tost/"))) {dir.create(paste0(part_name,"tost/"))}
 if (!dir.exists(paste0(part_name,"plot/"))) {dir.create(paste0(part_name,"plot/"))}
@@ -27,7 +19,6 @@ if (!dir.exists(paste0(part_name,"all_interactions/"))) {dir.create(paste0(part_
 if (!dir.exists(paste0(part_start,"MD_analysis/fin_data/docking_data/"))) {
   dir.create(paste0(part_start,"MD_analysis/fin_data/docking_data/"))}
 
-#"all_interactions/"
 i<-1
 for (i in 1:nrow(df_merge)) {
   if (!dir.exists(paste0(part_name,"din/tost/",df_merge$receptor[i],"_",df_merge$ligand[i]))) {
@@ -51,12 +42,7 @@ for (i in 1:nrow(df_merge)) {
     df_merge$folder_name[i]<-"interaction_center"
   }
 }
-i<-1
-j<-1
-df_inteteraction<-read.csv(paste0('din/',df_merge$folder_name[1],"/", df_merge$name.x[1],".csv"),stringsAsFactors = F)
 
-j<-1
-i<-1
 v_teoretical<-c(126,151,269,144,322,272,20,23,27)
 
 df_select<-df_select%>%mutate(only_docking=F)
@@ -66,7 +52,7 @@ df_select<-df_select%>%mutate(both=F)
 df_select<-df_select%>%mutate(only_docking_resno=F)
 df_select<-df_select%>%mutate(only_teoretical_resno=F)
 df_select<-df_select%>%mutate(both_resno=F)
-
+j<-1
 for (j in 1:nrow(df_select)) {
   df_seq<-read.csv(paste0(part_start,"MD_analysis/fin_data/str_data/",df_select$receptor[j],".csv"),stringsAsFactors = F)
   df_selected<-df_merge%>%filter(receptor==df_select$receptor[j] )
