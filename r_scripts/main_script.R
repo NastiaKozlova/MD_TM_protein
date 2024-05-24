@@ -18,6 +18,8 @@ if (!dir.exists(paste0(part_start,'MD_analysis/'))){dir.create(paste0(part_start
 #combine all dcd files of Productive MD runs 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/combine_dcd.R ",part_start),ignore.stdout=T,wait = T) 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/prepare_tcl_din.R ",part_start),ignore.stdout=T,wait = T) 
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/protein_lipid_interactions.R ",part_start),ignore.stdout=T,wait = T) 
+
 if(file.exists("start/domains_of_interest.csv")){
   system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/prepare_tcl_domain_of_interest.R ",part_start),ignore.stdout=T,wait = T) 
 }
@@ -38,6 +40,8 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/prepare_hbon
 #vmd
 system(command = paste0("vmd -dispdev text -e ",part_start,"MD_analysis/vmd_hbonds_script.tcl"),ignore.stdout=T,wait = T) 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/test_hbonds.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/test_water.R ",part_start),ignore.stdout=T,wait = T)
+
 
 #docking
 #Download programm https://ccsb.scripps.edu/mgltools/downloads/
@@ -63,10 +67,16 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/ring/ring2_g
 #make fin plots
 #correct alignemt file for another protein
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/find_conservative_aminoacids.R ",part_start),ignore.stdout=T,wait = T)
+#collect MD simulation data in minimal amount of dataframes 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/make_plots_RMSD_RMSF.R ",part_start),ignore.stdout=T,wait = T)
 #ligands_plasement
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/ligands_plasement.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/ligand_placement_analysis.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_ligand_path.R ",part_start),ignore.stdout=T,wait = T)
+
+#ligand_placement_analysis
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_plot.R ",part_start),ignore.stdout=T,wait = T)
+arrange_ligand_positions
 #system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/ligand_placement.R ",part_start),ignore.stdout=T,wait = T)
 
 # make random plot
@@ -75,5 +85,13 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/count compar
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/domain_interactions.R ",part_start),ignore.stdout=T,wait = T)
 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/claster_analysis_frame_data.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/claster_analysis_frame_data_RMSD.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/claster_analysis_frame_data_all.R ",part_start),ignore.stdout=T,wait = T)
 
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/frame_statistical_analysis_two_systems.R ",part_start),ignore.stdout=T,wait = T)
+#test_clusterisation
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/test_clusterisation.R ",part_start),ignore.stdout=T,wait = T)
+
+
+# system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/test_clusterisation.R ",part_start),ignore.stdout=T,wait = T)
+
+#system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/frame_statistical_analysis_two_systems.R ",part_start),ignore.stdout=T,wait = T)
