@@ -1,4 +1,3 @@
-part_start <- commandArgs(trailingOnly=TRUE)
 setwd(part_start)
 library(dplyr)
 library(bio3d)
@@ -25,7 +24,8 @@ if(!dir.exists(paste0(part,"fin_data/TMD_interactions/"))){dir.create(paste0(par
 if(!dir.exists(paste0(part,"fin_plots/aminoacids_interactions/"))){dir.create(paste0(part,"fin_plots/aminoacids_interactions/"))}
 if(!dir.exists(paste0(part,"fin_plots/aminoacids_interactions_sort/"))){dir.create(paste0(part,"fin_plots/aminoacids_interactions_sort/"))}
 if(!dir.exists(paste0(part,"fin_plots/TMD_interactions/"))){dir.create(paste0(part,"fin_plots/TMD_interactions/"))}
-
+if(!dir.exists(paste0(part,"fin_plots/aminoacids_map/"))){dir.create(paste0(part,"fin_plots/aminoacids_map/"))}
+#aminoacids_map
 
 mm.col <- c("ECD"= "#ff69b4",
             "TMD"= "#4783B7",
@@ -43,8 +43,8 @@ for (q in 1:nrow(df_all_systems)) {
       df_ring<-left_join(df_ring,df_seq,by=c("number.y"="resno"))
 
       df_ring_sorted<-df_ring%>%filter(persent_intractions>quantile(df_ring$persent_intractions,probs = 0.75))
-      df_ring_sorted<-df_ring_sorted%>%filter(abs(number.y-number.x)>5)
-      df_ring<-df_ring%>%filter(abs(number.y-number.x)>5)
+ #     df_ring_sorted<-df_ring_sorted%>%filter(abs(number.y-number.x)>5)
+ #     df_ring<-df_ring%>%filter(abs(number.y-number.x)>5)
       df_interactions_TMD<-df_ring_sorted%>%filter(number.x<number.y)
       df_interactions_TMD<-df_interactions_TMD%>%select( type.x,topology.x, type.y,topology.y)
       df_interactions_TMD<-df_interactions_TMD%>%mutate(TMD_bond=paste(type.x,type.y))%>%group_by(TMD_bond)%>%mutate(number_TMD_intractions=n())
@@ -114,3 +114,22 @@ for (q in 1:nrow(df_all_systems)) {
     }
   }
 }  
+for (q in 1:nrow(df_all_systems)) {
+  if(file.exists(paste0("fin_data/str_data/",df_all_systems$fin_name[q],".csv"))){
+    if(file.exists(paste0("din/",df_all_systems$fin_name[q],"/8_ring_interaction.csv"))){
+      df_seq<-read.csv(paste0("fin_data/str_data/",df_all_systems$fin_name[q],".csv"),stringsAsFactors = F)
+      df_ring<-read.csv(paste0("fin_data/aminoacids_interactions/",df_all_systems$fin_name[q],".csv"),stringsAsFactors = F)
+      df_ring<-df_ring%>%filter(persent_IONIC>0)
+      df_seq_TMD<-df_seq%>%filter(topology=="TMD")
+      p<-ggplot()+
+        geom_rect(aes(ymin=resno-0.5,ymax=resno+0.5,xmin=0,xmax=max(df_seq$resno),alpha=0.01),data=df_seq_TMD)+
+        geom_rect(aes(xmin=resno-0.5,xmax=resno+0.5,ymin=0,ymax=max(df_seq$resno),alpha=0.01),data=df_seq_TMD)+
+        geom_rect(aes(xmin=number.x-0.5,xmax=number.x+0.5,ymin=number.y-0.5,ymax=number.y+0.5,alpha=persent_IONIC),data=df_ring)+
+        geom_rect(aes(xmin=resno-0.5,xmax=resno+0.5,ymin=-1,ymax=0,colour=topology,fill=topology),data=df_seq)+
+        geom_rect(aes(ymin=resno-0.5,ymax=resno+0.5,xmin=-1,xmax=0,colour=topology,fill=topology),data=df_seq)+
+
+        theme_bw()
+      ggsave(p,filename = paste0("fin_plots/aminoacids_map/",df_all_systems$fin_name[q],"_",df_all_systems$Membrane[q],".png"), width = 32, height = 30, units = c("cm"), dpi = 200 ) 
+    }
+  }
+}
