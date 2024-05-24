@@ -68,4 +68,18 @@ for (j in 1:length(v_parta)) {
   if(file.exists(paste0(part,'/namd/step7.1_production.dcd'))){
     system(command = paste0('vmd -dispdev text -e ',part_start,'MD_analysis/tcl/',parta,'_combine_non_align.tcl'),ignore.stdout=T,wait = T) 
   }
+  df_tcl<-data.frame(matrix(nrow = 2,ncol = 2))
+  df_tcl[1,1]<-paste0('cd ', part,'/namd/\n\npackage require animate\n')
+  df_tcl[1,2]<-paste0('mol new {step5_input.psf} type {psf}\n')
+  df_tcl[1,3]<-paste0('mol addfile {',part,'/namd/step8.dcd} type {dcd} first 0 last -1 step 1 waitfor all\n')
+  df_tcl[1,4]<-paste0('set s1 [atomselect top "protein"]\n\n')
+  df_tcl[1,5]<-paste0('animate write dcd {',part,'/namd/step8_protein.dcd} waitfor all sel $s1\n\n')  
+  df_tcl[1,6]<-paste0('[atomselect top "protein" frame 0] writepdb ',part,'/namd/PCA_pdb.pdb\n\n')
+  df_tcl[1,7]<-paste0('mol delete all\n\nexit now')
+  
+  write.table(df_tcl,file =paste0(part_start,'MD_analysis/tcl/',parta,'_protein_align.tcl'),sep = ' ',na = '' ,row.names = F,col.names = F,quote = F)
+  print( paste0('vmd -dispdev text -e ',part_start,'MD_analysis/tcl/',parta,'_protein_align.tcl'))
+  if(file.exists(paste0(part,'/namd/step7.1_production.dcd'))){
+    system(command = paste0('vmd -dispdev text -e ',part_start,'MD_analysis/tcl/',parta,'_protein_align.tcl'),ignore.stdout=T,wait = T) 
+  }
 }
