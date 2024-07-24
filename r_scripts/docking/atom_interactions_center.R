@@ -26,7 +26,7 @@ df_merge<-df_merge%>%mutate(complex_name=paste0(receptor,"_",ligand,"_",size_of_
 i<-1
 j<-1
 df_merge<-df_merge%>%mutate(exists=F)
-df_merge<-df_merge%>%filter(receptor=="charmm-gui-1717818438")
+#df_merge<-df_merge%>%filter(receptor=="charmm-gui-1717818438")
 for (i in 1:nrow(df_merge)) {
   if(file.exists(paste0("interaction_center/",df_merge$name.x[i],".csv"))){
     if(file.exists(paste0("complex_structure_center/",df_merge$name.x[i]))){
@@ -39,9 +39,8 @@ df_merge<-df_merge%>%filter(exists)
 for (i in 1:nrow(df_merge)) {
   df_topology_seclected<-df_topology%>%mutate(selected=F)
   
-  df_hbonds<-read.csv(paste0(part_hbonds,"fin_data/str_data/",df_merge$receptor[i],".csv"),stringsAsFactors = F)
-  df_hbonds<-df_hbonds%>%filter(hbonds>50)
-  df_hbonds<-df_hbonds%>%filter(abs(z)<20)
+  df_hbonds<-read.csv(paste0(part_hbonds,"din/",df_merge$receptor[i],"/hbonds_8.csv"),stringsAsFactors = F)
+  df_hbonds<-df_hbonds%>%filter(persent>50)
   df_interactions<-read.csv(paste0("interaction_center/",df_merge$name.x[i],".csv"),stringsAsFactors = F)
   df_interactions<-df_interactions%>%filter(persent_interactions==100)
   df_interactions<-df_interactions%>%select(resid,resno,persent_interactions)
@@ -74,7 +73,7 @@ for (i in 1:nrow(df_merge)) {
   df_ligand<-df_ligand%>%filter(alt!="C")
   df_protein<-df_protein%>%filter(alt!="C")
   
-  df_test<-full_join(df_protein,df_ligand,by="type")
+  df_test<-full_join(df_protein,df_ligand,by="type",relationship = "many-to-many")
   df_test<-df_test%>%mutate(length=sqrt((x.x-x.y)^2+(y.x-y.y)^2+(z.x-z.y)^2))
   df_test<-df_test%>%filter(length<5)
   df_test<-df_test%>%filter(alt.x!=alt.y)
@@ -141,46 +140,46 @@ for (i in 1:nrow(df_merge)) {
 #                        'mol modmaterial 0 ',(i-1),' Opaque\n',
 #                        'mol modstyle 0 ' ,i-1, ' NewCartoon\n')#,
 #  df_TMD25<-paste(df_topology[df_topology$type%in%c("TM5","TM2"),]
-  v_loop1<-paste(df_topology$seq_beg[df_topology$type%in%c("loop1")]:df_topology$seq_end[df_topology$type%in%c("loop1")],collapse = " ")
-  v_loop2<-paste(df_topology$seq_beg[df_topology$type%in%c("loop2")]:df_topology$seq_end[df_topology$type%in%c("loop2")],collapse = " ")
-  v_TMD2<-paste(df_topology$seq_beg[df_topology$type%in%c("TM2")]:df_topology$seq_end[df_topology$type%in%c("TM2")],collapse = " ")
-  v_TMD5<-paste(df_topology$seq_beg[df_topology$type%in%c("TM5")]:df_topology$seq_end[df_topology$type%in%c("TM5")],collapse = " ")
+#  v_loop1<-paste(df_topology$seq_beg[df_topology$type%in%c("loop1")]:df_topology$seq_end[df_topology$type%in%c("loop1")],collapse = " ")
+#  v_loop2<-paste(df_topology$seq_beg[df_topology$type%in%c("loop2")]:df_topology$seq_end[df_topology$type%in%c("loop2")],collapse = " ")
+#  v_TMD2<-paste(df_topology$seq_beg[df_topology$type%in%c("TM2")]:df_topology$seq_end[df_topology$type%in%c("TM2")],collapse = " ")
+#  v_TMD5<-paste(df_topology$seq_beg[df_topology$type%in%c("TM5")]:df_topology$seq_end[df_topology$type%in%c("TM5")],collapse = " ")
 #  v_TMD25<-paste(c(df_TMD25$seq_beg[1]:df_TMD25$seq_end[1],df_TMD25$seq_beg[2]:df_TMD25$seq_end[2]),collapse = " ")
-  v_qsss<-paste(c(158:161,431:434),collapse = " ")
+#  v_qsss<-paste(c(158:161,431:434),collapse = " ")
   
-#  df_tcl[p+2,2]<-paste0('mol modselect 0 ',i-1,' protein and resid ',v_selected,'\n',
-#                        'mol modmaterial 0 ',(i-1),' Transparent\n',
-#                      #  'mol addrep ',(i-1),'\n',
-#                        'mol modstyle 0 ',(i-1),' NewCartoon \n',
-#                        'mol modcolor 0 ',(i-1),' Name\n')
-  df_tcl[p+2,1]<-paste0('mol addrep ',(i-1),'\n',
-                        'mol modselect 3 ',i-1,' protein and resid ',v_loop1,'\n',
-                        'mol modmaterial 3 ',(i-1),' Opaque\n',
-                        'mol modstyle 3 ',(i-1),' NewCartoon \n',
-                        'mol modcolor 3 ',(i-1),' ColorID 4\n')#,
+  df_tcl[p+2,2]<-paste0('mol modselect 0 ',i-1,' protein and resid ',v_selected,'\n',
+                        'mol modmaterial 0 ',(i-1),' Transparent\n',
+                      #  'mol addrep ',(i-1),'\n',
+                        'mol modstyle 0 ',(i-1),' NewCartoon \n',
+                        'mol modcolor 0 ',(i-1),' Name\n')
+#  df_tcl[p+2,1]<-paste0('mol addrep ',(i-1),'\n',
+#                        'mol modselect 3 ',i-1,' protein and resid ',v_loop1,'\n',
+#                        'mol modmaterial 3 ',(i-1),' Opaque\n',
+#                        'mol modstyle 3 ',(i-1),' NewCartoon \n',
+#                        'mol modcolor 3 ',(i-1),' ColorID 4\n')#,
   
-  df_tcl[p+2,2]<-paste0('mol addrep ',(i-1),'\n',
-                        'mol modselect 4 ',i-1,' protein and resid ',v_loop2,'\n',
-                        'mol modmaterial 4 ',(i-1),' Opaque\n',
-                        'mol modstyle 4 ',(i-1),' NewCartoon \n',
-                        'mol modcolor 4 ',(i-1),' ColorID 21\n')#,
-  df_tcl[p+2,3]<-paste0('mol addrep ',(i-1),'\n',
-                        'mol modselect 5 ',i-1,' protein and resid ',v_TMD2,'\n',
-                        'mol modmaterial 5 ',(i-1),' Opaque\n',
-                        'mol modstyle 5 ',(i-1),' NewCartoon \n',
-                        'mol modcolor 5 ',(i-1),' ColorID 5\n')#,
+#  df_tcl[p+2,2]<-paste0('mol addrep ',(i-1),'\n',
+#                        'mol modselect 4 ',i-1,' protein and resid ',v_loop2,'\n',
+#                        'mol modmaterial 4 ',(i-1),' Opaque\n',
+#                        'mol modstyle 4 ',(i-1),' NewCartoon \n',
+#                        'mol modcolor 4 ',(i-1),' ColorID 21\n')#,
+#  df_tcl[p+2,3]<-paste0('mol addrep ',(i-1),'\n',
+#                        'mol modselect 5 ',i-1,' protein and resid ',v_TMD2,'\n',
+#                        'mol modmaterial 5 ',(i-1),' Opaque\n',
+#                        'mol modstyle 5 ',(i-1),' NewCartoon \n',
+#                        'mol modcolor 5 ',(i-1),' ColorID 5\n')#,
 
-  df_tcl[p+2,4]<-paste0('mol addrep ',(i-1),'\n',
-                        'mol modselect 6 ',i-1,' protein and resid ',v_TMD5,'\n',
-                        'mol modmaterial 6 ',(i-1),' Opaque\n',
-                        'mol modstyle 6 ',(i-1),' NewCartoon \n',
-                        'mol modcolor 6 ',(i-1),' ColorID 0\n')#,
+#  df_tcl[p+2,4]<-paste0('mol addrep ',(i-1),'\n',
+#                        'mol modselect 6 ',i-1,' protein and resid ',v_TMD5,'\n',
+#                        'mol modmaterial 6 ',(i-1),' Opaque\n',
+#                        'mol modstyle 6 ',(i-1),' NewCartoon \n',
+#                        'mol modcolor 6 ',(i-1),' ColorID 0\n')#,
   
-  df_tcl[p+2,5]<-paste0('mol addrep ',(i-1),'\n',
-                        'mol modselect 7 ',i-1,' protein and resid ',v_qsss,'\n',
-                        'mol modmaterial 7 ',(i-1),' Opaque\n',
-                        'mol modstyle 7 ',(i-1),' NewCartoon \n',
-                        'mol modcolor 7 ',(i-1),' ColorID 16\n')#,
+#  df_tcl[p+2,5]<-paste0('mol addrep ',(i-1),'\n',
+#                        'mol modselect 7 ',i-1,' protein and resid ',v_qsss,'\n',
+#                        'mol modmaterial 7 ',(i-1),' Opaque\n',
+#                        'mol modstyle 7 ',(i-1),' NewCartoon \n',
+#                        'mol modcolor 7 ',(i-1),' ColorID 16\n')#,
   df_tcl[p+2,6]<-paste0('mol addrep ',(i-1),'\n',
                         'mol modselect 8 ',i-1,' protein and resid ',paste0(unique(df_hbonds$number),collapse = ' '),'\n',
                         'mol modmaterial 8 ',(i-1),' Transparent\n',
