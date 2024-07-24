@@ -18,7 +18,8 @@ if (!dir.exists(paste0(part_name,"plot/"))) {dir.create(paste0(part_name,"plot/"
 if (!dir.exists(paste0(part_name,"all_interactions/"))) {dir.create(paste0(part_name,"all_interactions/"))}
 if (!dir.exists(paste0(part_start,"MD_analysis/fin_data/docking_data/"))) {
   dir.create(paste0(part_start,"MD_analysis/fin_data/docking_data/"))}
-
+if (!dir.exists(paste0(part_name,"din/tost/"))) {
+  dir.create(paste0(part_name,"din/tost/"))}
 i<-1
 for (i in 1:nrow(df_merge)) {
   if (!dir.exists(paste0(part_name,"din/tost/",df_merge$receptor[i],"_",df_merge$ligand[i]))) {
