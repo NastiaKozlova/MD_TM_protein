@@ -41,6 +41,7 @@ for (name in v_name) {
         write.table(df_conf,paste0("MD/",name,"/namd/step7.",j+1,"_production.inp"),row.names=F,col.names=F,quote = F)
     }
 }
+for (name in v_name) {
 df_namd<-data.frame(matrix(ncol=2,nrow = 1007))
 colnames(df_namd)<-c("comand","conf")
 df_namd$comand<-"run_namd"
@@ -50,6 +51,7 @@ a<-c( paste0("step6.",c(1:6),"_equilibration.inp > step6.",c(1:6),"_equilibratio
 df_namd$conf<-a
 df_namd_add<-data.frame(matrix(ncol=2,nrow = 1))
 colnames(df_namd_add)<-c("comand","conf")
-df_namd_add$comand<-paste0("cd ",part_start,"namd")
+df_namd_add$comand<-paste0("cd ",part_start,"MD/",name,"/namd")
 df_namd<-rbind(df_namd_add,df_namd)
-write.table(df_namd,paste0("run_namd.txt"),sep = " ",row.names = F,col.names = F,quote = F,na = "")
+write.table(df_namd,paste0(part_start,"MD_count/",name,"_run_namd.txt"),sep = " ",row.names = F,col.names = F,quote = F,na = "")
+}
