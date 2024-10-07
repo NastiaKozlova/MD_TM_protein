@@ -13,7 +13,8 @@ df_merge<-read.csv(file = paste0(part_name,"din/df_structure.csv"),stringsAsFact
 df_convert<-df_merge%>%select( receptor,system_name,Membrane,Structure)
 df_convert<-unique(df_convert)
 
-if (!dir.exists(paste0(part_name,"tost/"))) {dir.create(paste0(part_name,"tost/"))}
+if (!dir.exists(paste0(part_name,"din/tost/"))) {dir.create(paste0(part_name,"din/tost/"))}
+if (!dir.exists(paste0(part_name,"din/tcl/"))) {dir.create(paste0(part_name,"din/tcl/"))}
 if (!dir.exists(paste0(part_name,"plot/"))) {dir.create(paste0(part_name,"plot/"))}
 if (!dir.exists(paste0(part_name,"all_interactions/"))) {dir.create(paste0(part_name,"all_interactions/"))}
 if (!dir.exists(paste0(part_start,"MD_analysis/fin_data/docking_data/"))) {
