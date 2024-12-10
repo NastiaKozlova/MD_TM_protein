@@ -42,7 +42,7 @@ j<-1
 df_active_center<-read.csv(paste0(part_name,"active_center.csv"),stringsAsFactors = F)
 df_active_center<-df_active_center%>%mutate(C=NA)
 
-df_ligand_center<-left_join(df_active_center,df_ligand,by="C")
+df_ligand_center<-left_join(df_active_center,df_ligand,by="C",relationship = "many-to-many")
 df_ligand_center<-df_ligand_center%>%select(type,receptor,ligand)
 df_ligand_center<-unique(df_ligand_center)
 write.csv(df_ligand_center,paste0(part_name,"ligand_center.csv"),row.names =  F)
