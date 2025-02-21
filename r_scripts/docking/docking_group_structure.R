@@ -27,6 +27,10 @@ for (i in 1:nrow(df_all)) {
     print(df_all$name[i])
     if (!dir.exists(paste0("groups/",df_all$name[i]))) {dir.create(paste0("groups/",df_all$name[i]))}
     df_RMSD_all<-read.csv(paste0("RMSD_analysis/",df_all$name[i],".csv"),stringsAsFactors = F)
+    #fix RMSD threshold
+    v_rmsd_temp<-quantile(df_RMSD_all$RMSD,probs=0.25)
+    if(v_rmsd<v_rmsd_temp){v_rmsd<-v_rmsd_temp}
+    print(paste0(df_all$name[i]," ",v_rmsd))
     df_RMSD_add<-df_RMSD_all%>%mutate(models.y=models.x)
     df_RMSD_add<-df_RMSD_add%>%mutate(RMSD=0)
     df_RMSD_add<-unique(df_RMSD_add)
