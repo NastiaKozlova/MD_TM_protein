@@ -39,6 +39,8 @@ q<-1
 for (q in 1:nrow(df_analysis)) {
   
   df_structure_RMSD_analysis<-read.csv(paste0("RMSD_merged/",df_analysis$receptor_ligand[q],".csv"),stringsAsFactors = F)
+  v_rmsd_temp<-quantile(df_structure_RMSD_analysis$RMSD,probs=0.25)
+  if(v_rmsd<v_rmsd_temp){v_rmsd<-v_rmsd_temp}
   df_structure_RMSD_analysis<-df_structure_RMSD_analysis%>%filter(RMSD<v_rmsd)
   df_structure_RMSD_analysis_add<-df_structure_RMSD_analysis%>%mutate(name.x=name.y)
   df_structure_RMSD_analysis_add<-df_structure_RMSD_analysis_add%>%mutate(RMSD=0)
