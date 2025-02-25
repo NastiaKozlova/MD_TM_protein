@@ -61,6 +61,9 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/dock
 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/RMSD_group_structure.R ",part_name),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/calibration_docking_group_structure.R ",part_name),ignore.stdout=T,wait = T)
+#add markers which separate positions of ligands interacting active centers from surface
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/separate_docking_surf_from_active_center.R ",part_name),ignore.stdout=T,wait = T)
+
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_group_structure.R ",part_name,",",1),ignore.stdout=T,wait = T)
 
 #system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/RMSD_merge_docking_parts.R ",part_name),ignore.stdout=T,wait = T)
