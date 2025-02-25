@@ -39,6 +39,7 @@ q<-1
 for (q in 1:nrow(df_analysis)) {
   
   df_structure_RMSD_analysis<-read.csv(paste0("RMSD_merged/",df_analysis$receptor_ligand[q],".csv"),stringsAsFactors = F)
+  #fix RMSD threshold
   v_rmsd_temp<-quantile(df_structure_RMSD_analysis$RMSD,probs=0.25)
   if(v_rmsd<v_rmsd_temp){v_rmsd<-v_rmsd_temp}
   df_structure_RMSD_analysis<-df_structure_RMSD_analysis%>%filter(RMSD<v_rmsd)
@@ -133,7 +134,8 @@ df_log<-read.csv("log_fin.csv",stringsAsFactors = F)
 df_log<-df_log%>%select(models.x,models.y,grop_number,ligand,affinity,center,receptor,ligand,new_number)
 
 df_log<-df_log%>%mutate(name=paste0(receptor,"_", ligand,"_",                 center,"_",grop_number,"_",models.x))
-df_structure_RMSD<-left_join(df_structure_RMSD_analysis_start,df_log,by=c("name.y" ="name","ligand","receptor"))
+df_structure_RMSD<-left_join(df_structure_RMSD_analysis_start,df_log,by=c("name.y" ="name","ligand","receptor"),
+                             relationship = "many-to-many")
 
 write.csv(df_structure_RMSD,"df_merge_structure_log.csv",row.names = F)
 setwd(part)
