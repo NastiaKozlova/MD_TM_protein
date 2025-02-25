@@ -9,18 +9,18 @@ part<-paste0(part_name,"din/")
 setwd(part)
 if (!dir.exists("df_RMSD_all")) {dir.create("df_RMSD_all")}
 df_all<-read.csv(paste0(part_name,"df_all.csv"),stringsAsFactors = F)
-df_all<-df_all%>%mutate(name=paste0(receptor,"_",ligand,"_",center))
-df_all<-df_all%>%mutate(x=NA)
-df_all<-df_all%>%mutate(y=NA)
-df_all<-df_all%>%mutate(z=NA)
-i<-1
-for (i in 1:nrow(df_all)) {
-  a<-strsplit(df_all$center[i],split = "_")[[1]]
-  df_all$x[i]<-as.numeric(a[3])
-  df_all$y[i]<-as.numeric(a[5])
-  df_all$z[i]<-as.numeric(a[7])
-}
-df_all<-df_all%>%filter(!is.na(x))
+#df_all<-df_all%>%mutate(name=paste0(receptor,"_",ligand,"_",center))
+#df_all<-df_all%>%mutate(x=NA)
+#df_all<-df_all%>%mutate(y=NA)
+#df_all<-df_all%>%mutate(z=NA)
+#i<-1
+#for (i in 1:nrow(df_all)) {
+#  a<-strsplit(df_all$center[i],split = "_")[[1]]
+#  df_all$x[i]<-as.numeric(a[3])
+#  df_all$y[i]<-as.numeric(a[5])
+#  df_all$z[i]<-as.numeric(a[7])
+#}
+#df_all<-df_all%>%filter(!is.na(x))
 
 for (i in 1:nrow(df_all)) {
   if(!file.exists(paste0("RMSD_analysis/",df_all$name[i],".csv"))){
@@ -40,34 +40,52 @@ for (i in 1:nrow(df_all)) {
 }
 
 df_RMSD_all<-read.csv(paste0("df_RMSD_all/",df_all$name[1],".csv"),stringsAsFactors = F)
+df_RMSD_all<-df_RMSD_all%>%mutate(ligand=df_all$ligand[1])
 for (i in 2:nrow(df_all)) {
   df_RMSD_add<-read.csv(paste0("df_RMSD_all/",df_all$name[i],".csv"),stringsAsFactors = F)
+  df_RMSD_add<-df_RMSD_add%>%mutate(ligand=df_all$ligand[i])
   df_RMSD_all<-rbind(df_RMSD_all,df_RMSD_add)
 }
-df_RMSD_all<-df_RMSD_all%>%group_by(RMSD)%>%mutate(group=sum(number))
-df_RMSD_all<-df_RMSD_all%>%select(RMSD,group)
+df_RMSD_all<-df_RMSD_all%>%group_by(RMSD,ligand)%>%mutate(group=sum(number))
+df_RMSD_all<-df_RMSD_all%>%select(RMSD,ligand,group)
 df_RMSD_all<-unique(df_RMSD_all)
+
+v_ligand<-unique(df_RMSD_all$ligand)
 seqv<-seq(from=0,to=max(df_RMSD_all$RMSD),by=0.1)
+i<-1
+for (i in 1:length(v_ligand)) {
+  df_RMSD_all_TEMP<-df_RMSD_all%>%filter(ligand==v_ligand[i])
+  v_seqv<-seqv[!seqv%in%df_RMSD_all_TEMP$RMSD]
 
+  df_RMSD_add<-data.frame(matrix(ncol=ncol(df_RMSD_all_TEMP),nrow = length(v_seqv)))
+  colnames(df_RMSD_add)<-colnames(df_RMSD_all_TEMP)
+  df_RMSD_add$RMSD<-v_seqv
+  df_RMSD_add$group<-0
+  df_RMSD_add$ligand<-v_ligand[i]
+  df_RMSD_all<-rbind(df_RMSD_all,df_RMSD_add)
+}
 
-seqv<-seqv[!seqv%in%df_RMSD_all$RMSD]
-df_RMSD_add<-data.frame(matrix(ncol=2,nrow = length(seqv)))
-colnames(df_RMSD_add)<-colnames(df_RMSD_all)
-df_RMSD_add$RMSD<-seqv
-df_RMSD_add$group<-0
-df_RMSD_all<-rbind(df_RMSD_all,df_RMSD_add)
+#seqv<-seqv[!seqv%in%df_RMSD_all$RMSD]
+#df_RMSD_add<-data.frame(matrix(ncol=ncol(df_RMSD_all),nrow = length(seqv)))
+#colnames(df_RMSD_add)<-colnames(df_RMSD_all)
+#df_RMSD_add$RMSD<-seqv
+#df_RMSD_add$group<-0
+#df_RMSD_all<-rbind(df_RMSD_all,df_RMSD_add)
 
 df_RMSD_all<-df_RMSD_all%>%mutate(number=RMSD*10)
 df_RMSD_all<-df_RMSD_all%>%mutate(numbera=number%/%1)
 df_RMSD_all<-df_RMSD_all%>%group_by(numbera)%>%mutate(RMSD_new=mean(RMSD))
 df_RMSD_all<-df_RMSD_all%>%group_by(numbera)%>%mutate(group_new=mean(group))
 df_RMSD_all<-ungroup(df_RMSD_all)
-df_RMSD_all<-df_RMSD_all%>%select(RMSD_new,group_new)
+df_RMSD_all<-df_RMSD_all%>%select(ligand,RMSD_new,group_new)
 df_RMSD_all<-unique(df_RMSD_all)
+#df_RMSD_all<-df_RMSD_all%>%group_by(ligand)%>%mutate(median_RMSD=median(RMSD_new))
 p<-ggplot(data=df_RMSD_all)+
   labs(x="RMSD, A", y="count")+
   geom_line(aes(x=RMSD_new,y=group_new))+
   geom_point(aes(x=RMSD_new,y=group_new))+
+  facet_grid(ligand~.)+
   theme_bw()+
+#  geom_vline(xintercept=df_RMSD_all$median_RMSD)+
   scale_x_continuous(breaks = v_rmsds,labels = v_rmsds)
-ggsave(p,filename = paste0("calibration_RMSD_group_structure.png"), width = 24, height = 15, units = c("cm"), dpi = 200 )
+ggsave(p,filename = paste0("calibration_RMSD_group_structure.png"), width = 20, height = 40, units = c("cm"), dpi = 200 )
