@@ -2,7 +2,7 @@ part_analysis <- commandArgs(trailingOnly=TRUE)
 #group ligand structures
 part_TEMP<-strsplit(part_analysis,split = ",")[[1]]
 part_start<-part_TEMP[1]
-v_rmsd<-as.numeric(part_TEMP[2])
+v_rmsd_start<-as.numeric(part_TEMP[2])
 library(bio3d)
 library(readr)
 library(dplyr)
@@ -18,18 +18,18 @@ if(dir.exists(paste0(part,"str_fin"))) {system(command = paste0("rm -r ",part,"s
 if (!dir.exists("groups")) {dir.create("groups")}
 if (!dir.exists("groups_fin")) {dir.create("groups_fin")}
 if (!dir.exists("str_fin")) {dir.create("str_fin")}
-df_all<-read.csv(paste0(part_start,"df_all.csv"),stringsAsFactors = F)
-df_all<-df_all%>%mutate(name=paste0(receptor,"_",ligand,"_",center))
+df_all<-read.csv(paste0(part_start,"df_separate.csv"),stringsAsFactors = F)
+#df_all<-df_all%>%mutate(name=paste0(receptor,"_",ligand,"_",center))
 #sort to grops
 for (i in 1:nrow(df_all)) {
   
   if(file.exists(paste0("RMSD_analysis/",df_all$name[i],".csv"))){
-    print(df_all$name[i])
+    #    print(df_all$name[i])
     if (!dir.exists(paste0("groups/",df_all$name[i]))) {dir.create(paste0("groups/",df_all$name[i]))}
     df_RMSD_all<-read.csv(paste0("RMSD_analysis/",df_all$name[i],".csv"),stringsAsFactors = F)
-    #fix RMSD threshold
-    v_rmsd_temp<-quantile(df_RMSD_all$RMSD,probs=0.25)
-    if(v_rmsd<v_rmsd_temp){v_rmsd<-v_rmsd_temp}
+    #fix RMSD threshold, from flat to variable (min 1 to 2.5% quantile)
+    v_rmsd_temp<-quantile(df_RMSD_all$RMSD,probs=0.025)
+    if(v_rmsd_start<v_rmsd_temp){v_rmsd<-v_rmsd_temp}else{v_rmsd<-v_rmsd_start}
     print(paste0(df_all$name[i]," ",v_rmsd))
     df_RMSD_add<-df_RMSD_all%>%mutate(models.y=models.x)
     df_RMSD_add<-df_RMSD_add%>%mutate(RMSD=0)
@@ -101,7 +101,7 @@ for (j in 1:length(df_all$name)) {
     for (q in 1:nrow(df_RMSD)){
       pdb<-read.pdb(paste0("pdb_second/",df_RMSD$ligand_center[q],"/",df_RMSD$models.y[q]))
       
-      write.pdb(pdb,paste0("str_fin/",df_RMSD$ligand_center[q],"_",df_RMSD$grop_number[q],"_",df_RMSD$models.y[q]))
+      write.pdb(pdb,paste0("str_fin/",df_RMSD$ligand_center[q],"_",df_RMSD$models.y[q]))
     }
   }
 }
@@ -112,15 +112,17 @@ for (j in 2:length(df_all$name)) {
     df_RMSD<-rbind(df_RMSD,df_RMSD_add)
   }
 }
+#df_all<-df_all%>%select(name,receptor,ligand,center)
 df_RMSD<-left_join(df_RMSD,df_all,by=c("ligand_center"="name"))
 write.csv(df_RMSD,"RMSD_group.csv",row.names = F)
 
 #energy bonding
 i<-1
 if (!dir.exists("log_fin")) {dir.create("log_fin")}
-if (!dir.exists("plot")) {dir.create("plot")}
+#if (!dir.exists("plot")) {dir.create("plot")}
 df_log<-read.csv("df_log_all.csv",stringsAsFactors = F)
 df_log<-df_log%>%mutate(models.y=paste0("frame_",new_number,".pdb"))
+df_log<-df_log%>%select(name,receptor, ligand,center,models.y,affinity)
 for (i in 1:nrow(df_all)) {
   if(file.exists(paste0("groups_fin/",df_all$name[i],".csv"))){
     df_groups<-read.csv(paste0("groups_fin/",df_all$name[i],".csv"),stringsAsFactors = F)
