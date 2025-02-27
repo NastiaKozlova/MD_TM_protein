@@ -1,27 +1,20 @@
 part_analysis <- commandArgs(trailingOnly=TRUE)
 #group ligand structures
+#group ligand structures
 library(bio3d)
 library(dplyr)
 library(ggplot2)
-#v_rmsd<-3.5
+v_rmsd<-3.5
+
+print(Sys.time())
 
 setwd(part_analysis)
-df_all<-read.csv(paste0("df_all.csv"),stringsAsFactors = F)
-df_all<-df_all%>%mutate(name=paste0(receptor,"_",ligand,"_",center))
-df_all<-df_all%>%mutate(x=NA)
-df_all<-df_all%>%mutate(y=NA)
-df_all<-df_all%>%mutate(z=NA)
-i<-1
-for (i in 1:nrow(df_all)) {
-  a<-strsplit(df_all$center[i],split = "_")[[1]]
-  df_all$x[i]<-as.numeric(a[3])
-  df_all$y[i]<-as.numeric(a[5])
-  df_all$z[i]<-as.numeric(a[7])
-}
-df_all<-df_all%>%filter(is.na(x))
-#df_all$name<-NULL
-df_all<-df_all%>%select(name,receptor,ligand,center)
-#group_size<-round(nrow(df_all)/100,digits = 0)
+df_all<-read.csv(paste0(part_analysis,"df_separate.csv"),stringsAsFactors = F)
+#df_all<-df_all%>%filter(surf=="surf")
+#df_all<-unique(df_all)
+df_analysis<-df_all%>%select(receptor,ligand)
+df_analysis<-unique(df_analysis)
+df_analysis<-df_analysis%>%mutate(receptor_ligand=paste0(receptor,"_",ligand))
 
 part<-paste0(part_analysis,"din/")
 setwd(part)
@@ -33,46 +26,64 @@ if (!dir.exists("groups_merged_center")) {dir.create("groups_merged_center")}
 if (!dir.exists("structure_merged_center")) {dir.create("structure_merged_center")}
 if (!dir.exists("fin_merged_center")) {dir.create("fin_merged_center")}
 
-v_protein_name<-unique(df_all$receptor)
-v_structure_RMSD<-list.files(paste0("str_fin/"))
-df_structure_RMSD<-data.frame(matrix(ncol=5,nrow = length(v_structure_RMSD)))
-colnames(df_structure_RMSD)<-c("name","receptor","ligand","center","RMSD")
-df_structure_RMSD$name<-v_structure_RMSD
-j<-1
-a<-c()
-for (j in 1:nrow(df_all)) {
-  b<-df_structure_RMSD$name[grepl(x = df_structure_RMSD$name,pattern = df_all$name[j])]
-  a<-c(a,b)
-}
-df_structure_RMSD<-df_structure_RMSD[df_structure_RMSD$name%in%a,]
-for (j in 1:nrow(df_structure_RMSD)) {
-  a<-strsplit(x = df_structure_RMSD$name[j],split = "_frame")[[1]][1]
-  a<-strsplit(x = a,split = "_")[[1]]
-  df_structure_RMSD$receptor[j]<-a[1]
-  df_structure_RMSD$ligand[j]<-a[2]
-  df_structure_RMSD$center[j]<-paste0(a[3:(length(a)-1)],collapse = "_")
-}
-df_structure_RMSD<-df_structure_RMSD[df_structure_RMSD$center%in%c(df_all$center),]
+df_structure<-read.csv("RMSD_group.csv",stringsAsFactors = F)
 
-df_analysis<-df_structure_RMSD%>%select(receptor,ligand)
-df_analysis<-unique(df_analysis)
-df_analysis<-df_analysis%>%mutate(receptor_ligand=paste0(receptor,"_",ligand))
+df_structure<-df_structure%>%select(models.x, ligand_center,receptor, ligand, center,
+                                    surf, x, y,z)
+df_structure<-unique(df_structure)
+df_structure<-df_structure%>%filter(surf!="surf")
+#df_structure<-left_join(df_structure,df_all,by = join_by(receptor, ligand, center))
+
 q<-1
+i<-1
+print(Sys.time())
+
 for (q in 1:nrow(df_analysis)) {
-  df_structure_RMSD_TEMP<-df_structure_RMSD%>%filter(receptor==df_analysis$receptor[q])
-  df_structure_RMSD_TEMP<-df_structure_RMSD_TEMP%>%filter(ligand==df_analysis$ligand[q])
-  
-#  group_size<-round(nrow(df_structure_RMSD_TEMP)/100,digits = 0)
   if(!file.exists(paste0("RMSD_merged_center/",df_analysis$receptor_ligand[q],".csv"))){
-    df_structure_RMSD_analysis<-left_join(df_structure_RMSD_TEMP,df_structure_RMSD_TEMP,by=c("receptor","ligand","RMSD"),
-                                          relationship = "many-to-many")
+    df_structure_TEMP<-df_structure%>%filter(receptor==df_analysis$receptor[q])
+    df_structure_TEMP<-df_structure_TEMP%>%filter(ligand==df_analysis$ligand[q])
     
-    for (j in 1:nrow(df_structure_RMSD_analysis)) {
-      pdb_1<-read.pdb(paste0("str_fin/",df_structure_RMSD_analysis$name.x[j]))
-      pdb_2<-read.pdb(paste0("str_fin/",df_structure_RMSD_analysis$name.y[j]))
+    df_structure_merge<-left_join(df_structure_TEMP,df_structure_TEMP,by=c("receptor", "ligand","surf"),
+                                  relationship = "many-to-many")
+    df_structure_merge<-df_structure_merge%>%mutate(RMSD=NA)
+    
+    df_structure_merge<-df_structure_merge%>%mutate(x=abs(x.x-x.y))
+    df_structure_merge<-df_structure_merge%>%mutate(y=abs(y.x-y.y))
+    df_structure_merge<-df_structure_merge%>%mutate(z=abs(z.x-z.y))
+    print(nrow(df_structure_merge))
+#    df_structure_merge<-df_structure_merge%>%filter(x<=30)
+#    df_structure_merge<-df_structure_merge%>%filter(y<=30)
+#    df_structure_merge<-df_structure_merge%>%filter(z<=30)
+    
+#    df_structure_merge<-df_structure_merge%>%filter(x.x<=x.y)
+#    df_structure_merge<-df_structure_merge%>%filter(y.x<=y.y)
+#    df_structure_merge<-df_structure_merge%>%filter(z.x<=z.y)
+    
+    print(nrow(df_structure_merge)) 
+    print(paste(df_analysis$receptor_ligand[q],Sys.time()))
+    
+    if(nrow(df_structure_merge)>0){
+      for (j in 1:nrow(df_structure_merge)) {
+        pdb_1<-read.pdb(paste0("str_fin/",df_structure_merge$receptor[j],"_",
+                               df_structure_merge$ligand[j],"_",
+                               df_structure_merge$center.x[j],"_",
+                               df_structure_merge$models.x.x[j]))
+        pdb_2<-read.pdb(paste0("str_fin/",df_structure_merge$receptor[j],"_",
+                               df_structure_merge$ligand[j],"_",
+                               df_structure_merge$center.y[j],"_",
+                               df_structure_merge$models.x.y[j]))
+        
+        df_structure_merge$RMSD[j]<-rmsd(pdb_1,pdb_2)
+      }
+      #      print(paste(df_analysis$receptor_ligand[q],nrow(df_structure_merge_test)))
       
-      df_structure_RMSD_analysis$RMSD[j]<-rmsd(pdb_1,pdb_2)
+      df_structure_merge<-df_structure_merge%>%filter(RMSD<50)
+      
+      write.csv(df_structure_merge,paste0("RMSD_merged_center/",df_analysis$receptor_ligand[q],".csv"),row.names=F)
+      #      df_structure_merge_test<-df_structure_merge%>%filter(is.na(RMSD))
+      
+      print(paste(df_analysis$receptor_ligand[q],Sys.time()))
     }
-    write.csv(df_structure_RMSD_analysis,paste0("RMSD_merged_center/",df_analysis$receptor_ligand[q],".csv"),row.names=F)
   }
 }
+print(Sys.time())
