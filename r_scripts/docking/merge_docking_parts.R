@@ -2,7 +2,7 @@ part_analysis <- commandArgs(trailingOnly=TRUE)
 #group ligand structures
 part_TEMP<-strsplit(part_analysis,split = ",")[[1]]
 #part_start<-part_TEMP[1]
-v_rmsd<-as.numeric(part_TEMP[2])
+v_rmsd_start<-as.numeric(part_TEMP[2])
 part_analysis<-part_TEMP[1]
 #group ligand structures
 library(bio3d)
@@ -39,16 +39,14 @@ q<-1
 for (q in 1:nrow(df_analysis)) {
   
   df_structure_RMSD_analysis<-read.csv(paste0("RMSD_merged/",df_analysis$receptor_ligand[q],".csv"),stringsAsFactors = F)
+  
+  df_structure_RMSD_analysis<-df_structure_RMSD_analysis%>%mutate(name.x=paste0(ligand_center.x,"_",models.x.x))
+  df_structure_RMSD_analysis<-df_structure_RMSD_analysis%>%mutate(name.y=paste0(ligand_center.y,"_",models.x.y))
   #fix RMSD threshold
-  v_rmsd_temp<-quantile(df_structure_RMSD_analysis$RMSD,probs=0.25)
-  if(v_rmsd<v_rmsd_temp){v_rmsd<-v_rmsd_temp}
+  v_rmsd_temp<-quantile(df_structure_RMSD_analysis$RMSD,probs=0.025)
+  if(v_rmsd_start<v_rmsd_temp){v_rmsd<-v_rmsd_temp}else{v_rmsd<-v_rmsd_start}
   df_structure_RMSD_analysis<-df_structure_RMSD_analysis%>%filter(RMSD<v_rmsd)
-  df_structure_RMSD_analysis_add<-df_structure_RMSD_analysis%>%mutate(name.x=name.y)
-  df_structure_RMSD_analysis_add<-df_structure_RMSD_analysis_add%>%mutate(RMSD=0)
-  df_structure_RMSD_analysis_add<-unique(df_structure_RMSD_analysis_add)
-  df_structure_RMSD_analysis<-rbind(df_structure_RMSD_analysis,df_structure_RMSD_analysis_add)
   df_structure_RMSD_analysis<-unique(df_structure_RMSD_analysis)
-#  colnames(df_structure_RMSD_analysis)
   df_structure_RMSD_analysis<-df_structure_RMSD_analysis%>%group_by(name.x)%>%mutate(number=n())
   df_structure_RMSD_analysis<-ungroup(df_structure_RMSD_analysis)       
   if (!dir.exists(paste0("groups_merged/",df_analysis$receptor_ligand[q]))) {
@@ -129,20 +127,23 @@ if(nrow(df_analysis)>0){
   }
 }
 df_structure_RMSD_analysis_start<-df_structure_RMSD_analysis_start%>%filter(!is.na(name.x))
-
+df_structure_RMSD_analysis_start<-ungroup(df_structure_RMSD_analysis_start)
+df_structure_RMSD_analysis_start<-df_structure_RMSD_analysis_start%>%select(name.x, models.x.x, ligand_center.x, center.x, receptor, 
+                                                                            name.y, models.x.y, ligand_center.y, center.y, RMSD, 
+                                                                            ligand, surf, number, grop_number, size_of_group)
+colnames(df_structure_RMSD_analysis_start)
 df_log<-read.csv("log_fin.csv",stringsAsFactors = F)
-df_log<-df_log%>%select(models.x,models.y,grop_number,ligand,affinity,center,receptor,ligand,new_number)
+df_log<-df_log%>%select(models.x,models.y,grop_number,ligand,affinity,center,receptor,ligand)
 
-df_log<-df_log%>%mutate(name=paste0(receptor,"_", ligand,"_",                 center,"_",grop_number,"_",models.x))
+df_log<-df_log%>%mutate(name=paste0(receptor,"_", ligand,"_",center,"_",models.x))
 df_structure_RMSD<-left_join(df_structure_RMSD_analysis_start,df_log,by=c("name.y" ="name","ligand","receptor"),
                              relationship = "many-to-many")
-
 write.csv(df_structure_RMSD,"df_merge_structure_log.csv",row.names = F)
 setwd(part)
 df_structure_RMSD<-read.csv("df_merge_structure_log.csv",stringsAsFactors = F)
 
-df_structure_RMSD<-df_structure_RMSD%>%filter(RMSD==0)
-df_structure_RMSD<-df_structure_RMSD%>%select(name.x,receptor,ligand,RMSD)
+#df_structure_RMSD<-df_structure_RMSD%>%filter(RMSD==0)
+df_structure_RMSD<-df_structure_RMSD%>%select(name.x,receptor,ligand)
 df_structure_RMSD<-unique(df_structure_RMSD)
 
 for (j in 1:nrow(df_structure_RMSD)) {
