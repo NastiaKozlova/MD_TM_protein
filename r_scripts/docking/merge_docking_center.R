@@ -138,9 +138,9 @@ df_log<-df_log%>%select(models.x,models.y,grop_number,ligand,affinity,center,rec
 df_log<-df_log%>%mutate(name=paste0(receptor,"_", ligand,"_",center,"_",models.x))
 df_structure_RMSD<-left_join(df_structure_RMSD_analysis_start,df_log,by=c("name.y" ="name","ligand","receptor"),
                              relationship = "many-to-many")
-write.csv(df_structure_RMSD,"df_merge_structure_log.csv",row.names = F)
+write.csv(df_structure_RMSD,"df_merge_structure_log_center.csv",row.names = F)
 setwd(part)
-df_structure_RMSD<-read.csv("df_merge_structure_log.csv",stringsAsFactors = F)
+df_structure_RMSD<-read.csv("df_merge_structure_log_center.csv",stringsAsFactors = F)
 
 #df_structure_RMSD<-df_structure_RMSD%>%filter(RMSD==0)
 df_structure_RMSD<-df_structure_RMSD%>%select(name.x,receptor,ligand)
