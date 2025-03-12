@@ -21,8 +21,8 @@ df_merge<-read.csv(paste0(part_name,"df_merge_structure_log.csv"),stringsAsFacto
 
 df_merge<-df_merge%>%select(name.x,receptor,ligand, size_of_group)
 df_merge<-unique(df_merge)
-#if(dir.exists(paste0(part_analysis,"din/make_picture_tcl_surf"))) {system(command = paste0("rm -r ",part_analysis,"din/make_picture_tcl_surf"),ignore.stdout=T,wait = T)}
-#if(dir.exists(paste0(part_analysis,"din/merge_interaction_surf"))) {system(command = paste0("rm -r ",part_analysis,"din/merge_interaction_surf"),ignore.stdout=T,wait = T)}
+if(dir.exists(paste0(part_analysis,"din/make_picture_tcl_surf"))) {system(command = paste0("rm -r ",part_analysis,"din/make_picture_tcl_surf"),ignore.stdout=T,wait = T)}
+if(dir.exists(paste0(part_analysis,"din/merge_interaction_surf"))) {system(command = paste0("rm -r ",part_analysis,"din/merge_interaction_surf"),ignore.stdout=T,wait = T)}
 
 if(!dir.exists("make_picture_tcl_surf")){dir.create("make_picture_tcl_surf")}
 if(!dir.exists("merge_interaction_surf")){dir.create("merge_interaction_surf")}
