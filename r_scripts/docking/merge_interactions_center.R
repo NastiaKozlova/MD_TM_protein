@@ -75,7 +75,6 @@ v_seq<-seq(from=0,to =max(df_topology$seq_end),by=10)
 p<-ggplot()+
   geom_rect(aes(xmin = seq_beg-0.5, xmax = seq_end+0.5, ymin = -Inf, ymax = Inf,fill=topology,alpha=0.1),data=df_topology)+
   geom_point(aes(x=resno,y=number),data=df_pdb)+
-  
   theme_bw()+facet_grid(receptor_ligand~., scales = "free")+
   scale_x_continuous(breaks = v_seq,labels = v_seq)+
   guides(alpha = "none")
