@@ -13,15 +13,16 @@ df_all<-df_all%>%mutate(receptor_ligand=paste0(receptor,"_",ligand,"_",center.x)
 
 #if (dir.exists(paste0("interaction/"))) { system(command = paste0("rm -r ",part_name,"din/interaction/"))}
 #if (dir.exists(paste0("interaction_TEMP/"))) {system(command = paste0("rm -r ",part_name,"din/interaction_TEMP/"))}
-if (dir.exists(paste0("interaction_serf/"))) {system(command = paste0("rm -r ",part_name,"din/interaction_serf/"))}
+if (dir.exists(paste0("interaction_surf/"))) {system(command = paste0("rm -r ",part_name,"din/interaction_surf/"))}
 
-if (!dir.exists(paste0("interaction_serf/"))) { dir.create(paste0("interaction_serf/"))}
+if (!dir.exists(paste0("interaction_surf/"))) { dir.create(paste0("interaction_surf/"))}
 i<-1
 j<-1
 p<-1
-v_structure<-unique(df_all$name.x)
-for (j in 1:length(v_structure)) {
-  df_complex<-df_all%>%filter(name.x==v_structure[j])
+df_structure<-df_all%>%select(name.x, receptor, ligand, surf)
+df_structure<-unique(df_structure)
+for (j in 1:nrow(df_structure)) {
+  df_complex<-df_all%>%filter(name.x==df_structure$name.x[j])
   pdb<-read.pdb(paste0(part_name,"receptor_start/",df_all$receptor[j],".pdb"))
   
   df_pdb<-pdb$atom
@@ -51,7 +52,7 @@ for (j in 1:length(v_structure)) {
   #    df_pdb<-df_pdb%>%mutate(persent_interactions=number_interactions/total_structure*100)
   df_pdb<-df_pdb%>%mutate(persent_interactions=number_interactions/tested_structure*100)
   write.csv(df_pdb,
-            paste0("interaction_serf/",v_structure[j],".csv"),row.names = F)
+            paste0("interaction_surf/",df_structure$name.x[j],".csv"),row.names = F)
   #  }else {
   #    print(paste0(i," ",v_structure[j]," ",w))
   #  }
@@ -63,11 +64,11 @@ df_all<-unique(df_all)
 df_all<-df_all%>%group_by(receptor_ligand)%>%mutate(number=1:n())
 df_all<-df_all%>%mutate(number=as.character(number))
 df_all<-ungroup(df_all)
-df_pdb<-read.csv(paste0("interaction_serf/",df_all$name.x[1],".csv"),stringsAsFactors = F)
+df_pdb<-read.csv(paste0("interaction_surf/",df_all$name.x[1],".csv"),stringsAsFactors = F)
 df_pdb<-df_pdb%>%mutate(name.x=df_all$name.x[1])
 df_pdb<-df_pdb%>%filter(persent_interactions==100)
 for (j in 2:nrow(df_all)) {
-  df_pdb_add<-read.csv(paste0("interaction_serf/",df_all$name.x[j],".csv"),stringsAsFactors = F)
+  df_pdb_add<-read.csv(paste0("interaction_surf/",df_all$name.x[j],".csv"),stringsAsFactors = F)
   df_pdb_add<-df_pdb_add%>%mutate(name.x=df_all$name.x[j])
   df_pdb<-rbind(df_pdb,df_pdb_add)
   df_pdb<-df_pdb%>%filter(persent_interactions==100)
@@ -86,4 +87,4 @@ p<-ggplot()+
   theme_bw()+facet_grid(receptor_ligand~., scales = "free")+
   scale_x_continuous(breaks = v_seq,labels = v_seq)+
   guides(alpha = "none")
-ggsave(p,   filename = paste0("serf_interactions.png"), width = 60, height = 30, units = c("cm"), dpi = 200 ) 
+ggsave(p,   filename = paste0("surf_interactions.png"), width = 60, height = 30, units = c("cm"), dpi = 200 ) 
