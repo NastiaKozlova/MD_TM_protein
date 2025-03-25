@@ -78,8 +78,8 @@ df_ligands_type<-df_ligands_type%>%mutate(parset=paste(receptor,ligand,type))
 df_ligands_type<-left_join(df_ligands_type,df_all_systems,by=c("receptor"="fin_name"))
 write.csv(df_ligands_type, paste0(part,"fin_data/docking_statistic/energy_receptor_ligand.csv"),row.names = F)
 df_ligands_type<-read.csv(paste0(part,"fin_data/docking_statistic/energy_receptor_ligand.csv"),stringsAsFactors = F)
-df_ligands_type<-df_ligands_type[df_ligands_type$system_name%in%c("POPE WT","POPG Inverted"),]
-df_ligands_type<-df_ligands_type%>%filter(ligand!="D-Glucose")
+#df_ligands_type<-df_ligands_type[df_ligands_type$system_name%in%c("POPE WT","POPG Inverted"),]
+#df_ligands_type<-df_ligands_type%>%filter(ligand!="D-Glucose")
 df_ligands_type<-df_ligands_type%>%mutate(type_name="water soluble surface")
 df_ligands_type$type_name[df_ligands_type$type=="active center"]<-"membrane parts"
 p<-ggplot(data=df_ligands_type)+
@@ -91,40 +91,3 @@ p<-ggplot(data=df_ligands_type)+
   theme_bw()+theme(legend.position = "bottom")
 
 ggsave(p,filename = paste0(part,"fin_plots/docking_statistic/type_energy_ligand_receptor_interactions.png"), width = 20, height = 16, units = c("cm"), dpi = 1000 ) 
-
-#kruskal <- df_ligands_type %>% kruskal_test(affinity ~ parset)
-
-
-#pwc2 <- df_ligands_type %>% 
-#  dunn_test(affinity ~ parset, p.adjust.method = "bonferroni") 
-
-#df_convert<-df_ligands_type%>%select(receptor,ligand,type,parset)
-#df_convert<-unique(df_convert)
-
-#pwc2<-left_join(pwc2,df_convert,by=c("group1"="parset"))
-#pwc2<-left_join(pwc2,df_convert,by=c("group2"="parset"))
-
-#pwc2<-pwc2%>%filter(receptor.x==receptor.y)%>%filter(ligand.x== ligand.y)
-
-#colnames(pwc2)
-
-
-#pwc2 <- pwc2 %>% add_xy_position(x = "parset")
-#pwc2<-left_join(pwc2,df_convert,by=c("group1"="parset"))
-#pwc2<-left_join(pwc2,df_convert,by=c("group2"="parset"))
-#pwc2<-pwc2%>%filter(p.adj<0.05)
-#pwc2<-pwc2%>%filter(receptor.x==receptor.y)%>%filter(ligand.x== ligand.y)
-#pwc2<-pwc2%>%mutate(receptor=receptor.x)
-#pwc2<-pwc2%>%mutate(ligand=ligand.x)
-#pwc2<-pwc2%>%select(group1,group2,  statistic,p,p.adj,p.adj.signif,receptor,ligand)
-#pwc2<-left_join(pwc2,df_all_systems,by=c("receptor"="fin_name"))
-
-
-#p<-ggplot(data=df_ligands_type)+
-#  labs(x="Affinity, kcal/mol")+
-#  geom_freqpoly(aes(x=affinity,colour=type))+
-#  geom_text(aes(x=1.5,y=1,5,label=format(p.adj, digits=2, big.mark   = ",")),data=pwc2)+
-#  facet_grid(system_name~ligand)+
-#  theme_bw()
-#ggsave(p,filename = paste0(part,"fin_plots/docking_statistic/boxplot_type_energy_ligand_receptor_interactions.png"), width = 20, height = 16, units = c("cm"), dpi = 1000 ) 
-
