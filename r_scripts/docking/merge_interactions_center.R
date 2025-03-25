@@ -19,9 +19,10 @@ if (!dir.exists(paste0("interaction_center/"))) { dir.create(paste0("interaction
 i<-1
 j<-1
 p<-1
-v_structure<-unique(df_all$name.x)
-for (j in 1:length(v_structure)) {
-  df_complex<-df_all%>%filter(name.x==v_structure[j])
+df_structure<-df_all%>%select(name.x, receptor, ligand, surf)
+df_structure<-unique(df_structure)
+for (j in 1:nrow(df_structure)) {
+  df_complex<-df_all%>%filter(name.x==df_structure$name.x[j])
   pdb<-read.pdb(paste0(part_name,"receptor_start/",df_all$receptor[j],".pdb"))
   
   df_pdb<-pdb$atom
@@ -47,7 +48,7 @@ for (j in 1:length(v_structure)) {
   }
   df_pdb<-df_pdb%>%mutate(persent_interactions=number_interactions/tested_structure*100)
   write.csv(df_pdb,
-            paste0("interaction_center/",v_structure[j],".csv"),row.names = F)
+            paste0("interaction_center/",df_structure$name.x[j],".csv"),row.names = F)
 }
 
 df_all<-df_all%>%mutate(receptor_ligand=paste0(receptor,"_",ligand))
