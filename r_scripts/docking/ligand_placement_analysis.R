@@ -84,9 +84,9 @@ df_structure<-rbind(df_structure_center,df_structure_surf)
 
 df_structure<-left_join(df_structure,df_all_systems,by=c("receptor"="fin_name"))
 df_structure<-df_structure%>%group_by(receptor,ligand)%>%arrange(desc(z))%>%mutate(structure_order=c(1:n()))
-df_structure<-df_structure[df_structure$system_name%in%c("POPE WT","POPG Inverted"),]
+#df_structure<-df_structure[df_structure$system_name%in%c("POPE WT","POPG Inverted"),]
 #df_structure<-df_structure[df_structure$system_name%in%c("POPE WT"),]
-df_structure<-df_structure%>%filter(ligand!="D-Glucose")
+#df_structure<-df_structure%>%filter(ligand!="D-Glucose")
 p<-ggplot(data=df_structure)+
   geom_segment(aes(x=z_min,xend=z_max,y = affinity,yend=affinity,colour=type))+
 #  geom_text(aes(x=z,y=affinity,colour=type,label=structure_order))+
