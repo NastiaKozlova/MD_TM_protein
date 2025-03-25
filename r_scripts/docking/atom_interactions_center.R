@@ -23,9 +23,11 @@ df_merge<-df_merge%>%select(name.x,receptor,ligand, size_of_group)
 df_merge<-unique(df_merge)
 if(dir.exists(paste0(part_analysis,"din/make_picture_tcl_center"))) {system(command = paste0("rm -r ",part_analysis,"din/make_picture_tcl_center"),ignore.stdout=T,wait = T)}
 if(dir.exists(paste0(part_analysis,"din/merge_interaction_center"))) {system(command = paste0("rm -r ",part_analysis,"din/merge_interaction_center"),ignore.stdout=T,wait = T)}
+if(dir.exists(paste0(part_analysis,"din/receptor_interaction_topology_center"))) {system(command = paste0("rm -r ",part_analysis,"din/receptor_interaction_topology_center"),ignore.stdout=T,wait = T)}
 
 if(!dir.exists("make_picture_tcl_center")){dir.create("make_picture_tcl_center")}
 if(!dir.exists("merge_interaction_center")){dir.create("merge_interaction_center")}
+if(!dir.exists("receptor_interaction_topology_center")){dir.create("receptor_interaction_topology_center")}
 
 
 df_merge<-df_merge%>%mutate(complex_name=paste0(receptor,"_",ligand,"_",size_of_group))
@@ -39,6 +41,7 @@ for (i in 1:nrow(df_merge)) {
 }
 df_merge<-df_merge%>%filter(exists)
 #i<-11869
+i<-1
 df_merge$exists<-F
 if(nrow(df_merge)>0){
   for (i in 1:nrow(df_merge)) {
@@ -55,10 +58,14 @@ if(nrow(df_merge)>0){
         v_domain<-c(df_topology_seclected$seq_beg[p]:df_topology_seclected$seq_end[p])
         df_topology_seclected$selected[length(df_interactions$resno%in%v_domain)>0]<-T
       }
+
       df_topology_seclected<-df_topology_seclected%>%filter(selected)
-      receptor_name<-paste0(part_analysis,"receptor_start/",df_merge$receptor[i],".pdb")
-      ligand_name<-paste0(part_name,"str_fin/",df_merge$name.x[i])
-      protein<-read.pdb(receptor_name)
+#      receptor_name<-paste0(part_analysis,"receptor_start/",df_merge$receptor[i],".pdb")
+#      ligand_name<-paste0(part_name,"str_fin/",df_merge$name.x[i])
+      pdb<-read.pdb(paste0("complex_structure_center/",df_merge$name.x[i]))
+      #complex_structure_center
+      protein.int<-atom.select(pdb,"protein")
+      ligand.int<-atom.select(pdb,"protein")
       ligand<-read.pdb(ligand_name)
       v_binding_test<-binding.site(protein,ligand,cutoff = 12)$resno
       df_protein<-protein$atom
@@ -89,6 +96,12 @@ if(nrow(df_merge)>0){
         df_interaction<-df_interaction%>%group_by(eleno.y)%>%mutate(length_test=min(length))
         df_interaction<-df_interaction%>%group_by(eleno.y)%>%filter(length_test==length)
         df_interaction<-ungroup(df_interaction)
+        df_interaction<-df_interaction%>%mutate(topology.x=NA)
+        for (w in 1:nrow(df_topology_seclected)) {
+          df_interaction$topology.x[df_interaction$resno.x%in%
+                                      c(df_topology_seclected$seq_beg[w]:df_topology_seclected$seq_end[w])]<-
+            df_topology_seclected$type[w]
+        }
         df_merge$exists[i]<-T
         write.csv(df_interaction,paste0("merge_interaction_center/",df_merge$name.x[i],".csv"),row.names = F)
       } else{print(paste(i,df_merge$name.x[i]))}
@@ -97,11 +110,26 @@ if(nrow(df_merge)>0){
   }
 }
 df_merge<-df_merge%>%filter(exists)
-i<-1
+i<-108
 if(nrow(df_merge)>0){
   for (i in 1:nrow(df_merge)) {
     if(file.exists(paste0("merge_interaction_center/",df_merge$name.x[i],".csv"))){
+      
       df_interaction<-read.csv(paste0("merge_interaction_center/",df_merge$name.x[i],".csv"),stringsAsFactors = F)
+      
+      df_topology_seclected<-df_topology%>%mutate(selected=F)
+      for (p in 1:nrow(df_topology_seclected)){
+        df_topology_seclected$selected[p]<-
+          sum(c(df_topology_seclected$seq_beg[p]:df_topology_seclected$seq_end[p])%in%c(df_interaction$resno.x))
+      }
+      write.csv(df_topology_seclected,paste0("receptor_interaction_topology_center/",df_merge$name.x[i],".csv"),row.names = F)
+      df_topology_seclected<-df_topology_seclected%>%filter(selected>0)
+
+      v_selected<-c()
+      for (q in 1:nrow(df_topology_seclected)) {
+        v_selected<-c(v_selected,df_topology_seclected$seq_beg[q]:df_topology_seclected$seq_end[q])
+      }
+
       df_tcl<-data.frame(matrix(nrow = 1,ncol = 1))
       df_tcl[1,1]<-paste0('cd ', part_name,"complex_structure_center/\n\n",
                           'mol new {',df_merge$name.x[i],'} type {pdb}')
@@ -137,25 +165,23 @@ if(nrow(df_merge)>0){
                                   ' and name ',df_interaction$elety.x[p],
                                   " and resname ",df_interaction$resid.x[p],')"] list]')
           df_tcl[(p+1),2]<-paste0('set atomID2 [[atomselect ',(i-1),
-                                  ' "(x > ',df_interaction$x.y[p]-0.5,' and x < ',df_interaction$x.y[p]+0.5,
-                                  ' and y > ',df_interaction$y.y[p]-0.5,' and y < ',df_interaction$y.y[p]+0.5,
-                                  ' and z > ',df_interaction$z.y[p]-0.5,' and z < ',df_interaction$z.y[p]+0.5,')"] list]')
+                                  
+                                  #' "(x > ',df_interaction$x.y[p]-0.5,' and x < ',df_interaction$x.y[p]+0.5,
+                                  #' and y > ',df_interaction$y.y[p]-0.5,' and y < ',df_interaction$y.y[p]+0.5,
+                                  #' and z > ',df_interaction$z.y[p]-0.5,' and z < ',df_interaction$z.y[p]+0.5,
+                                  ' and name ',df_interaction$eleno.y[p],
+                                  " and resname ",df_interaction$resid.y[p],')"] list]')
           
           df_tcl[(p+1),3]<-paste0('label add Bonds ',(i-1),'/$atomID1 ',(i-1),'/$atomID2')
         }
       }
-      v_selected<-c()
-      for (q in 1:nrow(df_topology_seclected)) {
-        v_selected<-c(v_selected,df_topology_seclected$seq_beg[q]:df_topology_seclected$seq_end[q])
-      }
-      df_tcl[p+2,1]<-paste0('mol modselect 0 ',i-1,' protein and resid ',paste0(v_selected,collapse = " "),'\n',
-                            'mol modmaterial 0 ',(i-1),' Opaque\n',
-                            'mol modstyle 0 ' ,(i-1), ' NewCartoon\n')#,
+
+      df_tcl[p+2,1]<-paste0('mol modselect 3 ',i-1,' protein and resid ',paste0(v_selected,collapse = " "),'\n',
+                            'mol modmaterial 3 ',(i-1),' Opaque\n',
+                            'mol modstyle 3 ' ,(i-1), ' NewCartoon\n')#,
       df_tcl[is.na(df_tcl)]<-""
       write.csv(df_tcl,paste0("make_picture_tcl_center/",df_merge$name.x[i],".tcl"),row.names = F)
     }
-    #   df_tcl<-read.csv(paste0("make_picture_tcl_center/",df_merge$name.x[1],".tcl"),stringsAsFactors = F)
-    #    i<-2
   }
 }
 df_tcl<-read.csv(paste0("make_picture_tcl_center/",df_merge$name.x[1],".tcl"),stringsAsFactors = F)
