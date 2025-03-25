@@ -73,8 +73,12 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/make_plots_R
 #ligands_plasement
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/ligands_plasement.R ",part_start),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/ligand_placement_analysis.R ",part_start),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_ligand_path.R ",part_start),ignore.stdout=T,wait = T)
 
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/ligand_placement_interaction_analysis.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/ligand_placement_interaction_analysis_plot.R ",part_start),ignore.stdout=T,wait = T)
+
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_ligand_path.R ",part_start),ignore.stdout=T,wait = T)
+ligand_placement_interaction_analysis
 #ligand_placement_analysis
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_plot.R ",part_start),ignore.stdout=T,wait = T)
 arrange_ligand_positions
