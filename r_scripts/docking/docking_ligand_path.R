@@ -7,7 +7,7 @@ part_name<-list.files(paste0(part_start,"MD_analysis/"))
 #v_seq<-read.csv(paste0(part_start,"start/sequence/",seq_name[1]))
 
 part_name<-paste0(part_start,"MD_analysis/docking/docking_first/")
-#/media/akozlova/Data2/Nastia_projects/lacY/MD_TMD_protein/MD_analysis/docking/docking_first/
+
 setwd(part_name)
 df_merge<-read.csv(file = paste0(part_name,"din/df_structure.csv"),stringsAsFactors = F)
 df_convert<-df_merge%>%select( receptor,system_name,Membrane,Structure)
@@ -45,7 +45,7 @@ for (i in 1:nrow(df_merge)) {
   }
 }
 
-v_teoretical<-c(126,151,269,144,322,272,20,23,27)
+#v_teoretical<-c(126,151,269,144,322,272,20,23,27)
 
 df_select<-df_select%>%mutate(only_docking=F)
 df_select<-df_select%>%mutate(only_teoretical=F)
@@ -78,7 +78,7 @@ for (j in 1:nrow(df_select)) {
   df_inteteraction<-unique(df_inteteraction)
   df_inteteraction<-df_inteteraction%>%select(resno,resid,persent_interactions)
   df_inteteraction<-df_inteteraction%>%mutate(experiment=F)
-  df_inteteraction$experiment[df_inteteraction$resno%in%v_teoretical]<-T
+#  df_inteteraction$experiment[df_inteteraction$resno%in%v_teoretical]<-T
   df_inteteraction<-df_inteteraction%>%mutate(docking=F)
   df_inteteraction$docking[df_inteteraction$persent_interactions==100]<-T
 
