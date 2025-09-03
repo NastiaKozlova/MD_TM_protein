@@ -42,6 +42,8 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/prepare_hbon
 system(command = paste0("vmd -dispdev text -e ",part_start,"MD_analysis/vmd_hbonds_script.tcl"),ignore.stdout=T,wait = T) 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/test_hbonds.R ",part_start),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/test_water.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/water_filled_pore.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/water_pore_size.R ",part_start),ignore.stdout=T,wait = T)
 
 #check comand ring2 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/ring/ring2_prepare.R ",part_start),ignore.stdout=T,wait = T)
@@ -62,6 +64,8 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/dock
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_main.R ",part_start),ignore.stdout=T,wait = T)
 #if you want don't count cout interactions of protein with protein serfuce v_surphase_conut<-F
 if(surphase_conut){
+  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_surf.R ",part_start),ignore.stdout=T,wait = T)
+  
 }else{
   system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_convert_active_center.R ",part_start),ignore.stdout=T,wait = T)
   system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_active_center.R ",part_start),ignore.stdout=T,wait = T)
@@ -75,6 +79,9 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/find_conserv
 #collect MD simulation data in minimal amount of dataframes 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/make_plots_RMSD_RMSF.R ",part_start),ignore.stdout=T,wait = T)
 #ligands_plasement
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/ligand_placement_density.R ",part_start,"MD_analysis/docking/docking_first/"),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/Inteaction_in_pore_filter.R ",part_start),ignore.stdout=T,wait = T)
+
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/ligands_plasement.R ",part_start),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/ligand_placement_analysis.R ",part_start),ignore.stdout=T,wait = T)
 
