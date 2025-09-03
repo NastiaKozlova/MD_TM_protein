@@ -11,28 +11,28 @@ if (!dir.exists(paste0(part_start,"MD_analysis/din/"))){dir.create(paste0(part_s
 sort_water<-function(file_name,n_frame){
   df_water<-read_tsv(file_name,skip = 2,col_names = F)
   colnames(df_water)<-c("donor","acceptor","occupancy")
-  df_water<-df_water%>%mutate(frame=q)
+  df_water<-df_water%>%mutate(frame=n_frame)
   df_water<-df_water%>%mutate(amino=NA)
   df_water<-df_water%>%mutate(number=NA)
   df_water<-df_water%>%mutate(type=NA)
   for (i in 1:nrow(df_water)) {
     dd<-strsplit(df_water$donor[i],split = "-",fixed = T)[[1]][1]
     dd<-strsplit(dd,split = "",fixed = T)[[1]]
-    number_d<-paste0(dd[5:length(dd)],collapse = "")
-    amino_d<-paste0(dd[1:4],collapse = "")
+    number_d<-paste0(dd[4:length(dd)],collapse = "")
+    amino_d<-paste0(dd[1:3],collapse = "")
     aa<-strsplit(df_water$acceptor[i],split = "-",fixed = T)[[1]][1]
     aa<-strsplit(aa,split = "",fixed = T)[[1]]
-    number_a<-paste0(aa[5:length(aa)],collapse = "")
-    amino_a<-paste0(aa[1:4],collapse = "")
+    number_a<-paste0(aa[4:length(aa)],collapse = "")
+    amino_a<-paste0(aa[1:3],collapse = "")
     if (amino_a!="TIP") {
       df_water$type[i]<-"donor"
-      df_water$number[i]<-number_d
-      df_water$amino[i]<-amino_d
+      df_water$number[i]<-number_a
+      df_water$amino[i]<-amino_a
     }
     if (amino_d!="TIP") {
       df_water$type[i]<-"acceptor"
-      df_water$number[i]<-number_a
-      df_water$amino[i]<-amino_a
+      df_water$number[i]<-number_d
+      df_water$amino[i]<-amino_d
     }
   }
   df_water<-df_water%>%select(number,amino,number,type,frame)
