@@ -5,6 +5,8 @@ setwd(part_start)
 #if you want don't count cout interactions of protein with protein surface surphase_conut<-F
 surphase_conut<-T
 
+v_search<-c("center","surf")
+#if(!surphase_conut){v_search<-v_search[1]}
 v_MD<-list.files(paste0("MD"))
 if(!dir.exists("MD_count")){dir.create("MD_count")}
 if(!dir.exists("plot")){dir.create("plot")}
@@ -42,30 +44,59 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/prepare_hbon
 system(command = paste0("vmd -dispdev text -e ",part_start,"MD_analysis/vmd_hbonds_script.tcl"),ignore.stdout=T,wait = T) 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/test_hbonds.R ",part_start),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/test_water.R ",part_start),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/water_filled_pore.R ",part_start),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/water_pore_size.R ",part_start),ignore.stdout=T,wait = T)
 
-#check comand ring2 
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/ring/ring2_prepare.R ",part_start),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/ring/ring2_convert.R ",part_start),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/ring/ring2_groups.R ",part_start),ignore.stdout=T,wait = T)
+
 
 #docking
 #Download programm https://ccsb.scripps.edu/mgltools/downloads/
 #docking python
 #/home/nastia/projects/MD_TM_protein/r_scripts/docking/docking_prepare_receptor_pdb.R
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/group_MD_data.R ",part_start),ignore.stdout=T,wait = T)
 
-#prepare receptor sturcture for docking
+#make fin plots
+#correct alignemt file for another protein
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/find_conservative_aminoacids.R ",part_start),ignore.stdout=T,wait = T)
+#collect MD simulation data in minimal amount of dataframes 
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/make_plots_RMSD_RMSF.R ",part_start),ignore.stdout=T,wait = T)
+
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/claster_analysis_frame_data.R ",part_start),ignore.stdout=T,wait = T)
+
+
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_prepare_receptor_pdb.R ",part_start),ignore.stdout=T,wait = T)
-#analyse search field for docking
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_add_serf_active_center.R ",part_start),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_main.R ",part_start),ignore.stdout=T,wait = T)
+v_search<-c("center","surf")
+i<-1
+#part_name<-paste0(part_start,",",v_search[i])
+for (i in 1:length(v_search)) {
+    part_name<-paste0(part_start,",",v_search[i])
+    system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/copy_files_for_docking.R ",part_name),ignore.stdout=T,wait = T)
+    system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/r_scripts/docking_add_serf_active_center.R ",part_start),ignore.stdout=T,wait = T)
+}
+for (i in 1:length(v_search)) {   
+    part_name<-paste0(part_start,",",v_search[i])
+    system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_premain.R ",part_name),ignore.stdout=T,wait = T)
+}
+#system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_add_serf_active_center.R ",part_start),ignore.stdout=T,wait = T)
+#for (i in 1:length(v_list_proteins)) {
+    for (j in 1:length(v_search)) {
+        part<-paste0(part_start,",",v_search[j])
+        system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_script.R ",part),ignore.stdout=T,wait = T)
+        
+        print("Run")
+        print(paste0(part,"script/script_readme.txt"))
+    }
+#}
+j<-2
+for (j in 1:length(v_search)) {
+    part<-paste0(part_start,",",v_search[j])
+    #part<-paste0(part_start,"MD_analysis/docking/docking_first/",v_search[j],"/")
+    system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_main.R ",part),ignore.stdout=T,wait = T)
+}
+for (j in 1:length(v_search)) {
+    part_name<-paste0(part_start,"MD_analysis/docking/docking_first/",v_search,"/")
+    system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_group_structure.R ",part_name,",",1),ignore.stdout=T,wait = T)
+}
 #if you want don't count cout interactions of protein with protein serfuce v_surphase_conut<-F
 if(surphase_conut){
   system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_surf.R ",part_start),ignore.stdout=T,wait = T)
-  
 }else{
   system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_convert_active_center.R ",part_start),ignore.stdout=T,wait = T)
   system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_active_center.R ",part_start),ignore.stdout=T,wait = T)
@@ -73,23 +104,15 @@ if(surphase_conut){
 }
 
 #ring2 
-#make fin plots
-#correct alignemt file for another protein
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/find_conservative_aminoacids.R ",part_start),ignore.stdout=T,wait = T)
-#collect MD simulation data in minimal amount of dataframes 
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/make_plots_RMSD_RMSF.R ",part_start),ignore.stdout=T,wait = T)
+#check comand ring2 
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/ring/ring2_prepare.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/ring/ring2_convert.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/ring/ring2_groups.R ",part_start),ignore.stdout=T,wait = T)
 #ligands_plasement
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/ligand_placement_density.R ",part_start,"MD_analysis/docking/docking_first/"),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/Inteaction_in_pore_filter.R ",part_start),ignore.stdout=T,wait = T)
-
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/ligands_plasement.R ",part_start),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/ligand_placement_analysis.R ",part_start),ignore.stdout=T,wait = T)
-
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/ligand_placement_interaction_analysis.R ",part_start),ignore.stdout=T,wait = T)
-system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/ligand_placement_interaction_analysis_plot.R ",part_start),ignore.stdout=T,wait = T)
-
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_ligand_path.R ",part_start),ignore.stdout=T,wait = T)
-ligand_placement_interaction_analysis
+
 #ligand_placement_analysis
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_plot.R ",part_start),ignore.stdout=T,wait = T)
 arrange_ligand_positions
@@ -100,7 +123,7 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/count compar
 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/domain_interactions.R ",part_start),ignore.stdout=T,wait = T)
 
-#system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/claster_analysis_frame_data.R ",part_start),ignore.stdout=T,wait = T)
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/claster_analysis_frame_data.R ",part_start),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/claster_analysis_frame_data_RMSD.R ",part_start),ignore.stdout=T,wait = T)
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/claster_analysis_frame_data_all.R ",part_start),ignore.stdout=T,wait = T)
 
