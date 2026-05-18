@@ -8,10 +8,10 @@ library(ggplot2)
 v_rmsd<-4
 #part_name<-part_name
 setwd(part_name)
-df_all<-read.csv(paste0(part_name,"ligand_center.csv"),stringsAsFactors = F)
-colnames(df_all)<-c("center","receptor","ligand")
+df_all<-read.csv(paste0("df_all.csv"),stringsAsFactors = F)
+#colnames(df_all)<-c("center","receptor","ligand")
 df_all<-df_all%>%mutate(name=paste0(receptor,"_",ligand,"_",center))
-write.csv(df_all,"df_all.csv",row.names = F)
+#write.csv(df_all,"df_all.csv",row.names = F)
 num_model<-1
 max_num<-5
 if (!file.exists("din/")) {dir.create("din/")}
@@ -22,7 +22,7 @@ a<-list.files(paste0("out/"))
 df_topology<-data.frame(matrix(nrow=length(a),ncol =  3))
 colnames(df_topology)<-c("name","run","name_log")
 i<-1
-df_topology<-df_topology%>%mutate(exists="NO")
+#df_topology<-df_topology%>%mutate(exists="NO")
 #i<-1
 for (i in 1:length(a)) {
   b<-strsplit(a[i],split = ".",fixed = T)[[1]][1]
@@ -30,12 +30,12 @@ for (i in 1:length(a)) {
   b<-strsplit(b,split = "_")[[1]]
   df_topology$run[i]<-b[length(b)]
   df_topology$name[i]<-paste0(b[1:(length(b)-1)],collapse="_")
-  if (file.exists(paste0("din/log/",df_topology$name_log[i],".csv"))){
-    df_topology$exists[i]<-"YES"
-  }
+#  if (file.exists(paste0("din/log/",df_topology$name_log[i],".csv"))){
+#    df_topology$exists[i]<-"YES"
+#  }
 }
-df_topology<-df_topology%>%filter(!is.na(exists))
-df_topology<-df_topology%>%filter(exists=="YES")
+#df_topology<-df_topology%>%filter(!is.na(exists))
+#df_topology<-df_topology%>%filter(exists=="YES")
 #print(nrow(df_topology))
 df_topology<-left_join(df_topology,df_all,by="name")
 df_topology<-df_topology%>%filter(!is.na(receptor))
