@@ -11,8 +11,8 @@ filter_structure<-function(df_pdb,x_min,x_max,y_min,y_max,z_min,z_max){
   df_pdb_filtered<-df_pdb_filtered%>%filter(y<y_max)
   df_pdb_filtered<-df_pdb_filtered%>%filter(z>z_min)
   df_pdb_filtered<-df_pdb_filtered%>%filter(z<z_max)
-  df_pdb_filtered<-df_pdb_filtered%>%select(type,resid,resno)
-  colnames(df_pdb_filtered)<-c("type","amino","resno") 
+  df_pdb_filtered<-df_pdb_filtered%>%select(type,chain,resid,resno)
+  colnames(df_pdb_filtered)<-c("type","chain","amino","resno") 
   df_pdb_filtered<-df_pdb_filtered%>%mutate(type=df_structure$type[i])
   return(df_pdb_filtered)
 }
@@ -63,7 +63,7 @@ for (j in 1:nrow(df_all_systems)) {
       }
     }
     df_structure<-unique(df_structure)
-    df_structure<-df_structure%>%mutate(zise=NA)
+#    df_structure<-df_structure%>%mutate(size=NA)
     i<-1
     df_type<-data.frame(matrix(ncol=3,nrow = 0))
     colnames(df_type)<-c("type","amino","resno") 
@@ -80,9 +80,9 @@ for (j in 1:nrow(df_all_systems)) {
     }
     df_structure<-df_structure%>%filter(size>3)
     df_type<-df_type[df_type$type%in%df_structure$type,]
-    df_add<-read.csv(paste0(part_start,"start/active_center.csv"),stringsAsFactors = F)
-    df_type<-rbind(df_type,df_add)
-    df_type<-unique(df_type)
+    #df_add<-read.csv(paste0(part_start,"start/active_center.csv"),stringsAsFactors = F)
+    #df_type<-rbind(df_type,df_add)
+    #df_type<-unique(df_type)
     df_type<-df_type%>%mutate(receptor=paste0("charmm-gui-",df_all_systems$system_name[j]))
   #  df_test<-left_join(df_type,df_pdb,by="resno")
   #  df_test<-df_test%>%group_by(type.x)%>%mutate(x_mean=mean(x))%>%mutate(y_mean=mean(y))%>%mutate(z_mean=mean(z))
@@ -111,4 +111,4 @@ for (j in 2:nrow(df_all_systems)) {
     }
 }
 
-write.csv(df_type,paste0("docking/docking_first/active_center.csv"),row.names = F)
+write.csv(df_type,paste0("docking/docking_first/surf/active_center.csv"),row.names = F)
