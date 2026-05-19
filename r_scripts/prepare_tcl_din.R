@@ -142,43 +142,6 @@ for (j in 1:length(v_parta)) {
         write.table(df_tcl,file =paste0(part_start,'MD_analysis/tcl/',parta[j],'_Second_str_hbond_',8,'.tcl'),sep = '\n', quote = F,na = '' ,row.names = F,col.names = F)
         
         system(command = paste0("vmd -dispdev text -e ",part_start,'MD_analysis/tcl/',parta[j],'_Second_str_hbond_',8,'.tcl'),ignore.stdout=T,wait = T)
-        pdb<-read.pdb(paste0(part,"din/pdb_second/8/frame_0.pdb"))
-#        pdb.int<-atom.select(pdb,"protein", inverse=TRUE)
-#        pdb <- trim.pdb(pdb, pdb.int)
-        df_pdb<-pdb$atom
-        df_pdb<-df_pdb%>%select(resno,segid)
-        df_pdb<-unique(df_pdb)
-#        df_pdb<-df_pdb[!df_pdb$resid%in%c("TIP3", "SOD",  "CLA"),]
-        
-        df_tcl<-data.frame(matrix(nrow = 1,ncol = 1))
-        df_tcl[1,1]<-paste('cd', part,"\npackage require namdenergy")
-        df_tcl[1,2]<-paste0('mol new {namd/step5_input.psf} type {psf}')
-        df_tcl[1,3]<-paste0('mol addfile {namd/step',8,'.dcd} type {dcd} first 0 last -1 step 1 waitfor all')
-        df_tcl[1,4]<-paste0('set sel2 [atomselect top "protein"]')
-#        v_resno<-unique(df_pdb$resno)
-        for (q in 1:nrow(df_pdb)) {
- #           df_tcl[q+1,1]<-paste0('set sel1 [atomselect top "(lipid or resname POPG) and resid',
- #                               v_resno[q],'"]')
-            df_tcl[q+1,1]<-paste0('set sel1 [atomselect top "(lipid or resname POPG)"]')
-            df_tcl[q+1,2]<-paste0('set sel2 [atomselect top "protein and resid ',df_pdb$resno[q],
-                                  ' and segname ',df_pdb$segid[q],'"]')
-            
-            df_tcl[q+1,3]<-paste0('namdenergy -sel $sel2  $sel1 -vdw -elec -nonb -cutoff 12 -skip 0 ',
-                                  ' -ofile din/Energy_protein_lipid/',df_pdb$resno[q],
-                                  '_segname_',df_pdb$segid[q],'.txt -switch 10 -exe ',namd_exe,' ',v_paraneters)
-            
-        }
-        #df_tcl[4,4]<-paste0('set sel0 [atomselect top "water"]')
-        df_tcl[q+2,1]<-paste0('set sel1 [atomselect top "lipid or resname POPG"]')
-        df_tcl[q+2,2]<-paste0('set sel2 [atomselect top "protein"]')
-        
-        df_tcl[q+2,3]<-paste0('namdenergy -sel $sel2  $sel1 -vdw -elec -nonb -cutoff 12 -skip 0 -ofile din/Energy/protein_lipid_energy_',8,'.txt -switch 10 -exe ',namd_exe,' ',v_paraneters)
-        df_tcl[q+2,4]<-'mol delete all\n\n\n exit now'
-        write.table(df_tcl,file =paste0(part_start,'MD_analysis/tcl/',parta[j],
-                                        '_Energy_aminoacids_interactions_',8,'.tcl'),sep = '\n', quote = F,na = '' ,row.names = F,col.names = F)
-        
-        system(command = paste0("vmd -dispdev text -e ",part_start,'MD_analysis/tcl/',parta[j],
-                                '_Energy_aminoacids_interactions_',8,'.tcl'),ignore.stdout=T,wait = T)
-        
+
     }
 }
