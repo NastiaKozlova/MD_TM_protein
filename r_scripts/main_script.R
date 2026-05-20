@@ -22,6 +22,7 @@ if (!dir.exists(paste0(part_start,'MD_analysis/'))){dir.create(paste0(part_start
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/combine_dcd.R ",part_start),ignore.stdout=T,wait = T) 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/prepare_tcl_din.R ",part_start),ignore.stdout=T,wait = T) 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/prepare_tcl_din_segname.R ",part_start),ignore.stdout=T,wait = T) 
+system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/Energy_aminoacids_interactions_tcl.R ",part_start),ignore.stdout=T,wait = T) 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/protein_lipid_interactions.R ",part_start),ignore.stdout=T,wait = T) 
 
 if(file.exists("start/domains_of_interest.csv")){
