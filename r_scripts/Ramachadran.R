@@ -134,33 +134,45 @@ for (p in 1:length(v_part)) {
             i<-1
             
             df_rama_filter<-read.csv(paste0(main,"_ramachad/",df_topology$frame_number[i],".csv"),stringsAsFactors = F)
-            df_rama_filter<-df_rama_filter%>%group_by(segid)%>%summarise(ramachadran=n())
+            #df_rama_filter<-df_rama_filter%>%group_by(segid)%>%summarise(ramachadran=n())
             df_rama_filter<-df_rama_filter%>%mutate(number=df_topology$number[i])%>%
-                mutate(frame_number=df_topology$frame_number[i])
+                mutate(frame_number=df_topology$number[i])
             
             for (i in 2:nrow(df_topology)) {
                 df_rama_filter_add<-read.csv(paste0(main,"_ramachad/",df_topology$frame_number[i],".csv"),stringsAsFactors = F)
-                df_rama_filter_add<-df_rama_filter_add%>%group_by(segid)%>%summarise(ramachadran=n())
+                #df_rama_filter_add<-df_rama_filter_add%>%group_by(segid)%>%summarise(ramachadran_chain=n())
                 df_rama_filter_add<-df_rama_filter_add%>%mutate(number=df_topology$number[i])%>%
-                    mutate(frame_number=df_topology$frame_number[i])
+                    mutate(frame_number=df_topology$number[i])
                 df_rama_filter<-rbind(df_rama_filter,df_rama_filter_add)
             }
+            df_rama_filter<-df_rama_filter%>%group_by(segid,frame_number)%>%mutate(ramachadran_segid=n())
+            df_rama_filter<-ungroup(df_rama_filter)
+            df_rama_filter<-df_rama_filter%>%group_by(frame_number)%>%mutate(ramachadran=n())
+            df_rama_filter<-ungroup(df_rama_filter)
+            #df_rama_filter<-df_rama_filter%>%group_by(segid,frame_number)%>%summarise(ramachadran_chain=n())
             df_rama_filter<-df_rama_filter%>%mutate(time=number/10)
             
             p1<-ggplot(data = df_rama_filter)+
                 labs(y="Nimber of aminoasid", x="Time, ns")+
                 facet_grid(segid~.)+
+                geom_line(aes(x=time,y=ramachadran_segid))+theme_bw()
+            ggsave(plot = p1, filename = paste0(parta,main,"_time_Ramachadran_segid.png"),  width = 20, height = 20, units = c("cm"), dpi = 300 )
+            p1<-ggplot(data = df_rama_filter)+
+                labs(y="Nimber of aminoasid", x="Time, ns")+
+                #facet_grid(segid~.)+
                 geom_line(aes(x=time,y=ramachadran))+theme_bw()
-            ggsave(plot = p1, filename = paste0(parta,main,"_time_Ramachadran.png"),  width = 20, height = 20, units = c("cm"), dpi = 300 )
+            ggsave(plot = p1, filename = paste0(parta,main,"_time_Ramachadran.png"),  width = 20, height = 15, units = c("cm"), dpi = 300 )
             write.csv(df_rama_filter,paste0(parta,main,"_time_Ramachadran.csv"),row.names = F)
-            df_topology<-df_rama_filter%>%group_by(frame_number)%>%mutate(sum_ramachadran=sum(ramachadran))
-            df_topology<-ungroup(df_topology)
-            df_topology<-df_topology%>%mutate(ramachadran=sum_ramachadran)
+            df_topology<-df_rama_filter%>%select(ramachadran,time)
+            df_topology<-unique(df_topology)
             df_topology<-df_topology%>%group_by(ramachadran)%>%mutate(x_num=n())
             df_topology<-ungroup(df_topology)
-            df_topology<-df_topology%>%select(ramachadran, x_num)
-            df_topology<-unique(df_topology)
-            df_topology<-df_topology%>%mutate(x_num=x_num/frame_number*100)
+            #df_topology<-df_topology%>%mutate(ramachadran=sum_ramachadran)
+            #df_topology<-df_topology%>%group_by(ramachadran)%>%mutate(x_num=n())
+            #df_topology<-ungroup(df_topology)
+            #df_topology<-df_topology%>%select(ramachadran, x_num)
+            #df_topology<-unique(df_topology)
+            #df_topology<-df_topology%>%mutate(x_num=x_num/frame_number*100)
             write.csv(df_topology,paste0(parta,main,"_Ramachadran.csv"),row.names = F)
         }
         if (file.exists(paste0(parta,main,"_Ramachadran.csv"))){
@@ -175,35 +187,16 @@ for (p in 1:length(v_part)) {
             p1<-ggplot(data = df_topology)+
                 labs(x="Quantity of unfavorite aminoasids",y="persent of time, %")+
                 geom_point(aes(x=ramachadran,y=x_num))+
-                geom_line(aes(x=ramachadran,y=x_num))+theme_bw()+
-                geom_text(aes(x=ramachadran,y=x_num+0.25,label=persent))+
-                facet_grid(segid~.)+
-                scale_y_continuous(breaks = c(min(round(df_topology$x_num,digits = 0)):max(round(df_topology$x_num,digits = 0))),
-                                   labels = c(min(round(df_topology$x_num,digits = 0)):max(round(df_topology$x_num,digits = 0))))+
-                scale_x_continuous(breaks = c(min(df_topology$ramachadran):max(df_topology$ramachadran)),
-                                   labels = c(min(df_topology$ramachadran):max(df_topology$ramachadran)))
+                geom_line(aes(x=ramachadran,y=x_num))+
+                #geom_text(aes(x=ramachadran,y=x_num+0.25,label=persent))#+
+                #facet_grid(segid~.)+
+                #scale_y_continuous(breaks = c(min(round(df_topology$x_num,digits = 0)):max(round(df_topology$x_num,digits = 0))),
+                #                   labels = c(min(round(df_topology$x_num,digits = 0)):max(round(df_topology$x_num,digits = 0))))+
+                #scale_x_continuous(breaks = c(min(df_topology$ramachadran):max(df_topology$ramachadran)),
+                #                   labels = c(min(df_topology$ramachadran):max(df_topology$ramachadran)))
+                theme_bw()
             ggsave(plot = p1, filename = paste0(parta,main,"_Ramachadran.png"),  width = 20, height = 15, units = c("cm"), dpi = 300 )
-            df_topology<-read.csv(paste0(parta,main,"_time_Ramachadran.csv"),stringsAsFactors = F)
-            df_rama<-read.csv(paste0(main,"_ramachad/",df_topology$frame_number[1],".csv"),stringsAsFactors =  F)
-            for (i in 2:nrow(df_topology)) {
-                df_rama_filter<-read.csv(paste0(main,"_ramachad/",df_topology$frame_number[i],".csv"),stringsAsFactors = F)
-                df_rama<-rbind(df_rama,df_rama_filter)
-            }
-            df_rama<-df_rama%>%group_by(amino)%>%mutate(x_num=n())
-            df_rama<-ungroup(df_rama)
-            df_rama<-df_rama%>%select(seq, number ,amino, x_num)
-            df_rama<-unique(df_rama) 
-            df_rama<-df_rama%>%mutate(x_num=x_num/frame_number*100)
-            df_rama_filter<-df_rama
-            p1<-ggplot(data = df_rama)+
-                labs(x="Nimber of aminoasid", y="persent of time, %")+
-                geom_point(aes(x=number,y=x_num))+theme_bw()+
-                #geom_line(aes(x=number,y=x_num))+
-                facet_grid(segid~.)+
-                scale_x_continuous(breaks = test_10,labels = test_10)+
-                geom_text(aes(x=number,y=x_num,label=amino),data = df_rama_filter)
-            write.csv(df_rama,paste0(parta,main,"_ramachad.csv"),row.names = F)
-            ggsave(plot = p1, filename = paste0(parta,main,"_Ramachadran_histogram.png"),  width = 40, height = 20, units = c("cm"), dpi = 300 )
+    
         }
     }
 }
