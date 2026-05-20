@@ -65,7 +65,7 @@ for (j in 1:length(v_parta)) {
             df_tcl[10,1]<-'mol delete all\n\n\n exit now'
             write.table(df_tcl,file =paste0(part_start,'MD_analysis/tcl/',parta[j],'_Energy_',v_segid[p],'.tcl'),sep = '\n', quote = F,na = '' ,row.names = F,col.names = F)
             
- #           system(command = paste0("vmd -dispdev text -e ",part_start,'MD_analysis/tcl/',parta[j],'_Energy_',v_segid[p],'.tcl'),ignore.stdout=T,wait = T)
+            system(command = paste0("vmd -dispdev text -e ",part_start,'MD_analysis/tcl/',parta[j],'_Energy_',v_segid[p],'.tcl'),ignore.stdout=T,wait = T)
         }
         
     }
