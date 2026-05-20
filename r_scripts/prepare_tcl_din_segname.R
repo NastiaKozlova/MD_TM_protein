@@ -49,7 +49,7 @@ for (j in 1:length(v_parta)) {
         v_paraneters<-paste(v_paraneters,collapse = " ")
         
         pdb<-read.pdb(paste0(part,"din/pdb_second/8/frame_0.pdb"))
-        v_segid<-pdb$atom$segid
+        v_segid<-unique(pdb$atom$segid)
         for (p in 1:length(v_segid)){
             df_tcl<-data.frame(matrix(nrow = 1,ncol = 1))
             df_tcl[1,1]<-paste('cd', part,"\npackage require namdenergy")
@@ -65,7 +65,7 @@ for (j in 1:length(v_parta)) {
             df_tcl[10,1]<-'mol delete all\n\n\n exit now'
             write.table(df_tcl,file =paste0(part_start,'MD_analysis/tcl/',parta[j],'_Energy_',v_segid[p],'.tcl'),sep = '\n', quote = F,na = '' ,row.names = F,col.names = F)
             
-            system(command = paste0("vmd -dispdev text -e ",part_start,'MD_analysis/tcl/',parta[j],'_Energy_',v_segid[p],'.tcl'),ignore.stdout=T,wait = T)
+ #           system(command = paste0("vmd -dispdev text -e ",part_start,'MD_analysis/tcl/',parta[j],'_Energy_',v_segid[p],'.tcl'),ignore.stdout=T,wait = T)
         }
         
     }
