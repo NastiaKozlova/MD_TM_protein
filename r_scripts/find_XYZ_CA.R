@@ -26,12 +26,12 @@ for (p in 1:length(v_part)) {
         pdb<-read.pdb(paste0("pdb_second/",main,"/frame_",q,".pdb"))
         df_pdb<-pdb$atom
         df_pdb<-df_pdb%>%filter(elety=="CA")
-        df_pdb<-df_pdb%>%select(resid,resno,x,y,z)
+        df_pdb<-df_pdb%>%select(resid,resno,x,y,z,segid)
         
         write.csv(df_pdb,paste0("pdb_sec/",main,"/frame_",q,".csv"),row.names = F)
         df_pdb<-pdb$atom
         df_pdb<-df_pdb%>%filter(elety=="SG")
-        df_pdb<-df_pdb%>%select(resid,resno,x,y,z)
+        df_pdb<-df_pdb%>%select(resid,resno,x,y,z,segid)
         write.csv(df_pdb,paste0("pdb_sec/",main,"_SG/frame_",q,".csv"),row.names = F)
       }
     }
