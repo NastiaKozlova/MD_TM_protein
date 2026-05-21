@@ -33,9 +33,12 @@ for (j in 1:length(v_parta)) {
                     df_tcl[i+2,3]<-paste0('set protein [atomselect top "protein and segname ',v_segid[u],'" ]')
                     df_tcl[i+2,4]<-paste0('set water [atomselect top "water" ]')
                     df_tcl[i+2,5]<-paste0('hbonds -sel1 $protein -sel2 $water -writefile yes -upsel yes -frames all -dist 3.0 -ang 20 -plot no -outdir din -log hbonds_log/',main_part[q],'/seqid_',v_segid[u],'_frame_',i,'.txt -writefile yes -outfile outfile -polar no -DA both -type all -detailout hbonds/',main_part[q],'/seqid_',v_segid[u],'_frame_',i,'.txt')
-                    df_tcl[i+2,6]<-'mol delete all"\n\n\nexit now"'
+                    df_tcl[i+2,6]<-'mol delete all'
                 }
+                a<-nrow(df_tcl)
+                df_tcl[a+1,1]<-'\n\n\nexit now'
                 write.table(df_tcl,file =paste0(part_start,'MD_analysis/tcl/',parta,'_hbond_',main_part[q],"seqid_",v_segid[u],'.tcl'),sep = '\n', quote = F,na = '' ,row.names = F,col.names = F)
+                
                 system(command = paste0("vmd -dispdev text -e ",part_start,'MD_analysis/tcl/',parta,'_hbond_',main_part[q],"seqid_",v_segid[u],'.tcl'),ignore.stdout=T,wait = T)
             }
         }
