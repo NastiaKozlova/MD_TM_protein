@@ -60,6 +60,7 @@ system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/find_conserv
 #collect MD simulation data in minimal amount of dataframes 
 
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/make_plots_RMSD_RMSF_frame.R ",part_start),ignore.stdout=T,wait = T)
+#rewrite
 system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/make_plots_RMSD_RMSF.R ",part_start),ignore.stdout=T,wait = T)
 
 #system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/claster_analysis_frame_data.R ",part_start),ignore.stdout=T,wait = T)
