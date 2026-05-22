@@ -74,14 +74,17 @@ for (p in 1:length(v_part)) {
                 }
             }
         }
-        y<-1
-        df_hbonds<-read.csv(paste0("hbonds/",main,"_seqid/seqid_",v_segid[1],"_frame_",q,".txt"),stringsAsFactors = F)
+        y<-1 
         for (q in 0:number_frame) {
+            df_hbonds<-read.csv(paste0("hbonds/",main,"_seqid/seqid_",v_segid[1],"_frame_",q,".txt"),stringsAsFactors = F)
+            
             if(length(v_segid)>1){
-                df_hbonds_add<-read.csv(paste0("hbonds/",main,"_seqid/seqid_",v_segid[y],"frame_",q,".txt"),stringsAsFactors = F)
-                df_hbonds<-rbind(df_hbonds,df_hbonds_add)
+                for(y in 2:length(v_segid)){
+                    df_hbonds_add<-read.csv(paste0("hbonds/",main,"_seqid/seqid_",v_segid[y],"_frame_",q,".txt"),stringsAsFactors = F)
+                    df_hbonds<-rbind(df_hbonds,df_hbonds_add)
+                }
             }
-            write.csv(df_hbonds,paste0("hbonds/",main,"_mod/frame_",0,".txt"),row.names =  F)
+            write.csv(df_hbonds,paste0("hbonds/",main,"_mod/frame_",q,".txt"),row.names =  F)
         }
         
         df_hbonds<-read.csv(paste0("hbonds/",main,"_mod/frame_",0,".txt"),stringsAsFactors = F)
@@ -90,11 +93,11 @@ for (p in 1:length(v_part)) {
             df_hbonds<-rbind(df_hbonds,df_hbonds_add)
         }
         #      df_hbonds<-df_hbonds%>%filter(abs(z)<18)
-        df_hbonds<-df_hbonds%>%select(number, amino,frame)
+        df_hbonds<-df_hbonds%>%select(number, amino,frame,segid)
         df_bonds<-unique(df_hbonds)
         df_bonds<-df_bonds%>%group_by(number)%>%mutate(occupancy=n())
         df_bonds<-df_bonds%>%mutate(persent=occupancy/(number_frame+1)*100)
-        df_bonds<-df_bonds%>%select(number, amino, occupancy,	persent)
+        df_bonds<-df_bonds%>%select(number, amino,segid, occupancy,	persent)
         df_bonds<-unique(df_bonds)
         write.csv(df_bonds,paste0(part_start,"MD_analysis/din/",v_part[p],"/hbonds_",main,".csv"),row.names = F)  
     }
