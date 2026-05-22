@@ -61,7 +61,7 @@ for (p in 1:length(v_part)) {
         file_name<-paste0("hbonds/",main,"/frame_",q,".txt")
         df_bonds<-sort_water(file_name=file_name,n_frame=q)
         df_pdb<-read.csv(paste0("pdb_sec/",main,"/frame_",q,".csv"),stringsAsFactors = F)
-        df_bonds<-left_join(df_bonds,df_pdb,c("number"="resno","amino"="resid"))
+        df_bonds<-left_join(df_bonds,df_pdb,c("number"="resno","amino"="resid","segid"))
         df_bonds<-unique(df_bonds)
         write.csv(df_bonds,paste0("water/",main,"_mod/frame_",q,".txt"),row.names = F)
       }
