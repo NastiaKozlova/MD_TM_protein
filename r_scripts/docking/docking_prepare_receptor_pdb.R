@@ -33,12 +33,14 @@ for (j in 1:length(v_parta)) {
     df_main<-df_main%>%filter(number==max(number))
 
     df_ramachadran<-read.csv(paste0("MD_analysis/din/",v_parta[j],"/",df_main$number[1],"_time_Ramachadran.csv"),stringsAsFactors = F)
+    df_ramachadran<-df_ramachadran%>%select(frame_number,ramachadran)
+    df_ramachadran<-unique(df_ramachadran)
     df_Energy<-read.table(paste0(part,"/","din/Energy/protein_",df_main$number[1],".txt"), header=T, na.strings ="", stringsAsFactors= F)
-    df_ramachadran<-left_join(df_ramachadran,df_Energy,by=c("number"="Frame" ))
+    df_ramachadran<-left_join(df_ramachadran,df_Energy,by=c("frame_number"="Frame" ))
     df_ramachadran<-df_ramachadran%>%filter(ramachadran==min(ramachadran))
     df_ramachadran<-df_ramachadran%>%filter(Total==min(Total))
     for (i in 1:nrow(df_ramachadran)) {
-      pdb<-read.pdb(paste0(part,"/din/pdb_second/",df_main$number[1],"/",df_ramachadran$frame_number[i],".pdb"))
+      pdb<-read.pdb(paste0(part,"/din/pdb_second/",df_main$number[1],"/frame_",df_ramachadran$frame_number[i],".pdb"))
       pdb.int<-atom.select(pdb,"water","ions",operator = "OR",inverse=T)
       pdb_fin<-trim.pdb(pdb,pdb.int)
       write.pdb(pdb_fin,paste0("MD_analysis/docking/receptor_start/",v_parta[j],".pdb"))
