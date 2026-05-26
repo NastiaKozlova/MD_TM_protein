@@ -80,21 +80,7 @@ for (j in 1:nrow(df_all_systems)) {
     }
     df_structure<-df_structure%>%filter(size>3)
     df_type<-df_type[df_type$type%in%df_structure$type,]
-    #df_add<-read.csv(paste0(part_start,"start/active_center.csv"),stringsAsFactors = F)
-    #df_type<-rbind(df_type,df_add)
-    #df_type<-unique(df_type)
     df_type<-df_type%>%mutate(receptor=paste0("charmm-gui-",df_all_systems$system_name[j]))
-  #  df_test<-left_join(df_type,df_pdb,by="resno")
-  #  df_test<-df_test%>%group_by(type.x)%>%mutate(x_mean=mean(x))%>%mutate(y_mean=mean(y))%>%mutate(z_mean=mean(z))
-  #  df_testo<-df_test%>%left_join(x=df_test,y=df_structure,by=c("type.x"="type"))
-  #  df_testo<-df_testo%>%filter(x_mean>x_min)
-  #  df_testo<-df_testo%>%filter(y_mean>y_min)
-  #  df_testo<-df_testo%>%filter(z_mean>z_min)
-    
-  #  df_testo<-df_testo%>%filter(x_mean<x_max)
-  #  df_testo<-df_testo%>%filter(y_mean<y_max)
-  #  df_testo<-df_testo%>%filter(z_mean<z_max)
-  #  df_temp<-df_test$type.x[!df_test$type.x%in%df_testo$type.x]
     write.csv(df_type,paste0("docking/active_center_TEMP/charmm-gui-",df_all_systems$system_name[j],"_active_center.csv"),row.names = F)
   }
 }
