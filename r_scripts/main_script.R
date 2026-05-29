@@ -101,10 +101,10 @@ for (j in 1:length(v_search)) {
     system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_group_structure.R ",part_name[j],",",1),ignore.stdout=T,wait = T)
 }
 #if you want don't count cout interactions of protein with protein serfuce v_surphase_conut<-F  
-part_name<-paste0(part_start,"MD_analysis/docking/docking_first/",v_search,"/")
+part_name<-paste0(part_start,",",v_search)
 for (j in 1:length(v_search)) {
 
-    system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking/docking_surf.R ",part_name[j]),ignore.stdout=T,wait = T)
+    system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_surf.R ",part_name[j]),ignore.stdout=T,wait = T)
 }
 #if(surphase_conut){
 #  system(command = paste0("Rscript --vanilla  ",part_start,"r_scripts/docking_surf.R ",part_start),ignore.stdout=T,wait = T)
